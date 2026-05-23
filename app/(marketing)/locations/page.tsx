@@ -4,10 +4,10 @@ import { demoStore } from "@/lib/demo/store";
 
 export default function LocationsPage() {
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="mx-auto max-w-7xl px-6 pb-16 pt-28">
       <h1 className="text-4xl font-bold">Locations</h1>
       <p className="mt-4 text-[#9DA3AE]">
-        5 state-of-the-art facilities across the Phoenix metro.
+        5 state-of-the-art facilities across the Atlanta metro.
       </p>
       <div className="mt-10">
         <LocationsMap />

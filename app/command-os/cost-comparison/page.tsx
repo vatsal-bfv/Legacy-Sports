@@ -171,11 +171,16 @@ export default function CostComparisonPage() {
                 background: "#15171B",
                 border: "1px solid #2A2D34",
               }}
-              formatter={(value: number, name: string) => [
-                formatCurrency(Math.abs(value)) +
-                  (name === "Legacy net" && value < 0 ? " net gain" : "/mo"),
-                name,
-              ]}
+              formatter={(value, name) => {
+                const numeric =
+                  typeof value === "number" ? value : Number(value) || 0;
+                const label = String(name);
+                return [
+                  formatCurrency(Math.abs(numeric)) +
+                    (label === "Legacy net" && numeric < 0 ? " net gain" : "/mo"),
+                  label,
+                ];
+              }}
             />
             <Line
               type="monotone"

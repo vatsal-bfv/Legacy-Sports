@@ -1,34 +1,43 @@
 import Link from "next/link";
 import Image from "next/image";
-import publicAthletes from "@/content/public-athletes.json";
+import {
+  featuredAthletes,
+  formatFeaturedSport,
+  getFeaturedAthleteName,
+} from "@/lib/marketing/featured-athletes";
 
 export default function AthletesPage() {
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <h1 className="text-4xl font-bold">Success Stories</h1>
-      <p className="mt-4 text-[#9DA3AE]">
+    <div className="mx-auto max-w-7xl px-[var(--legacy-gutter)] pb-16 pt-28">
+      <h1 className="text-4xl font-bold text-pitch">Success Stories</h1>
+      <p className="mt-4 text-slate">
         Athletes who transformed their trajectory at Legacy.
       </p>
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {publicAthletes.map((a) => (
+        {featuredAthletes.map((athlete) => (
           <Link
-            key={a.id}
-            href={`/athletes/${a.slug}`}
-            className="overflow-hidden rounded-lg border border-[#2A2D34] bg-[#15171B] transition hover:border-[#FF5A1F]/50"
+            key={athlete.id}
+            href={`/athletes/${athlete.slug}`}
+            data-cursor="link"
+            className="overflow-hidden rounded-[14px] border border-bone bg-chalk transition hover:border-orange/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]"
           >
-            <Image
-              src={a.photo_url}
-              alt=""
-              width={400}
-              height={300}
-              className="h-56 w-full object-cover"
-            />
+            <div className="relative h-56 overflow-hidden">
+              <Image
+                src={athlete.photo_url}
+                alt={`Portrait of ${getFeaturedAthleteName(athlete)}, a Legacy athlete`}
+                fill
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
             <div className="p-6">
-              <h2 className="text-xl font-semibold">
-                {a.first_name} {a.last_name}
+              <h2 className="text-xl font-semibold text-pitch">
+                {getFeaturedAthleteName(athlete)}
               </h2>
-              <p className="text-sm capitalize text-[#FF5A1F]">{a.sport}</p>
-              <p className="mt-2 text-sm text-[#9DA3AE]">{a.story}</p>
+              <p className="text-sm capitalize text-orange">
+                {formatFeaturedSport(athlete.sport)}
+              </p>
+              <p className="mt-2 line-clamp-3 text-sm text-slate">{athlete.story}</p>
             </div>
           </Link>
         ))}

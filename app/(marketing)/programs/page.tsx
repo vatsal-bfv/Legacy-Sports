@@ -4,7 +4,7 @@ import { formatCurrency } from "@/lib/utils";
 
 export default function ProgramsPage() {
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="mx-auto max-w-7xl px-6 pb-16 pt-28">
       <h1 className="text-4xl font-bold">Programs</h1>
       <p className="mt-4 text-[#9DA3AE]">
         Training paths for every age and ambition.
@@ -33,7 +33,7 @@ export default function ProgramsPage() {
       <div className="mt-16 rounded-lg bg-[#FF5A1F]/10 p-8 text-center">
         <p className="text-lg font-medium">Ready to start?</p>
         <Link
-          href="/locations/phoenix#book"
+          href="/locations/suwanee#book"
           className="mt-4 inline-block rounded-md bg-[#FF5A1F] px-6 py-3 text-white"
         >
           Book a free assessment

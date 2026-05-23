@@ -1,20 +1,42 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
+  variable: "--font-display",
+  weight: "400",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Legacy Sports Complex",
-  description: "Where athletes become recruits.",
+  metadataBase: new URL("https://legacysportscomplex.com"),
+  title: {
+    default: "Legacy Sports Complex",
+    template: "%s | Legacy Sports Complex",
+  },
+  description:
+    "Georgia's premier multi-location athlete development system. Performance training, combine prep, and a college recruiting pipeline powered by AI.",
+  applicationName: "Legacy Sports Complex",
+  openGraph: {
+    siteName: "Legacy Sports Complex",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0A0B0D",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -23,12 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html
+      lang="en"
+      className={`${inter.variable} ${bebasNeue.variable} antialiased`}
+    >
+      <body>{children}</body>
     </html>
   );
 }
