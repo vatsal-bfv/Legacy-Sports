@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@source "../node_modules/streamdown/dist/*.js";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -292,4 +293,21 @@ body {
 
 .legacy-command-schedule .sx__current-time-indicator::before {
   background-color: #ef4444 !important;
+}
+
+/* Streamdown — Command OS AI markdown */
+.legacy-ai-markdown {
+  --foreground: #f5f6f7;
+  --muted-foreground: #9da3ae;
+  --border: #2a2d34;
+  --muted: #1a1d24;
+  --primary: #3b82f6;
+}
+
+.legacy-ai-markdown a {
+  color: #3b82f6;
+}
+
+.legacy-ai-markdown strong {
+  color: #f5f6f7;
 }

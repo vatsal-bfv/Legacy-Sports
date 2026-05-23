@@ -12,18 +12,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { QueryResponse } from "@/lib/ai/query-cache";
+import { AiMarkdown } from "@/components/app/AiMarkdown";
 
-export function QueryResultRenderer({ response }: { response: QueryResponse }) {
+export function QueryResultRenderer({
+  response,
+  isAnimating = false,
+}: {
+  response: QueryResponse;
+  isAnimating?: boolean;
+}) {
   if (response.type === "narrative") {
     return (
-      <div
-        className="prose prose-invert prose-sm max-w-none text-[#F5F6F7]"
-        dangerouslySetInnerHTML={{
-          __html: response.markdown
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-            .replace(/\n/g, "<br/>"),
-        }}
-      />
+      <AiMarkdown isAnimating={isAnimating}>{response.markdown}</AiMarkdown>
     );
   }
 
@@ -104,7 +104,11 @@ export function QueryResultRenderer({ response }: { response: QueryResponse }) {
     return (
       <div className="space-y-6">
         {response.blocks.map((block, i) => (
-          <QueryResultRenderer key={i} response={block} />
+          <QueryResultRenderer
+            key={i}
+            response={block}
+            isAnimating={isAnimating}
+          />
         ))}
       </div>
     );

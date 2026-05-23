@@ -8,27 +8,33 @@ import { HERO_IDS, COACH_RODRIGUEZ_ID } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function RetentionPage() {
   const atRisk = demoStore.athletes
     .filter((a) => a.status === "at_risk")
     .sort((a, b) => (b.risk_score ?? 0) - (a.risk_score ?? 0));
-  const [draftOpen, setDraftOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  const selected = atRisk.find((a) => a.id === selectedId);
+  const attendance = selected
+    ? demoStore.attendance.filter((a) => a.athlete_id === selected.id)
+    : [];
+
   async function draftMessage(athleteId: string) {
     setSelectedId(athleteId);
     setLoading(true);
     setSent(false);
+    setSheetOpen(true);
     const res = await fetch("/api/ai/draft-message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -41,7 +47,6 @@ export default function RetentionPage() {
     const data = await res.json();
     setMessage(data.message);
     setLoading(false);
-    setDraftOpen(true);
   }
 
   async function sendMessage() {
@@ -52,7 +57,7 @@ export default function RetentionPage() {
       body: JSON.stringify({ athlete_id: selectedId, body: message }),
     });
     setSent(true);
-    setTimeout(() => setDraftOpen(false), 1500);
+    setTimeout(() => setSheetOpen(false), 1500);
   }
 
   return (
@@ -69,69 +74,100 @@ export default function RetentionPage() {
             <tr>
               <th className="p-4">Athlete</th>
               <th className="p-4">Risk score</th>
+              <th className="p-4">Missed sessions</th>
               <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {atRisk.map((a) => (
-              <tr key={a.id} className="border-t border-[#2A2D34]/50">
-                <td className="p-4">
-                  <Link
-                    href={`/command-os/athletes/${a.id}`}
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      src={a.photo_url}
-                      alt=""
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    {a.first_name} {a.last_name}
-                  </Link>
-                </td>
-                <td className="p-4">
-                  <Badge variant="danger">{a.risk_score ?? 70}%</Badge>
-                </td>
-                <td className="p-4">
-                  <Button
-                    size="sm"
-                    onClick={() => draftMessage(a.id)}
-                  >
-                    Draft re-engagement message
-                  </Button>
-                </td>
-              </tr>
-            ))}
+            {atRisk.map((a) => {
+              const missed = demoStore.attendance.filter(
+                (att) =>
+                  att.athlete_id === a.id && att.status === "no_show"
+              ).length;
+              return (
+                <tr key={a.id} className="border-t border-[#2A2D34]/50">
+                  <td className="p-4">
+                    <Link
+                      href={`/command-os/athletes/${a.id}`}
+                      className="flex items-center gap-3"
+                    >
+                      <Image
+                        src={a.photo_url}
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                      {a.first_name} {a.last_name}
+                    </Link>
+                  </td>
+                  <td className="p-4">
+                    <Badge variant="danger">{a.risk_score ?? 70}%</Badge>
+                  </td>
+                  <td className="p-4 text-[#9DA3AE]">{missed}</td>
+                  <td className="p-4">
+                    <Button size="sm" onClick={() => draftMessage(a.id)}>
+                      Draft re-engagement message
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
-      <Dialog open={draftOpen} onOpenChange={setDraftOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent
+          side="right"
+          className="w-full border-[#2A2D34] bg-[#15171B] text-[#F5F6F7] sm:max-w-lg [&_[data-slot=sheet-title]]:text-[#F5F6F7] [&_[data-slot=sheet-close]]:text-[#9DA3AE] [&_[data-slot=sheet-close]]:hover:bg-[#1A1D24] [&_[data-slot=sheet-close]]:hover:text-[#F5F6F7]"
+        >
+          <SheetHeader className="border-b border-[#2A2D34] pb-4">
+            <SheetTitle>
               {selectedId === HERO_IDS.tyler
                 ? "Re-engage Tyler Chen"
-                : "Draft message"}
-            </DialogTitle>
-          </DialogHeader>
-          {loading ? (
-            <p className="text-[#9DA3AE]">Generating...</p>
-          ) : (
-            <>
-              <Textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={4}
-              />
-              <Button onClick={sendMessage} disabled={sent}>
-                {sent ? "Sent ✓" : "Send"}
-              </Button>
-            </>
+                : "Draft re-engagement message"}
+            </SheetTitle>
+          </SheetHeader>
+          {selected && (
+            <div className="space-y-4 px-4 pb-4">
+              <div>
+                <p className="text-sm font-medium">Attendance pattern</p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {attendance.slice(0, 14).map((att) => (
+                    <div
+                      key={att.id}
+                      className={`h-6 w-6 rounded-sm ${
+                        att.status === "attended"
+                          ? "bg-emerald-500/50"
+                          : "bg-red-500/50"
+                      }`}
+                      title={att.status}
+                    />
+                  ))}
+                </div>
+                <p className="mt-1 text-xs text-[#9DA3AE]">
+                  Last 14 sessions · green = attended, red = missed
+                </p>
+              </div>
+              {loading ? (
+                <p className="text-[#9DA3AE]">Generating with AI...</p>
+              ) : (
+                <>
+                  <Textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={5}
+                  />
+                  <Button onClick={sendMessage} disabled={sent} className="w-full">
+                    {sent ? "Sent ✓" : "Send"}
+                  </Button>
+                </>
+              )}
+            </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

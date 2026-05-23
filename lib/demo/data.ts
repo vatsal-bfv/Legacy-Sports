@@ -675,7 +675,48 @@ export const initialLeads: Lead[] = [
     status: "scheduled",
     assigned_coach_id: coaches[2].id,
   },
+  ...generateBackgroundLeads(),
 ];
+
+function generateBackgroundLeads(): Lead[] {
+  const firstNames = [
+    "James", "Sarah", "David", "Emily", "Chris", "Lisa", "Ryan", "Nicole",
+    "Kevin", "Maria", "Brian", "Jessica", "Daniel", "Ashley", "Mark",
+  ];
+  const lastNames = [
+    "Wilson", "Martinez", "Anderson", "Thomas", "Jackson", "White",
+    "Harris", "Martin", "Thompson", "Garcia", "Robinson", "Lewis",
+  ];
+  const sources = ["website", "referral", "walk-in", "social", "event"];
+  const statuses: Lead["status"][] = [
+    "new", "new", "contacted", "contacted", "scheduled", "converted", "lost",
+  ];
+  const locIds = Object.values(LOCATION_IDS);
+  const leads: Lead[] = [];
+
+  for (let i = 0; i < 198; i++) {
+    const daysAgo = Math.floor((i * 90) / 198);
+    const created = new Date(Date.now() - daysAgo * 86400000);
+    created.setHours(8 + (i % 10), (i * 7) % 60, 0, 0);
+    leads.push({
+      id: `lead-gen-${String(i + 3).padStart(4, "0")}`,
+      created_at: created.toISOString(),
+      source: sources[i % sources.length],
+      first_name: firstNames[i % firstNames.length],
+      last_name: lastNames[i % lastNames.length],
+      email: `lead${i + 3}@email.demo`,
+      phone: `(480) 555-${String(4000 + i).slice(-4)}`,
+      athlete_name: `${firstNames[(i + 3) % firstNames.length]} Jr.`,
+      athlete_age: 10 + (i % 9),
+      interested_program_id: programs[i % programs.length].id,
+      interested_location_id: locIds[i % locIds.length],
+      notes: i % 5 === 0 ? "Requested callback" : "",
+      status: statuses[i % statuses.length],
+      assigned_coach_id: i % 3 === 0 ? coaches[i % coaches.length].id : null,
+    });
+  }
+  return leads;
+}
 
 export { messages } from "./messages-seed";
 
@@ -821,22 +862,62 @@ export const payments: Payment[] = athletes
     },
   ]);
 
-export const sessions: Session[] = locations.flatMap((loc, li) =>
-  [9, 11, 14, 16].map((hour, hi) => ({
-    id: `sess-${li}-${hi}`,
-    location_id: loc.id,
-    coach_id: coaches[li % coaches.length].id,
-    program_id: programs[hi % programs.length].id,
-    starts_at: new Date(
-      new Date().setHours(hour, 0, 0, 0)
-    ).toISOString(),
-    ends_at: new Date(
-      new Date().setHours(hour + 1, 0, 0, 0)
-    ).toISOString(),
-    room: `Room ${hi + 1}`,
-    capacity: 20,
-  }))
-);
+function generateSessions(): Session[] {
+  const base = new Date();
+  base.setMinutes(0, 0, 0);
+
+  const slots: {
+    locationIndex: number;
+    hour: number;
+    programIndex: number;
+    room: string;
+    capacity: number;
+  }[] = [
+    // Phoenix — busy flagship, morning + late afternoon
+    { locationIndex: 0, hour: 7, programIndex: 0, room: "Turf A", capacity: 24 },
+    { locationIndex: 0, hour: 9, programIndex: 0, room: "Turf B", capacity: 20 },
+    { locationIndex: 0, hour: 11, programIndex: 1, room: "Combine Lab", capacity: 16 },
+    { locationIndex: 0, hour: 16, programIndex: 3, room: "Weight Room", capacity: 18 },
+    // Mesa — mid-morning teams, afternoon recruit track
+    { locationIndex: 1, hour: 8, programIndex: 0, room: "Court 1", capacity: 22 },
+    { locationIndex: 1, hour: 10, programIndex: 4, room: "Turf A", capacity: 20 },
+    { locationIndex: 1, hour: 14, programIndex: 1, room: "Turf B", capacity: 16 },
+    { locationIndex: 1, hour: 17, programIndex: 2, room: "Film Room", capacity: 12 },
+    // Gilbert — lighter morning, strong after-school block
+    { locationIndex: 2, hour: 9, programIndex: 0, room: "Field 1", capacity: 20 },
+    { locationIndex: 2, hour: 15, programIndex: 1, room: "Turf A", capacity: 18 },
+    { locationIndex: 2, hour: 18, programIndex: 3, room: "Weight", capacity: 15 },
+    // Scottsdale — premium recovery + combine windows
+    { locationIndex: 3, hour: 7, programIndex: 3, room: "Recovery", capacity: 10 },
+    { locationIndex: 3, hour: 11, programIndex: 2, room: "Turf A", capacity: 14 },
+    { locationIndex: 3, hour: 13, programIndex: 1, room: "Combine Lab", capacity: 16 },
+    { locationIndex: 3, hour: 16, programIndex: 4, room: "Court 1", capacity: 20 },
+    // Chandler — late morning + lunch-hour team slot
+    { locationIndex: 4, hour: 10, programIndex: 0, room: "Court 2", capacity: 22 },
+    { locationIndex: 4, hour: 12, programIndex: 4, room: "Turf A", capacity: 24 },
+    { locationIndex: 4, hour: 15, programIndex: 1, room: "Turf B", capacity: 16 },
+  ];
+
+  return slots.map((slot, i) => {
+    const loc = locations[slot.locationIndex];
+    const start = new Date(base);
+    start.setHours(slot.hour, 0, 0, 0);
+    const end = new Date(start);
+    end.setHours(slot.hour + 1);
+    return {
+      id: `sess-${loc.slug}-${slot.hour}-${i}`,
+      location_id: loc.id,
+      coach_id: coaches[slot.locationIndex % coaches.length].id,
+      program_id: programs[slot.programIndex].id,
+      starts_at: start.toISOString(),
+      ends_at: end.toISOString(),
+      room: slot.room,
+      capacity: slot.capacity,
+    };
+  });
+}
+
+export const sessions: Session[] = generateSessions();
 
 export const attendance: Attendance[] = heroAthletes.flatMap((a) =>
   Array.from({ length: 12 }, (_, i) => ({

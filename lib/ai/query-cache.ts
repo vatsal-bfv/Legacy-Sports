@@ -173,7 +173,7 @@ const PATTERNS: { pattern: RegExp; key: string }[] = [
   { pattern: /phoenix.*mesa.*retention|mesa.*phoenix.*retention|compare.*retention/i, key: "compare phoenix and mesa member retention" },
   { pattern: /marcus.*vertical|vertical.*marcus|2027.*recruit/i, key: "compare marcus vertical progression to other 2027 recruits in our system" },
   { pattern: /quarterback.*40|40.*under.*4\.?7|qb.*4\.?7/i, key: "show me every quarterback with a 40 under 47" },
-  { pattern: /marcus.*trend|how.*marcus/i, key: "how is marcus johnson trending" },
+  { pattern: /marcus.*trend|how.*marcus|marcus.*johnson|what.*marcus|marcus.*up to|marcus.*doing|\bmarcus\b/i, key: "how is marcus johnson trending" },
   { pattern: /coach.*retention|retention.*coach/i, key: "which coaches have the highest member retention" },
 ];
 

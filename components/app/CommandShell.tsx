@@ -78,8 +78,8 @@ export function CommandShell({
           </nav>
         </aside>
         <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-40 border-b border-[#2A2D34] bg-[#0A0B0D]/95 backdrop-blur">
-            <div className="flex h-16 items-center gap-4 px-4 lg:px-6">
+          <header className="sticky top-0 z-40 overflow-visible border-b border-[#2A2D34] bg-[#0A0B0D]/95 backdrop-blur">
+            <div className="flex min-h-16 items-center gap-4 px-4 py-2 lg:px-6">
               <LocationSwitcher />
               <div className="hidden flex-1 md:block">
                 <NaturalLanguageInput compact />

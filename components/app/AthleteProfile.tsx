@@ -2,11 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { demoStore } from "@/lib/demo/store";
-import type { Athlete } from "@/lib/demo/types";
+import type { Athlete, CoachNote } from "@/lib/demo/types";
 import {
   LineChart,
   Line,
@@ -18,15 +22,41 @@ import {
 } from "recharts";
 import { HERO_IDS } from "@/lib/constants";
 import { AthleteCommsTab } from "@/components/app/AthleteCommsTab";
+import { MessageSquare, Pencil } from "lucide-react";
+
+function buildCalendarHeatmap(attendance: { checked_in_at: string; status: string }[]) {
+  const weeks: { date: string; status: string }[][] = [];
+  let currentWeek: { date: string; status: string }[] = [];
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const att = attendance.find((a) => a.checked_in_at.startsWith(dateStr));
+    currentWeek.push({
+      date: dateStr,
+      status: att?.status ?? "none",
+    });
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  }
+  if (currentWeek.length) weeks.push(currentWeek);
+  return weeks;
+}
 
 export function AthleteProfile({ athlete }: { athlete: Athlete }) {
   const measurables = demoStore.measurables.filter(
     (m) => m.athlete_id === athlete.id
   );
   const wearables = demoStore.wearables.filter((w) => w.athlete_id === athlete.id);
-  const notes = demoStore.coachNotes.filter((n) => n.athlete_id === athlete.id);
+  const seedNotes = demoStore.coachNotes.filter((n) => n.athlete_id === athlete.id);
+  const [localNotes, setLocalNotes] = useState<CoachNote[]>([]);
+  const notes = [...seedNotes, ...localNotes];
   const videos = demoStore.videoClips.filter((v) => v.athlete_id === athlete.id);
   const attendance = demoStore.attendance.filter((a) => a.athlete_id === athlete.id);
+  const [noteDraft, setNoteDraft] = useState("");
+  const [showAiSummary, setShowAiSummary] = useState(true);
   const program = demoStore.programs.find((p) => p.id === athlete.program_id);
   const location = demoStore.locations.find(
     (l) => l.id === athlete.home_location_id
@@ -42,42 +72,97 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
       metric: m.metric,
     }));
 
+  const recovery30 = useMemo(() => {
+    const cutoff = Date.now() - 30 * 86400000;
+    const byDay = new Map<string, number>();
+    wearables
+      .filter(
+        (w) =>
+          w.metric === "recovery_score" &&
+          new Date(w.recorded_at).getTime() >= cutoff
+      )
+      .forEach((w) => {
+        const day = w.recorded_at.slice(0, 10);
+        byDay.set(day, w.value);
+      });
+    return Array.from(byDay.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, value]) => ({
+        date: new Date(date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        value: Math.round(value),
+      }));
+  }, [wearables]);
+
+  const heatmap = buildCalendarHeatmap(attendance);
   const hasWearables = wearables.length > 0;
   const latestRecovery = wearables
     .filter((w) => w.metric === "recovery_score")
     .slice(-1)[0];
 
+  function addNote() {
+    if (!noteDraft.trim()) return;
+    setLocalNotes((prev) => [
+      ...prev,
+      {
+        id: `local-note-${Date.now()}`,
+        athlete_id: athlete.id,
+        coach_id: demoStore.coaches[0].id,
+        created_at: new Date().toISOString(),
+        content: noteDraft.trim(),
+        tags: [],
+      },
+    ]);
+    setNoteDraft("");
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-6">
-        <div className="flex flex-wrap items-start gap-6">
-          <Image
-            src={athlete.photo_url}
-            alt=""
-            width={96}
-            height={96}
-            className="rounded-xl"
-          />
-          <div>
-            <h1 className="text-3xl font-bold">
-              {athlete.first_name} {athlete.last_name}
-            </h1>
-            <p className="text-[#9DA3AE]">
-              {athlete.sport}
-              {athlete.position ? ` · ${athlete.position}` : ""} · {program?.name}{" "}
-              · {location?.name}
-            </p>
-            <div className="mt-2 flex gap-2">
-              <Badge
-                variant={athlete.status === "at_risk" ? "danger" : "success"}
-              >
-                {athlete.status.replace("_", " ")}
-              </Badge>
-              <Badge>{athlete.recruit_status}</Badge>
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="flex flex-wrap items-start gap-6">
+            <Image
+              src={athlete.photo_url}
+              alt=""
+              width={96}
+              height={96}
+              className="rounded-xl"
+            />
+            <div>
+              <h1 className="text-3xl font-bold">
+                {athlete.first_name} {athlete.last_name}
+              </h1>
+              <p className="text-[#9DA3AE]">
+                {athlete.sport}
+                {athlete.position ? ` · ${athlete.position}` : ""} · {program?.name}{" "}
+                · {location?.name}
+              </p>
+              <div className="mt-2 flex gap-2">
+                <Badge
+                  variant={athlete.status === "at_risk" ? "danger" : "success"}
+                >
+                  {athlete.status.replace("_", " ")}
+                </Badge>
+                <Badge>{athlete.recruit_status}</Badge>
+              </div>
+              <p className="mt-2 text-sm text-[#9DA3AE]">
+                Parent: {athlete.parent_name} · {athlete.parent_email}
+              </p>
             </div>
-            <p className="mt-2 text-sm text-[#9DA3AE]">
-              Parent: {athlete.parent_name} · {athlete.parent_email}
-            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/command-os/communications?athlete=${athlete.id}`}>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Message
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" disabled title="Demo read-only">
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
           </div>
         </div>
 
@@ -143,19 +228,48 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
 
           <TabsContent value="wearables">
             {hasWearables ? (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-[#9DA3AE]">Recovery score</p>
+                      <p className="text-3xl font-bold">
+                        {latestRecovery?.value.toFixed(0) ?? "—"}%
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-[#9DA3AE]">Connected device</p>
+                      <p className="text-lg font-medium">WHOOP</p>
+                    </CardContent>
+                  </Card>
+                </div>
                 <Card>
-                  <CardContent className="pt-6">
-                    <p className="text-sm text-[#9DA3AE]">Recovery score</p>
-                    <p className="text-3xl font-bold">
-                      {latestRecovery?.value.toFixed(0) ?? "—"}%
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <p className="text-sm text-[#9DA3AE]">Connected device</p>
-                    <p className="text-lg font-medium">WHOOP</p>
+                  <CardHeader>
+                    <CardTitle className="text-base">30-day recovery trend</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={220}>
+                      <LineChart data={recovery30}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
+                        <XAxis dataKey="date" stroke="#9DA3AE" fontSize={10} />
+                        <YAxis stroke="#9DA3AE" fontSize={12} domain={[0, 100]} />
+                        <Tooltip
+                          contentStyle={{
+                            background: "#15171B",
+                            border: "1px solid #2A2D34",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="#10B981"
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </CardContent>
                 </Card>
               </div>
@@ -171,22 +285,27 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
           <TabsContent value="attendance">
             <Card>
               <CardContent className="pt-6">
-                <p className="mb-2 text-sm">
-                  Streak:{" "}
+                <p className="mb-4 text-sm">
                   {attendance.filter((a) => a.status === "attended").length}{" "}
-                  sessions logged
+                  sessions attended · 90-day calendar
                 </p>
-                <div className="flex flex-wrap gap-1">
-                  {attendance.slice(0, 20).map((a) => (
-                    <div
-                      key={a.id}
-                      className={`h-8 w-8 rounded ${
-                        a.status === "attended"
-                          ? "bg-emerald-500/40"
-                          : "bg-red-500/40"
-                      }`}
-                      title={a.status}
-                    />
+                <div className="space-y-1">
+                  {heatmap.map((week, wi) => (
+                    <div key={wi} className="flex gap-1">
+                      {week.map((day) => (
+                        <div
+                          key={day.date}
+                          className={`h-3 w-3 rounded-sm ${
+                            day.status === "attended"
+                              ? "bg-emerald-500/70"
+                              : day.status === "no_show"
+                                ? "bg-red-500/70"
+                                : "bg-[#2A2D34]"
+                          }`}
+                          title={`${day.date}: ${day.status}`}
+                        />
+                      ))}
+                    </div>
                   ))}
                 </div>
               </CardContent>
@@ -194,7 +313,38 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
           </TabsContent>
 
           <TabsContent value="notes">
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Textarea
+                  placeholder="Add a coach note..."
+                  value={noteDraft}
+                  onChange={(e) => setNoteDraft(e.target.value)}
+                  rows={2}
+                  className="flex-1"
+                />
+                <Button onClick={addNote} className="self-end">
+                  Add note
+                </Button>
+              </div>
+              <label className="flex items-center gap-2 text-sm text-[#9DA3AE]">
+                <input
+                  type="checkbox"
+                  checked={showAiSummary}
+                  onChange={(e) => setShowAiSummary(e.target.checked)}
+                  className="h-4 w-4 rounded border-[#2A2D34]"
+                />
+                Show AI summary of notes
+              </label>
+              {showAiSummary && notes.length > 0 && (
+                <Card className="border-[#3B82F6]/30 bg-[#3B82F6]/5">
+                  <CardContent className="pt-4 text-sm text-[#9DA3AE]">
+                    AI summary: {notes.length} notes logged. Recent themes:{" "}
+                    {[...new Set(notes.flatMap((n) => n.tags))].join(", ") ||
+                      "training progress, engagement"}
+                    .
+                  </CardContent>
+                </Card>
+              )}
               {notes.map((n) => (
                 <Card key={n.id}>
                   <CardContent className="pt-4">

@@ -1,47 +1,44 @@
 import { NextResponse } from "next/server";
 import { requireStaff } from "@/lib/auth/guards";
-import { lookupCachedQuery } from "@/lib/ai/query-cache";
-import { queryWithGemini } from "@/lib/ai/gemini";
+import { runQuery } from "@/lib/ai/query-engine";
+import { apiLog } from "@/lib/server/api-logger";
 
 export async function POST(request: Request) {
+  const log = apiLog("POST /api/ai/query");
+
   try {
     await requireStaff();
   } catch {
+    log.warn(401, "unauthorized");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { query, scope } = await request.json();
   if (!query || typeof query !== "string") {
+    log.warn(400, "query required");
     return NextResponse.json({ error: "Query required" }, { status: 400 });
   }
 
-  const cached = lookupCachedQuery(query);
-  if (cached) {
-    return NextResponse.json({ response: cached, cached: true });
-  }
+  log.request({
+    query: query.slice(0, 120),
+    scope: scope ?? null,
+  });
 
   try {
-    const geminiResult = await Promise.race([
-      queryWithGemini(query),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000)),
-    ]);
-
-    if (geminiResult) {
-      return NextResponse.json({ response: geminiResult, cached: false });
-    }
-  } catch {
-    /* fallback */
+    const result = await runQuery(query, scope ?? {});
+    log.response(200, {
+      cached: result.cached,
+      stream: result.stream ?? false,
+      responseType: result.response.type,
+    });
+    return NextResponse.json({
+      response: result.response,
+      cached: result.cached,
+      stream: result.stream ?? false,
+      scope,
+    });
+  } catch (error) {
+    log.error(500, error, { query: query.slice(0, 120) });
+    return NextResponse.json({ error: "Query failed" }, { status: 500 });
   }
-
-  const fallback = lookupCachedQuery("how is marcus johnson trending");
-  return NextResponse.json({
-    response:
-      fallback ?? {
-        type: "narrative",
-        markdown:
-          "I found relevant data across your locations. Try asking about at-risk athletes, revenue by location, or Marcus Johnson's progression.",
-      },
-    cached: true,
-    scope,
-  });
 }
