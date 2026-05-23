@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LocationsMap } from "@/components/marketing/LocationsMap";
 import { demoStore } from "@/lib/demo/store";
 
 export default function LocationsPage() {
@@ -8,6 +9,9 @@ export default function LocationsPage() {
       <p className="mt-4 text-[#9DA3AE]">
         5 state-of-the-art facilities across the Phoenix metro.
       </p>
+      <div className="mt-10">
+        <LocationsMap />
+      </div>
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {demoStore.locations.map((loc) => (
           <Link

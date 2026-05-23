@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LocationProvider } from "@/components/app/LocationProvider";
 import { LocationSwitcher } from "@/components/app/LocationSwitcher";
 import { NaturalLanguageInput } from "@/components/app/NaturalLanguageInput";
+import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -84,6 +85,7 @@ export function CommandShell({
                 <NaturalLanguageInput compact />
               </div>
               <div className="ml-auto flex items-center gap-3">
+                <NotificationsBell />
                 <span className="text-sm text-[#9DA3AE]">{userName}</span>
                 <button
                   onClick={logout}

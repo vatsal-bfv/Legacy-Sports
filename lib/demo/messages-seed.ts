@@ -305,4 +305,43 @@ export const messages: Message[] = [
     read_at: null,
     ai_generated: false,
   },
+  ...generateBackgroundMessages(),
 ];
+
+function generateBackgroundMessages(): Message[] {
+  const templates = [
+    "Session reminder for tomorrow at 4pm.",
+    "Payment received — thank you!",
+    "Can we reschedule this week's session?",
+    "Great progress in today's training!",
+    "Welcome to Legacy Sports Complex!",
+  ];
+  const channels = ["sms", "email", "in_app"];
+  const msgs: Message[] = [];
+  for (let i = 0; i < 80; i++) {
+    const daysAgo = Math.floor((i * 90) / 80);
+    const athleteIdx = i % 5;
+    const heroIds = [
+      HERO_IDS.emma,
+      HERO_IDS.marcus,
+      HERO_IDS.tyler,
+      HERO_IDS.sofia,
+      HERO_IDS.deshawn,
+    ];
+    msgs.push({
+      id: `msg-bg-${i}`,
+      created_at: d(daysAgo),
+      channel: channels[i % channels.length],
+      direction: i % 3 === 0 ? "inbound" : "outbound",
+      from_party: i % 3 === 0 ? "parent" : "coach",
+      to_party: i % 3 === 0 ? "coach" : "parent",
+      athlete_id: heroIds[athleteIdx],
+      lead_id: null,
+      subject: i % 4 === 0 ? "Training update" : null,
+      body: templates[i % templates.length],
+      read_at: i % 3 === 0 && i % 5 !== 0 ? d(daysAgo) : null,
+      ai_generated: i % 7 === 0,
+    });
+  }
+  return msgs;
+}

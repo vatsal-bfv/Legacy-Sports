@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { AnimatedStat } from "@/components/marketing/AnimatedStat";
+import { TestimonialReel } from "@/components/marketing/TestimonialReel";
 import { demoStore } from "@/lib/demo/store";
 import { formatCurrency } from "@/lib/utils";
 
@@ -50,19 +52,14 @@ export default function HomePage() {
 
       <section className="border-y border-[#2A2D34] bg-[#15171B] py-16">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 md:grid-cols-4">
-          {[
-            { label: "Athletes trained", value: "12,400+" },
-            { label: "College commitments", value: "340+" },
-            { label: "Locations", value: "5" },
-            { label: "Years", value: "12" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-3xl font-bold text-[#FF5A1F]">{stat.value}</p>
-              <p className="mt-1 text-sm text-[#9DA3AE]">{stat.label}</p>
-            </div>
-          ))}
+          <AnimatedStat label="Athletes trained" target={12400} suffix="+" />
+          <AnimatedStat label="College commitments" target={340} suffix="+" />
+          <AnimatedStat label="Locations" target={5} />
+          <AnimatedStat label="Years" target={12} />
         </div>
       </section>
+
+      <TestimonialReel />
 
       <section className="py-20 px-6">
         <h2 className="text-center text-3xl font-bold">Programs</h2>
