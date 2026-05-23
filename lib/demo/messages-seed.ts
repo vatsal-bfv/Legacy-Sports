@@ -1,8 +1,26 @@
 import { HERO_IDS } from "@/lib/constants";
 import type { Message } from "./types";
 
-const d = (daysAgo: number) =>
-  new Date(Date.now() - daysAgo * 86400000).toISOString();
+/** ISO timestamp N days ago at a specific local time. */
+function dAt(daysAgo: number, hour: number, minute: number): string {
+  const t = new Date();
+  const wholeDays = Math.floor(daysAgo);
+  const extraMs = (daysAgo - wholeDays) * 86400000;
+  t.setTime(t.getTime() - wholeDays * 86400000 - extraMs);
+  t.setHours(hour, minute, 0, 0);
+  return t.toISOString();
+}
+
+/** Days ago with varied time-of-day (slot breaks ties for messages on the same day). */
+function d(daysAgo: number, slot = 0): string {
+  const hour = 8 + ((Math.floor(daysAgo) * 5 + slot * 3) % 13);
+  const minute = (Math.floor(daysAgo) * 11 + slot * 7) % 60;
+  return dAt(daysAgo, hour, minute);
+}
+
+function backgroundAthleteId(index: number): string {
+  return `a0000002-${String((index % 145) + 1).padStart(4, "0")}-4000-8000-000000000000`;
+}
 
 export const messages: Message[] = [
   // Emma Patel — deep parent thread (hero demo)
@@ -22,7 +40,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-emma-002",
-    created_at: d(12),
+    created_at: d(12, 0),
     channel: "sms",
     direction: "inbound",
     from_party: "parent",
@@ -31,12 +49,12 @@ export const messages: Message[] = [
     lead_id: null,
     subject: null,
     body: "Thanks! Emma is so excited. Any gear she should bring?",
-    read_at: d(12),
+    read_at: d(12, 0),
     ai_generated: false,
   },
   {
     id: "msg-emma-003",
-    created_at: d(12),
+    created_at: d(12, 1),
     channel: "sms",
     direction: "outbound",
     from_party: "coach",
@@ -45,7 +63,7 @@ export const messages: Message[] = [
     lead_id: null,
     subject: null,
     body: "Athletic shoes and water bottle — we provide everything else. See you Thursday!",
-    read_at: d(12),
+    read_at: d(12, 1),
     ai_generated: false,
   },
   {
@@ -178,7 +196,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-tyler-003",
-    created_at: d(2),
+    created_at: d(2, 1),
     channel: "in_app",
     direction: "outbound",
     from_party: "system",
@@ -207,7 +225,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-sofia-002",
-    created_at: d(7),
+    created_at: d(7, 1),
     channel: "sms",
     direction: "inbound",
     from_party: "parent",
@@ -216,7 +234,7 @@ export const messages: Message[] = [
     lead_id: null,
     subject: null,
     body: "Good to know! She's leaning soccer for club season. Thanks for the insight.",
-    read_at: d(7),
+    read_at: d(7, 1),
     ai_generated: false,
   },
   // DeShawn Williams
@@ -265,7 +283,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-lead-001-b",
-    created_at: d(0.03),
+    created_at: d(0.03, 1),
     channel: "sms",
     direction: "outbound",
     from_party: "coach",
@@ -274,7 +292,7 @@ export const messages: Message[] = [
     lead_id: "lead-001",
     subject: null,
     body: "Thanks Michael! I'd love to schedule a free assessment for Lucas. Does Thursday at 5pm work?",
-    read_at: d(0.03),
+    read_at: d(0.03, 1),
     ai_generated: false,
   },
   {
@@ -309,38 +327,137 @@ export const messages: Message[] = [
 ];
 
 function generateBackgroundMessages(): Message[] {
-  const templates = [
-    "Session reminder for tomorrow at 4pm.",
-    "Payment received — thank you!",
-    "Can we reschedule this week's session?",
-    "Great progress in today's training!",
-    "Welcome to Legacy Sports Complex!",
+  type Scenario = Pick<
+    Message,
+    | "channel"
+    | "direction"
+    | "from_party"
+    | "to_party"
+    | "subject"
+    | "body"
+  >;
+
+  const scenarios: Scenario[] = [
+    {
+      channel: "sms",
+      direction: "outbound",
+      from_party: "coach",
+      to_party: "parent",
+      subject: null,
+      body: "Reminder: training session tomorrow at 4pm. Reply if you need to reschedule.",
+    },
+    {
+      channel: "email",
+      direction: "outbound",
+      from_party: "system",
+      to_party: "parent",
+      subject: "Payment receipt — Legacy Sports",
+      body: "Your monthly membership payment of $349 was received. Thank you!",
+    },
+    {
+      channel: "sms",
+      direction: "inbound",
+      from_party: "parent",
+      to_party: "coach",
+      subject: null,
+      body: "Can we move this week's session to Friday? We have a school conflict.",
+    },
+    {
+      channel: "sms",
+      direction: "outbound",
+      from_party: "coach",
+      to_party: "parent",
+      subject: null,
+      body: "Great work in today's session — measurable improvements on agility drills.",
+    },
+    {
+      channel: "email",
+      direction: "outbound",
+      from_party: "coach",
+      to_party: "parent",
+      subject: "Welcome to Legacy Sports Complex",
+      body: "We're excited to have your athlete in the program. Your first session is confirmed.",
+    },
+    {
+      channel: "sms",
+      direction: "inbound",
+      from_party: "parent",
+      to_party: "coach",
+      subject: null,
+      body: "Running 10 minutes late — traffic on the 101.",
+    },
+    {
+      channel: "in_app",
+      direction: "outbound",
+      from_party: "system",
+      to_party: "coach",
+      subject: "Attendance note",
+      body: "Athlete checked in 5 minutes after session start.",
+    },
+    {
+      channel: "email",
+      direction: "outbound",
+      from_party: "coach",
+      to_party: "parent",
+      subject: "Monthly progress summary",
+      body: "Attached is this month's training summary with attendance and key measurables.",
+    },
+    {
+      channel: "sms",
+      direction: "inbound",
+      from_party: "parent",
+      to_party: "coach",
+      subject: null,
+      body: "Thanks for the update! Any homework drills before next week?",
+    },
+    {
+      channel: "sms",
+      direction: "outbound",
+      from_party: "coach",
+      to_party: "parent",
+      subject: null,
+      body: "Heads up — we're off-site next Tuesday for the turf maintenance closure.",
+    },
+    {
+      channel: "email",
+      direction: "inbound",
+      from_party: "parent",
+      to_party: "coach",
+      subject: "Billing question",
+      body: "Can you confirm the charge date for next month's membership?",
+    },
+    {
+      channel: "in_app",
+      direction: "outbound",
+      from_party: "coach",
+      to_party: "parent",
+      subject: null,
+      body: "Session notes posted — review today's lift progress in the athlete portal.",
+    },
   ];
-  const channels = ["sms", "email", "in_app"];
+
   const msgs: Message[] = [];
   for (let i = 0; i < 80; i++) {
-    const daysAgo = Math.floor((i * 90) / 80);
-    const athleteIdx = i % 5;
-    const heroIds = [
-      HERO_IDS.emma,
-      HERO_IDS.marcus,
-      HERO_IDS.tyler,
-      HERO_IDS.sofia,
-      HERO_IDS.deshawn,
-    ];
+    const daysAgo = (i * 90) / 80;
+    const scenario = scenarios[(i * 7 + 3) % scenarios.length];
+    const athleteIndex = (i * 11 + 5) % 145;
+    const createdAt = d(daysAgo, i);
+    const isUnreadInbound =
+      scenario.direction === "inbound" && i % 5 === 0;
+
     msgs.push({
       id: `msg-bg-${i}`,
-      created_at: d(daysAgo),
-      channel: channels[i % channels.length],
-      direction: i % 3 === 0 ? "inbound" : "outbound",
-      from_party: i % 3 === 0 ? "parent" : "coach",
-      to_party: i % 3 === 0 ? "coach" : "parent",
-      athlete_id: heroIds[athleteIdx],
+      created_at: createdAt,
+      channel: scenario.channel,
+      direction: scenario.direction,
+      from_party: scenario.from_party,
+      to_party: scenario.to_party,
+      athlete_id: backgroundAthleteId(athleteIndex),
       lead_id: null,
-      subject: i % 4 === 0 ? "Training update" : null,
-      body: templates[i % templates.length],
-      read_at: i % 3 === 0 && i % 5 !== 0 ? d(daysAgo) : null,
-      ai_generated: i % 7 === 0,
+      subject: scenario.subject,
+      body: scenario.body,
+      read_at: isUnreadInbound ? null : createdAt,
+      ai_generated: i % 11 === 0 && scenario.from_party === "coach",
     });
   }
   return msgs;
