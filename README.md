@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Legacy Sports Complex — Demo
 
-## Getting Started
+High-fidelity demo for Legacy Sports Complex: public marketing site, **Legacy Command** OS, and **Scout Portal**.
 
-First, run the development server:
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) for the marketing site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Surface | URL | Email | Password |
+|---------|-----|-------|----------|
+| Legacy Command (staff) | [/login](http://localhost:3000/login) → `/command-os` | `amber@legacy.demo` | `LegacyDemo2026!` |
+| Scout Portal | [/scout/login](http://localhost:3000/scout/login) | `mike.chen@scout.demo` | `LegacyDemo2026!` |
 
-## Learn More
+### Production routing
 
-To learn more about Next.js, take a look at the following resources:
+- Marketing: `legacy.blackforge.ai`
+- Command OS: `command.legacy.blackforge.ai` (rewrites to `/command-os/*`)
+- Scout: `legacy.blackforge.ai/scout/*`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo path checklist
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Lead handoff** — Submit form at `/locations/mesa`, see lead appear in `/command-os/leads`
+2. **NL query** — Ask "which athletes are at risk of churning this week" on Command Center
+3. **Athlete profile** — `/command-os/athletes/{marcus-id}`
+4. **At-risk flow** — `/command-os/retention` → Tyler Chen → draft message → Send
+5. **Location switcher** — Top nav on Command OS
+6. **Scout Portal** — Search QBs with 40 &lt; 4.7, view Marcus Johnson
 
-## Deploy on Vercel
+## Supabase setup (optional)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Create a Supabase project
+2. Run migrations in `supabase/migrations/`
+3. Enable Realtime on `leads` table
+4. Copy `.env.example` → `.env.local` and fill keys
+5. `npm run seed`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Without Supabase, the app uses in-memory demo data (fully functional for screen-share).
+
+## Scripts
+
+- `npm run dev` — development server
+- `npm run build` — production build
+- `npm run seed` — seed Supabase + export `content/public-athletes.json`
+
+## Stack
+
+Next.js 16 · Supabase Auth + Postgres · Gemini AI · Tailwind CSS · Recharts

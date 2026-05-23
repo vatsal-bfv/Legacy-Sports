@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --marketing-bg: #0a0b0d;
+  --marketing-surface: #15171b;
+  --marketing-surface-elevated: #1e2127;
+  --marketing-border: #2a2d34;
+  --marketing-text: #f5f6f7;
+  --marketing-text-secondary: #9da3ae;
+  --marketing-accent: #ff5a1f;
+  --marketing-success: #10b981;
+
+  --os-bg: #0a0b0d;
+  --os-surface: #12141a;
+  --os-surface-elevated: #1a1d24;
+  --os-border: #2a2d34;
+  --os-accent: #3b82f6;
+  --os-accent-orange: #ff5a1f;
+
+  --scout-bg: #fafafa;
+  --scout-surface: #ffffff;
+  --scout-accent: #1a2332;
+  --scout-text: #1a2332;
+  --scout-text-secondary: #64748b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+@keyframes highlight-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+}
+
+.animate-highlight {
+  animation: highlight-pulse 1.5s ease-out 2;
 }
