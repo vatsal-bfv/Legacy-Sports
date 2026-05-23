@@ -17,6 +17,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { HERO_IDS } from "@/lib/constants";
+import { AthleteCommsTab } from "@/components/app/AthleteCommsTab";
 
 export function AthleteProfile({ athlete }: { athlete: Athlete }) {
   const measurables = demoStore.measurables.filter(
@@ -25,7 +26,6 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
   const wearables = demoStore.wearables.filter((w) => w.athlete_id === athlete.id);
   const notes = demoStore.coachNotes.filter((n) => n.athlete_id === athlete.id);
   const videos = demoStore.videoClips.filter((v) => v.athlete_id === athlete.id);
-  const msgs = demoStore.messages.filter((m) => m.athlete_id === athlete.id);
   const attendance = demoStore.attendance.filter((a) => a.athlete_id === athlete.id);
   const program = demoStore.programs.find((p) => p.id === athlete.program_id);
   const location = demoStore.locations.find(
@@ -232,20 +232,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
           </TabsContent>
 
           <TabsContent value="communications">
-            <div className="space-y-3">
-              {msgs.map((m) => (
-                <div
-                  key={m.id}
-                  className={`rounded-lg p-4 text-sm ${
-                    m.direction === "outbound"
-                      ? "ml-8 bg-[#3B82F6]/20"
-                      : "mr-8 bg-[#15171B]"
-                  }`}
-                >
-                  {m.body}
-                </div>
-              ))}
-            </div>
+            <AthleteCommsTab athleteId={athlete.id} />
           </TabsContent>
         </Tabs>
       </div>

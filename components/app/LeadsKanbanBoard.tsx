@@ -11,12 +11,7 @@ import {
   KanbanItemHandle,
   KanbanOverlay,
 } from "@/components/reui/kanban";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { LeadDetailDialog } from "@/components/app/LeadDetailDialog";
 import { Badge } from "@/components/ui/badge";
 import { useLeads } from "@/components/app/LeadsRealtimeProvider";
 import type { Lead } from "@/lib/demo/types";
@@ -24,7 +19,9 @@ import {
   applyStatusOverrides,
   groupLeadsByStatus,
   LEAD_STATUSES,
+  loadStatusOverrides,
   persistColumnState,
+  saveStatusOverrides,
   type LeadStatus,
 } from "@/lib/leads/status-overrides";
 import { cn } from "@/lib/utils";
@@ -246,29 +243,19 @@ export function LeadsKanbanBoard() {
         </KanbanOverlay>
       </Kanban>
 
-      <Dialog open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
-        <DialogContent className="border-[#2A2D34] bg-[#15171B] text-[#F5F6F7]">
-          {selected && (
-            <>
-              <DialogHeader>
-                <DialogTitle>
-                  {selected.first_name} {selected.last_name}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-2 text-sm">
-                <p className="text-[#9DA3AE]">{selected.email}</p>
-                <p className="text-[#9DA3AE]">{selected.phone}</p>
-                {selected.athlete_name && (
-                  <p>
-                    Athlete: {selected.athlete_name}, age {selected.athlete_age}
-                  </p>
-                )}
-                <p className="mt-2">{selected.notes || "No notes"}</p>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <LeadDetailDialog
+        lead={selected}
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        onLeadUpdated={(updated) => {
+          if (updated.status !== selected?.status) {
+            const overrides = loadStatusOverrides();
+            overrides[updated.id] = updated.status;
+            saveStatusOverrides(overrides);
+          }
+          setSelected(updated);
+        }}
+      />
     </div>
   );
 }

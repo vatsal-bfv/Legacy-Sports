@@ -36,6 +36,29 @@ export async function POST(request: Request) {
   }
 
   demoStore.addLead(lead);
+
+  const location = demoStore.locations.find(
+    (l) => l.id === lead.interested_location_id
+  );
+  const program = demoStore.programs.find(
+    (p) => p.id === lead.interested_program_id
+  );
+
+  demoStore.addMessage({
+    id: `msg-lead-in-${Date.now()}`,
+    created_at: lead.created_at,
+    channel: "in_app",
+    direction: "inbound",
+    from_party: "lead",
+    to_party: "coach",
+    athlete_id: null,
+    lead_id: lead.id,
+    subject: null,
+    body: `New website inquiry: ${lead.first_name} ${lead.last_name} for ${lead.athlete_name || "their athlete"} (age ${lead.athlete_age || "—"}) · ${program?.name ?? "Program TBD"} · ${location?.name ?? "Location TBD"}. ${lead.notes ? `Notes: ${lead.notes}` : ""}`.trim(),
+    read_at: null,
+    ai_generated: false,
+  });
+
   return NextResponse.json({ lead });
 }
 

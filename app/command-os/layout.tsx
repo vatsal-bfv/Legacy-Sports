@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CommandShell } from "@/components/app/CommandShell";
+import { CommandOsProviders } from "@/components/app/CommandOsProviders";
 import { getSession } from "@/lib/auth/guards";
 import { isStaffRole } from "@/lib/auth/roles";
 
@@ -14,6 +14,8 @@ export default async function CommandLayout({
   }
 
   return (
-    <CommandShell userName={session.displayName}>{children}</CommandShell>
+    <CommandOsProviders userName={session.displayName}>
+      {children}
+    </CommandOsProviders>
   );
 }

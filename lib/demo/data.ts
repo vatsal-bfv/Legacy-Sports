@@ -677,50 +677,7 @@ export const initialLeads: Lead[] = [
   },
 ];
 
-export const messages: Message[] = [
-  {
-    id: "msg-001",
-    created_at: new Date(Date.now() - 172800000).toISOString(),
-    channel: "sms",
-    direction: "outbound",
-    from_party: "coach",
-    to_party: "parent",
-    athlete_id: HERO_IDS.emma,
-    lead_id: null,
-    subject: null,
-    body: "Hi Priya! Emma had a great session today — her approach jump is looking much more explosive. See you Thursday!",
-    read_at: new Date(Date.now() - 172000000).toISOString(),
-    ai_generated: false,
-  },
-  {
-    id: "msg-002",
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    channel: "sms",
-    direction: "inbound",
-    from_party: "parent",
-    to_party: "coach",
-    athlete_id: HERO_IDS.emma,
-    lead_id: null,
-    subject: null,
-    body: "Thank you! She's been really motivated. Can we add an extra session next week?",
-    read_at: new Date(Date.now() - 86000000).toISOString(),
-    ai_generated: false,
-  },
-  {
-    id: "msg-003",
-    created_at: new Date(Date.now() - 604800000).toISOString(),
-    channel: "email",
-    direction: "outbound",
-    from_party: "coach",
-    to_party: "parent",
-    athlete_id: HERO_IDS.marcus,
-    lead_id: null,
-    subject: "Marcus — Combine Results Update",
-    body: "Robert, Marcus's latest 40 time of 4.62 is generating significant recruiter interest. Let's schedule a call to discuss camp strategy.",
-    read_at: null,
-    ai_generated: false,
-  },
-];
+export { messages } from "./messages-seed";
 
 export const videoClips: VideoClip[] = [
   {

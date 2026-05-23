@@ -6,7 +6,6 @@ import {
   initialLeads,
   locations,
   measurables,
-  messages,
   payments,
   programs,
   scoutUsers,
@@ -14,10 +13,11 @@ import {
   videoClips,
   wearables,
 } from "./data";
+import { messages as seedMessages } from "./messages-seed";
 import type { Lead, Message } from "./types";
 
 let leads: Lead[] = [...initialLeads];
-let allMessages: Message[] = [...messages];
+let allMessages: Message[] = [...seedMessages];
 
 export const demoStore = {
   get locations() {
@@ -75,5 +75,20 @@ export const demoStore = {
   },
   getLeadsSince(since: string) {
     return leads.filter((l) => l.created_at > since);
+  },
+  getMessagesSince(since: string) {
+    return allMessages.filter((m) => m.created_at > since);
+  },
+  markThreadRead(athleteId: string | null, leadId: string | null) {
+    const now = new Date().toISOString();
+    allMessages = allMessages.map((m) => {
+      const inThread =
+        (athleteId && m.athlete_id === athleteId) ||
+        (leadId && m.lead_id === leadId);
+      if (inThread && !m.read_at && m.direction === "inbound") {
+        return { ...m, read_at: now };
+      }
+      return m;
+    });
   },
 };
