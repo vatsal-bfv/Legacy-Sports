@@ -177,6 +177,13 @@ const PATTERNS: { pattern: RegExp; key: string }[] = [
   { pattern: /coach.*retention|retention.*coach/i, key: "which coaches have the highest member retention" },
 ];
 
+export function getCachedQuerySuggestions(): string[] {
+  return Object.keys(CACHE).map((key) => {
+    const label = key.charAt(0).toUpperCase() + key.slice(1);
+    return label.endsWith("?") ? label : `${label}?`;
+  });
+}
+
 export function lookupCachedQuery(query: string): QueryResponse | null {
   const normalized = normalizeQuery(query);
   if (CACHE[normalized]) return CACHE[normalized];

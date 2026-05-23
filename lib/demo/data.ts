@@ -425,6 +425,50 @@ export const heroAthletes: Athlete[] = [
 ];
 
 function generateBackgroundAthletes(): Athlete[] {
+  const firstNames = [
+    "Alex",
+    "Jordan",
+    "Taylor",
+    "Morgan",
+    "Casey",
+    "Riley",
+    "Jamie",
+    "Quinn",
+    "Avery",
+    "Blake",
+    "Cameron",
+    "Drew",
+    "Elliot",
+    "Finley",
+    "Harper",
+    "Jesse",
+    "Kai",
+    "Logan",
+    "Noah",
+    "Parker",
+  ];
+  const lastNames = [
+    "Adams",
+    "Baker",
+    "Clark",
+    "Davis",
+    "Evans",
+    "Fisher",
+    "Garcia",
+    "Hill",
+    "Iverson",
+    "James",
+    "Kim",
+    "Lopez",
+    "Martinez",
+    "Nguyen",
+    "Owens",
+    "Patel",
+    "Reed",
+    "Singh",
+    "Torres",
+    "Walker",
+  ];
   const sports = [
     { sport: "football", weight: 35 },
     { sport: "basketball", weight: 25 },
@@ -450,19 +494,8 @@ function generateBackgroundAthletes(): Athlete[] {
     const status = statuses[i % statuses.length];
     athletes.push({
       id: `a0000002-${String(i + 1).padStart(4, "0")}-4000-8000-000000000000`,
-      first_name: ["Alex", "Jordan", "Taylor", "Morgan", "Casey", "Riley"][
-        i % 6
-      ],
-      last_name: [
-        "Adams",
-        "Baker",
-        "Clark",
-        "Davis",
-        "Evans",
-        "Fisher",
-        "Garcia",
-        "Hill",
-      ][i % 8],
+      first_name: firstNames[i % firstNames.length],
+      last_name: lastNames[(i * 3 + 1) % lastNames.length],
       date_of_birth: `20${10 + (i % 6)}-${String((i % 12) + 1).padStart(2, "0")}-15`,
       sport: sports[sportIdx].sport,
       position: i % 3 === 0 ? "athlete" : null,
@@ -485,7 +518,8 @@ function generateBackgroundAthletes(): Athlete[] {
       ],
       created_at: "2024-01-15T00:00:00Z",
       updated_at: new Date().toISOString(),
-      risk_score: status === "at_risk" ? 60 + (i % 30) : undefined,
+      risk_score:
+        status === "at_risk" ? 60 + ((i * 11 + 7) % 30) : undefined,
     });
   }
   return athletes;

@@ -45,6 +45,19 @@ function buildCalendarHeatmap(attendance: { checked_in_at: string; status: strin
   return weeks;
 }
 
+/** Y-axis domain padded around data min/max so trends aren't flattened at zero. */
+function trendYDomain(values: number[], paddingRatio = 0.12): [number, number] {
+  if (values.length === 0) return [0, 1];
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = max - min;
+  const pad =
+    span === 0
+      ? Math.max(Math.abs(min) * 0.08, min * 0.05 || 1)
+      : span * paddingRatio;
+  return [min - pad, max + pad];
+}
+
 export function AthleteProfile({ athlete }: { athlete: Athlete }) {
   const measurables = demoStore.measurables.filter(
     (m) => m.athlete_id === athlete.id
@@ -62,15 +75,51 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
     (l) => l.id === athlete.home_location_id
   );
 
-  const vertData = measurables
-    .filter((m) => m.metric === "vertical" || m.metric === "forty_yard")
-    .map((m) => ({
-      date: new Date(m.recorded_at).toLocaleDateString("en-US", {
-        month: "short",
-      }),
-      value: m.value,
-      metric: m.metric,
-    }));
+  const verticalChart = useMemo(
+    () =>
+      measurables
+        .filter((m) => m.metric === "vertical")
+        .sort(
+          (a, b) =>
+            new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime()
+        )
+        .map((m) => ({
+          label: new Date(m.recorded_at).toLocaleDateString("en-US", {
+            month: "short",
+            year: "2-digit",
+          }),
+          value: m.value,
+        })),
+    [measurables]
+  );
+
+  const fortyChart = useMemo(
+    () =>
+      measurables
+        .filter((m) => m.metric === "forty_yard")
+        .sort(
+          (a, b) =>
+            new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime()
+        )
+        .map((m) => ({
+          label: new Date(m.recorded_at).toLocaleDateString("en-US", {
+            month: "short",
+            year: "2-digit",
+          }),
+          value: m.value,
+        })),
+    [measurables]
+  );
+
+  const verticalDomain = useMemo(
+    () => trendYDomain(verticalChart.map((d) => d.value)),
+    [verticalChart]
+  );
+
+  const fortyDomain = useMemo(
+    () => trendYDomain(fortyChart.map((d) => d.value), 0.25),
+    [fortyChart]
+  );
 
   const recovery30 = useMemo(() => {
     const cutoff = Date.now() - 30 * 86400000;
@@ -96,10 +145,42 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
       }));
   }, [wearables]);
 
+  const sleep30 = useMemo(() => {
+    const cutoff = Date.now() - 30 * 86400000;
+    const byDay = new Map<string, number>();
+    wearables
+      .filter(
+        (w) =>
+          w.metric === "sleep_hours" &&
+          new Date(w.recorded_at).getTime() >= cutoff
+      )
+      .forEach((w) => {
+        const day = w.recorded_at.slice(0, 10);
+        byDay.set(day, Math.round(w.value * 10) / 10);
+      });
+    return Array.from(byDay.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, value]) => ({
+        date: new Date(date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        value,
+      }));
+  }, [wearables]);
+
+  const sleepDomain = useMemo(
+    () => trendYDomain(sleep30.map((d) => d.value)),
+    [sleep30]
+  );
+
   const heatmap = buildCalendarHeatmap(attendance);
   const hasWearables = wearables.length > 0;
   const latestRecovery = wearables
     .filter((w) => w.metric === "recovery_score")
+    .slice(-1)[0];
+  const latestSleep = wearables
+    .filter((w) => w.metric === "sleep_hours")
     .slice(-1)[0];
 
   function addNote() {
@@ -170,7 +251,6 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
           <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="measurables">Measurables</TabsTrigger>
-            <TabsTrigger value="wearables">Wearables</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
             <TabsTrigger value="video">Video</TabsTrigger>
@@ -200,36 +280,94 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="measurables">
-            <Card>
-              <CardContent className="pt-6">
-                <ResponsiveContainer width="100%" height={280}>
-                  <LineChart data={vertData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
-                    <XAxis dataKey="date" stroke="#9DA3AE" fontSize={12} />
-                    <YAxis stroke="#9DA3AE" fontSize={12} />
-                    <Tooltip
-                      contentStyle={{
-                        background: "#15171B",
-                        border: "1px solid #2A2D34",
-                      }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#3B82F6"
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <TabsContent value="measurables" className="space-y-6">
+            {verticalChart.length === 0 && fortyChart.length === 0 ? (
+              <Card>
+                <CardContent className="py-8 text-center text-sm text-[#9DA3AE]">
+                  No performance trend data yet
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 lg:grid-cols-2">
+                {verticalChart.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Vertical jump</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={240}>
+                        <LineChart data={verticalChart}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
+                          <XAxis dataKey="label" stroke="#9DA3AE" fontSize={12} />
+                          <YAxis
+                            stroke="#9DA3AE"
+                            fontSize={12}
+                            domain={verticalDomain}
+                            tickFormatter={(v) => `${Math.round(v)}"`}
+                            width={40}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              background: "#15171B",
+                              border: "1px solid #2A2D34",
+                            }}
+                            formatter={(value) => [`${Number(value)}"`, "Vertical"]}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            stroke="#3B82F6"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+                {fortyChart.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">40-yard dash</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={240}>
+                        <LineChart data={fortyChart}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
+                          <XAxis dataKey="label" stroke="#9DA3AE" fontSize={12} />
+                          <YAxis
+                            stroke="#9DA3AE"
+                            fontSize={12}
+                            domain={fortyDomain}
+                            tickFormatter={(v) => `${Number(v).toFixed(2)}s`}
+                            width={48}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              background: "#15171B",
+                              border: "1px solid #2A2D34",
+                            }}
+                            formatter={(value) => [`${Number(value)}s`, "40-yd"]}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            stroke="#FF5A1F"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
 
-          <TabsContent value="wearables">
             {hasWearables ? (
               <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
+                <h2 className="text-sm font-semibold text-[#9DA3AE]">Wearables</h2>
+                <div className="grid gap-4 sm:grid-cols-3">
                   <Card>
                     <CardContent className="pt-6">
                       <p className="text-sm text-[#9DA3AE]">Recovery score</p>
@@ -240,42 +378,90 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                   </Card>
                   <Card>
                     <CardContent className="pt-6">
+                      <p className="text-sm text-[#9DA3AE]">Last night sleep</p>
+                      <p className="text-3xl font-bold">
+                        {latestSleep ? `${latestSleep.value.toFixed(1)}h` : "—"}
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
                       <p className="text-sm text-[#9DA3AE]">Connected device</p>
                       <p className="text-lg font-medium">WHOOP</p>
                     </CardContent>
                   </Card>
                 </div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">30-day recovery trend</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={220}>
-                      <LineChart data={recovery30}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
-                        <XAxis dataKey="date" stroke="#9DA3AE" fontSize={10} />
-                        <YAxis stroke="#9DA3AE" fontSize={12} domain={[0, 100]} />
-                        <Tooltip
-                          contentStyle={{
-                            background: "#15171B",
-                            border: "1px solid #2A2D34",
-                          }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="value"
-                          stroke="#10B981"
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">30-day recovery trend</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={220}>
+                        <LineChart data={recovery30}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
+                          <XAxis dataKey="date" stroke="#9DA3AE" fontSize={10} />
+                          <YAxis stroke="#9DA3AE" fontSize={12} domain={[0, 100]} />
+                          <Tooltip
+                            contentStyle={{
+                              background: "#15171B",
+                              border: "1px solid #2A2D34",
+                            }}
+                            formatter={(value) => [`${value}%`, "Recovery"]}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            stroke="#10B981"
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">30-day sleep trend</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={220}>
+                        <LineChart data={sleep30}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
+                          <XAxis dataKey="date" stroke="#9DA3AE" fontSize={10} />
+                          <YAxis
+                            stroke="#9DA3AE"
+                            fontSize={12}
+                            domain={sleepDomain}
+                            tickFormatter={(v) => `${Number(v).toFixed(1)}h`}
+                            width={44}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              background: "#15171B",
+                              border: "1px solid #2A2D34",
+                            }}
+                            formatter={(value) => [`${Number(value).toFixed(1)}h`, "Sleep"]}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            stroke="#8B5CF6"
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             ) : (
               <Card>
-                <CardContent className="py-12 text-center text-[#9DA3AE]">
+                <CardHeader>
+                  <CardTitle className="text-base">Wearables</CardTitle>
+                </CardHeader>
+                <CardContent className="py-8 text-center text-[#9DA3AE]">
                   Not connected — invite to link wearable
                 </CardContent>
               </Card>
