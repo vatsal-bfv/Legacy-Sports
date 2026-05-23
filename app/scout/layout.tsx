@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth/guards";
 import { isScoutRole } from "@/lib/auth/roles";
+import { ScoutLogoutButton } from "@/components/scout/ScoutLogoutButton";
 
 export default async function ScoutLayout({
   children,
@@ -17,7 +18,7 @@ export default async function ScoutLayout({
             <Link href="/scout" className="font-bold tracking-wide">
               LEGACY SCOUT PORTAL
             </Link>
-            <nav className="flex gap-6 text-sm">
+            <nav className="flex items-center gap-4 text-sm sm:gap-6">
               <Link href="/scout" className="hover:text-[#3B82F6]">
                 Dashboard
               </Link>
@@ -27,6 +28,7 @@ export default async function ScoutLayout({
               <Link href="/scout/billing" className="hover:text-[#3B82F6]">
                 Billing
               </Link>
+              <ScoutLogoutButton />
             </nav>
           </div>
         </header>
