@@ -107,8 +107,10 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     setFocused(false);
   }
 
+  const overlayActive = focused || Boolean(compact && panelOpen);
+
   useEffect(() => {
-    if (!focused && !(compact && panelOpen)) return;
+    if (!overlayActive) return;
 
     function handlePointerDown(event: MouseEvent) {
       if (
@@ -121,7 +123,13 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     }
 
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") closePanel();
+      if (event.key === "Escape") {
+        setPanelOpen(false);
+        setResponse(null);
+        setStreamingText("");
+        setLoading(false);
+        setFocused(false);
+      }
     }
 
     document.addEventListener("mousedown", handlePointerDown);
@@ -130,7 +138,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [compact, panelOpen, focused]);
+  }, [overlayActive]);
 
   const displayResponse =
     streamingText && !response
