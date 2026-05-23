@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sparkles, X } from "lucide-react";
 import { QueryResultRenderer } from "@/components/app/QueryResultRenderer";
 import { useLocationScope } from "@/components/app/LocationProvider";
-import type { QueryResponse } from "@/lib/ai/query-cache";
+import {
+  getCachedQuerySuggestions,
+  type QueryResponse,
+} from "@/lib/ai/query-cache";
 import { cn } from "@/lib/utils";
 
-const SUGGESTIONS = [
-  "Which athletes are at risk of churning this week?",
-  "Show me revenue by location this quarter",
-  "How is Marcus Johnson trending?",
-];
+const CACHED_SUGGESTIONS = getCachedQuerySuggestions();
 
 export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
   const { locationId } = useLocationScope();
@@ -23,6 +22,19 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
   const [response, setResponse] = useState<QueryResponse | null>(null);
   const [streamingText, setStreamingText] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
+
+  const filteredSuggestions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return CACHED_SUGGESTIONS;
+    return CACHED_SUGGESTIONS.filter((s) => s.toLowerCase().includes(q));
+  }, [query]);
+
+  function selectSuggestion(suggestion: string) {
+    setQuery(suggestion);
+    setFocused(false);
+    runQuery(suggestion);
+  }
 
   async function streamNarrative(q: string) {
     setStreamingText("");
@@ -92,10 +104,11 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     setResponse(null);
     setStreamingText("");
     setLoading(false);
+    setFocused(false);
   }
 
   useEffect(() => {
-    if (!compact || !panelOpen) return;
+    if (!focused && !(compact && panelOpen)) return;
 
     function handlePointerDown(event: MouseEvent) {
       if (
@@ -103,6 +116,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
         !containerRef.current.contains(event.target as Node)
       ) {
         setPanelOpen(false);
+        setFocused(false);
       }
     }
 
@@ -116,7 +130,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [compact, panelOpen]);
+  }, [compact, panelOpen, focused]);
 
   const displayResponse =
     streamingText && !response
@@ -125,6 +139,12 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
 
   const showCompactPanel =
     compact && panelOpen && (loading || displayResponse);
+
+  const showSuggestions =
+    focused &&
+    filteredSuggestions.length > 0 &&
+    !showCompactPanel &&
+    !loading;
 
   return (
     <div
@@ -143,8 +163,12 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setFocused(true)}
             placeholder="Ask anything about your athletes, locations, revenue..."
             className="h-11 border-[#2A2D34] bg-[#12141A] pl-10"
+            aria-expanded={showSuggestions}
+            aria-controls={showSuggestions ? "nl-suggestions" : undefined}
+            aria-autocomplete="list"
           />
         </div>
         <Button type="submit" disabled={loading}>
@@ -152,16 +176,45 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
         </Button>
       </form>
 
-      {!compact && (
+      {showSuggestions && (
+        <div
+          id="nl-suggestions"
+          role="listbox"
+          className={cn(
+            "z-50 rounded-lg border border-[#2A2D34] bg-[#12141A] shadow-2xl",
+            compact
+              ? "absolute left-0 top-[calc(100%+0.5rem)] w-[min(42rem,calc(100vw-3rem))] max-h-[min(50vh,20rem)] overflow-y-auto p-2"
+              : "mt-2 p-2"
+          )}
+        >
+          <p className="px-2 py-1 text-xs font-medium text-[#9DA3AE]">
+            Suggested queries
+          </p>
+          <ul className="space-y-0.5">
+            {filteredSuggestions.map((s) => (
+              <li key={s}>
+                <button
+                  type="button"
+                  role="option"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => selectSuggestion(s)}
+                  className="w-full rounded-md px-2 py-2 text-left text-sm text-[#F5F6F7] hover:bg-[#1A1D24]"
+                >
+                  {s}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {!compact && !showSuggestions && (
         <div className="mt-2 flex flex-wrap gap-2">
-          {SUGGESTIONS.map((s) => (
+          {CACHED_SUGGESTIONS.map((s) => (
             <button
               key={s}
               type="button"
-              onClick={() => {
-                setQuery(s);
-                runQuery(s);
-              }}
+              onClick={() => selectSuggestion(s)}
               className="text-xs text-[#9DA3AE] underline-offset-2 hover:text-[#3B82F6] hover:underline"
             >
               {s}
