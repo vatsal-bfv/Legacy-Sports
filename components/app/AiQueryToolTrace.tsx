@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AlertCircle,
   Check,
@@ -106,15 +106,7 @@ export function AiQueryToolTrace({
   isActive?: boolean;
   className?: string;
 }) {
-  const [open, setOpen] = useState(isActive ?? false);
-
-  useEffect(() => {
-    if (isActive) {
-      setOpen(true);
-    } else if (tools.length > 0) {
-      setOpen(false);
-    }
-  }, [isActive, tools.length]);
+  const [open, setOpen] = useState(false);
 
   if (tools.length === 0 && !isActive) return null;
 

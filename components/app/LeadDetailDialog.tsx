@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import type { Lead, Message } from "@/lib/demo/types";
 import { demoStore } from "@/lib/demo/store";
@@ -15,29 +15,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export function LeadDetailDialog({
+function LeadDetailBody({
   lead,
-  open,
-  onClose,
   onLeadUpdated,
 }: {
-  lead: Lead | null;
-  open: boolean;
-  onClose: () => void;
+  lead: Lead;
   onLeadUpdated?: (lead: Lead) => void;
 }) {
   const { messages, appendMessage } = useComms();
-  const [assignedCoachId, setAssignedCoachId] = useState<string>("");
-  const [converted, setConverted] = useState(false);
-
-  useEffect(() => {
-    if (lead) {
-      setAssignedCoachId(lead.assigned_coach_id ?? "");
-      setConverted(lead.status === "converted");
-    }
-  }, [lead]);
-
-  if (!lead) return null;
+  const [assignedCoachId, setAssignedCoachId] = useState(
+    () => lead.assigned_coach_id ?? ""
+  );
+  const [converted, setConverted] = useState(() => lead.status === "converted");
 
   const threadMessages = messages
     .filter((m) => m.lead_id === lead.id)
@@ -54,7 +43,7 @@ export function LeadDetailDialog({
   );
 
   async function assignCoach() {
-    const res = await fetch(`/api/leads/${lead!.id}`, {
+    const res = await fetch(`/api/leads/${lead.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ assigned_coach_id: assignedCoachId || null }),
@@ -66,7 +55,7 @@ export function LeadDetailDialog({
   }
 
   async function convertToAthlete() {
-    const res = await fetch(`/api/leads/${lead!.id}`, {
+    const res = await fetch(`/api/leads/${lead.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "converted" }),
@@ -79,6 +68,87 @@ export function LeadDetailDialog({
   }
 
   return (
+    <div className="flex flex-col gap-4 text-sm">
+      <div className="flex flex-col gap-1 text-slate">
+        <p>{lead.email}</p>
+        <p>{lead.phone}</p>
+        {lead.athlete_name && (
+          <p>
+            Athlete: {lead.athlete_name}, age {lead.athlete_age}
+          </p>
+        )}
+        <p>
+          {program?.name} · {location?.name}
+        </p>
+        <p className="capitalize">Status: {lead.status.replace("_", " ")}</p>
+      </div>
+
+      {lead.notes && <p className="rounded-lg bg-field p-3">{lead.notes}</p>}
+
+      <div>
+        <p className="mb-2 font-medium">Assign coach</p>
+        <div className="flex gap-2">
+          <select
+            value={assignedCoachId}
+            onChange={(e) => setAssignedCoachId(e.target.value)}
+            className="h-9 flex-1 rounded-md border border-bone bg-field px-3 text-sm"
+          >
+            <option value="">Unassigned</option>
+            {demoStore.coaches.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.first_name} {c.last_name}
+              </option>
+            ))}
+          </select>
+          <Button type="button" size="sm" variant="outline" onClick={assignCoach}>
+            Save
+          </Button>
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-2 font-medium">Message thread</p>
+        <MessageThread messages={threadMessages} compact />
+        <CommsReplyBox
+          leadId={lead.id}
+          threadMessages={threadMessages}
+          onSent={(msg?: Message) => {
+            if (msg) appendMessage(msg);
+          }}
+        />
+      </div>
+
+      <div className="flex flex-wrap gap-2 pt-2">
+        <Button
+          type="button"
+          size="sm"
+          onClick={convertToAthlete}
+          disabled={converted}
+        >
+          {converted ? "Converted ✓" : "Convert to athlete"}
+        </Button>
+        <Button type="button" size="sm" variant="outline" asChild>
+          <Link href="/command-os/communications">Open in Comms Hub</Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function LeadDetailDialog({
+  lead,
+  open,
+  onClose,
+  onLeadUpdated,
+}: {
+  lead: Lead | null;
+  open: boolean;
+  onClose: () => void;
+  onLeadUpdated?: (lead: Lead) => void;
+}) {
+  if (!lead) return null;
+
+  return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-bone bg-chalk text-pitch">
         <DialogHeader>
@@ -87,72 +157,11 @@ export function LeadDetailDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 text-sm">
-          <div className="flex flex-col gap-1 text-slate">
-            <p>{lead.email}</p>
-            <p>{lead.phone}</p>
-            {lead.athlete_name && (
-              <p>
-                Athlete: {lead.athlete_name}, age {lead.athlete_age}
-              </p>
-            )}
-            <p>
-              {program?.name} · {location?.name}
-            </p>
-            <p className="capitalize">Status: {lead.status.replace("_", " ")}</p>
-          </div>
-
-          {lead.notes && (
-            <p className="rounded-lg bg-field p-3">{lead.notes}</p>
-          )}
-
-          <div>
-            <p className="mb-2 font-medium">Assign coach</p>
-            <div className="flex gap-2">
-              <select
-                value={assignedCoachId}
-                onChange={(e) => setAssignedCoachId(e.target.value)}
-                className="h-9 flex-1 rounded-md border border-bone bg-field px-3 text-sm"
-              >
-                <option value="">Unassigned</option>
-                {demoStore.coaches.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.first_name} {c.last_name}
-                  </option>
-                ))}
-              </select>
-              <Button type="button" size="sm" variant="outline" onClick={assignCoach}>
-                Save
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-2 font-medium">Message thread</p>
-            <MessageThread messages={threadMessages} compact />
-            <CommsReplyBox
-              leadId={lead.id}
-              threadMessages={threadMessages}
-              onSent={(msg?: Message) => {
-                if (msg) appendMessage(msg);
-              }}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Button
-              type="button"
-              size="sm"
-              onClick={convertToAthlete}
-              disabled={converted}
-            >
-              {converted ? "Converted ✓" : "Convert to athlete"}
-            </Button>
-            <Button type="button" size="sm" variant="outline" asChild>
-              <Link href="/command-os/communications">Open in Comms Hub</Link>
-            </Button>
-          </div>
-        </div>
+        <LeadDetailBody
+          key={lead.id}
+          lead={lead}
+          onLeadUpdated={onLeadUpdated}
+        />
       </DialogContent>
     </Dialog>
   );

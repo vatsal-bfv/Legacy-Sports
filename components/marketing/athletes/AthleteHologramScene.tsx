@@ -9,6 +9,11 @@ import type { AthleteGender } from "@/lib/marketing/featured-athletes";
 const HOLOGRAM_MODEL = "/models/human-body.glb";
 const HOLOGRAM_SCALE = 2.45;
 const HOLOGRAM_SCALE_IMMERSIVE = 3.55;
+const HOLOGRAM_SCALE_COMPACT = 2.35;
+
+function immersiveScale(compact: boolean) {
+  return compact ? HOLOGRAM_SCALE_COMPACT : HOLOGRAM_SCALE_IMMERSIVE;
+}
 
 const HOLOGRAM_ACCENT: Record<AthleteGender, string> = {
   male: "#ff5a1f",
@@ -42,10 +47,12 @@ function HumanBodyHologram({
   autoRotate,
   gender,
   immersive = false,
+  compact = false,
 }: {
   autoRotate: boolean;
   gender: AthleteGender;
   immersive?: boolean;
+  compact?: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const accent = HOLOGRAM_ACCENT[gender];
@@ -63,11 +70,13 @@ function HumanBodyHologram({
   });
 
   return (
-    <group ref={groupRef} position={immersive ? [0, -1.05, 0] : [0, 0, 0]}>
+    <group ref={groupRef} position={immersive ? [0, compact ? -0.85 : -1.05, 0] : [0, 0, 0]}>
       <Center>
         <primitive
           object={model}
-          scale={immersive ? HOLOGRAM_SCALE_IMMERSIVE : HOLOGRAM_SCALE}
+          scale={
+            immersive ? immersiveScale(compact) : HOLOGRAM_SCALE
+          }
         />
       </Center>
     </group>
@@ -78,15 +87,22 @@ export function AthleteHologramScene({
   autoRotate = true,
   gender = "male",
   immersive = false,
+  compact = false,
 }: {
   autoRotate?: boolean;
   gender?: AthleteGender;
   immersive?: boolean;
+  compact?: boolean;
 }) {
   const accent = HOLOGRAM_ACCENT[gender];
   const cameraPosition = useMemo<[number, number, number]>(
-    () => (immersive ? [0, 0.25, 3.05] : [0, 1.1, 4.35]),
-    [immersive]
+    () =>
+      immersive
+        ? compact
+          ? [0, 0.2, 3.35]
+          : [0, 0.25, 3.05]
+        : [0, 1.1, 4.35],
+    [immersive, compact]
   );
 
   return (
@@ -108,13 +124,14 @@ export function AthleteHologramScene({
         autoRotate={autoRotate}
         gender={gender}
         immersive={immersive}
+        compact={compact}
       />
       <OrbitControls
         enablePan={false}
         enableZoom={false}
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI / 2.05}
-        target={[0, immersive ? 0.28 : 0.85, 0]}
+        target={[0, immersive ? (compact ? 0.22 : 0.28) : 0.85, 0]}
       />
     </Canvas>
   );

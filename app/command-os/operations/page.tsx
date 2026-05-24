@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocationScope } from "@/components/app/LocationProvider";
@@ -93,23 +93,19 @@ function UtilizationHeatmap({ location }: { location: Location }) {
   );
 }
 
-export default function OperationsPage() {
-  const { locationId } = useLocationScope();
-  const locations = demoStore.locations.filter(
-    (l) => !locationId || l.id === locationId
-  );
-
+function FacilityUtilizationPanel({
+  locationId,
+  locations,
+}: {
+  locationId: string | null;
+  locations: Location[];
+}) {
   const [selectedHeatmapIds, setSelectedHeatmapIds] = useState<string[]>(() =>
     defaultHeatmapIds(locationId)
   );
 
-  useEffect(() => {
-    setSelectedHeatmapIds(defaultHeatmapIds(locationId));
-  }, [locationId]);
-
   const selectedLocations = useMemo(
-    () =>
-      locations.filter((l) => selectedHeatmapIds.includes(l.id)),
+    () => locations.filter((l) => selectedHeatmapIds.includes(l.id)),
     [locations, selectedHeatmapIds]
   );
 
@@ -118,6 +114,58 @@ export default function OperationsPage() {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Facility utilization</CardTitle>
+        <p className="text-sm text-slate">
+          Choose which locations to include in today&apos;s room-by-room
+          heatmaps.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex flex-wrap gap-x-6 gap-y-3">
+          {locations.map((loc) => {
+            const checked = selectedHeatmapIds.includes(loc.id);
+            return (
+              <label
+                key={loc.id}
+                className="flex cursor-pointer items-center gap-2 text-sm text-pitch"
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleHeatmap(loc.id)}
+                  className="h-4 w-4 rounded border-bone bg-chalk accent-orange"
+                />
+                {loc.name}
+              </label>
+            );
+          })}
+        </div>
+
+        {selectedLocations.length > 0 ? (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {selectedLocations.map((loc) => (
+              <UtilizationHeatmap key={loc.id} location={loc} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-slate">
+            Select at least one location to view utilization heatmaps.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function OperationsPage() {
+  const { locationId } = useLocationScope();
+  const locations = demoStore.locations.filter(
+    (l) => !locationId || l.id === locationId
+  );
 
   return (
     <div className="space-y-6">
@@ -148,48 +196,11 @@ export default function OperationsPage() {
             ))}
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Facility utilization</CardTitle>
-              <p className="text-sm text-slate">
-                Choose which locations to include in today&apos;s room-by-room
-                heatmaps.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-wrap gap-x-6 gap-y-3">
-                {locations.map((loc) => {
-                  const checked = selectedHeatmapIds.includes(loc.id);
-                  return (
-                    <label
-                      key={loc.id}
-                      className="flex cursor-pointer items-center gap-2 text-sm text-pitch"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleHeatmap(loc.id)}
-                        className="h-4 w-4 rounded border-bone bg-chalk accent-orange"
-                      />
-                      {loc.name}
-                    </label>
-                  );
-                })}
-              </div>
-
-              {selectedLocations.length > 0 ? (
-                <div className="grid gap-4 lg:grid-cols-2">
-                  {selectedLocations.map((loc) => (
-                    <UtilizationHeatmap key={loc.id} location={loc} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-slate">
-                  Select at least one location to view utilization heatmaps.
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <FacilityUtilizationPanel
+            key={locationId ?? "all"}
+            locationId={locationId}
+            locations={locations}
+          />
         </TabsContent>
         <TabsContent value="coaches" className="grid gap-4 sm:grid-cols-2">
           {demoStore.coaches.map((c) => (

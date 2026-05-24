@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
   const isScoutLogin = pathname === "/scout/login";
   const isApi = pathname.startsWith("/api");
 
-  let response = isSupabaseConfigured()
+  const response = isSupabaseConfigured()
     ? await updateSession(request)
     : NextResponse.next({ request });
 

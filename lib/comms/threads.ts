@@ -1,4 +1,4 @@
-import type { Athlete, Lead, Location, Message } from "@/lib/demo/types";
+import type { Athlete, Lead, Message } from "@/lib/demo/types";
 
 export type CommsThread = {
   id: string;
@@ -37,8 +37,7 @@ function threadKey(message: Message): string | null {
 export function buildThreads(
   messages: Message[],
   athletes: Athlete[],
-  leads: Lead[],
-  locations: Location[]
+  leads: Lead[]
 ): CommsThread[] {
   const grouped = new Map<string, Message[]>();
 
@@ -84,7 +83,6 @@ export function buildThreads(
       const leadId = key.replace("lead:", "");
       const lead = leads.find((l) => l.id === leadId);
       if (!lead) continue;
-      const loc = locations.find((l) => l.id === lead.interested_location_id);
       threads.push({
         id: key,
         type: "lead",

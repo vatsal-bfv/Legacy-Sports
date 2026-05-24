@@ -19,13 +19,14 @@ export default function AthletesListPage() {
   const [positionFilter, setPositionFilter] = useState("");
   const [recruitFilter, setRecruitFilter] = useState("");
   const [attendedWithin, setAttendedWithin] = useState("");
+  const [now] = useState(() => Date.now());
 
   const athletes = useMemo(() => {
     const cutoff =
       attendedWithin === "7"
-        ? Date.now() - 7 * 86400000
+        ? now - 7 * 86400000
         : attendedWithin === "30"
-          ? Date.now() - 30 * 86400000
+          ? now - 30 * 86400000
           : null;
 
     return demoStore.athletes.filter((a) => {
@@ -63,6 +64,7 @@ export default function AthletesListPage() {
     positionFilter,
     recruitFilter,
     attendedWithin,
+    now,
   ]);
 
   const selectClass =

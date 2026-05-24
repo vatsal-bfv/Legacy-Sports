@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { LocationSchematic } from "@/lib/marketing/location-schematics";
 import { LocationSchematicFallback } from "@/components/marketing/locations/LocationSchematicFallback";
+import { getWebglUnavailable } from "@/lib/marketing/scene-capabilities";
+import { usePrefersReducedMotion } from "@/lib/hooks/use-prefers-reduced-motion";
 
 const LocationSchematicScene = dynamic(
   () =>
@@ -35,33 +37,8 @@ export function LocationSchematic({
   onZoneSelect?: (zoneId: string) => void;
   onZoneHover?: (zoneId: string | null) => void;
 }) {
-  const [preferStatic, setPreferStatic] = useState(false);
-  const [webglFailed, setWebglFailed] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPreferStatic(media.matches);
-
-    function onChange(event: MediaQueryListEvent) {
-      setPreferStatic(event.matches);
-    }
-
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    try {
-      const canvas = document.createElement("canvas");
-      const gl =
-        canvas.getContext("webgl") ?? canvas.getContext("experimental-webgl");
-      if (!gl) {
-        setWebglFailed(true);
-      }
-    } catch {
-      setWebglFailed(true);
-    }
-  }, []);
+  const preferStatic = usePrefersReducedMotion();
+  const [webglFailed] = useState(() => getWebglUnavailable());
 
   const showFallback = preferStatic || webglFailed;
   const isImmersive = variant === "immersive";

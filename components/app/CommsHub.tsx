@@ -34,8 +34,7 @@ export function CommsHub() {
       buildThreads(
         messages,
         demoStore.athletes,
-        allLeads,
-        demoStore.locations
+        allLeads
       ),
     [messages, allLeads]
   );
@@ -45,8 +44,13 @@ export function CommsHub() {
     [threads, filters]
   );
 
+  const resolvedSelectedId =
+    selectedId && filtered.some((thread) => thread.id === selectedId)
+      ? selectedId
+      : (filtered[0]?.id ?? null);
+
   const selected: CommsThread | undefined = filtered.find(
-    (t) => t.id === selectedId
+    (t) => t.id === resolvedSelectedId
   );
 
   const selectedUnreadKey = selected
@@ -85,20 +89,14 @@ export function CommsHub() {
   );
 
   useEffect(() => {
-    if (selectedId !== null || filtered.length === 0) return;
-    selectThread(filtered[0]);
-  }, [filtered, selectedId, selectThread]);
-
-  // Mark new inbound messages that arrive via polling on the active thread
-  useEffect(() => {
-    if (!selectedId || !selectedUnreadKey) {
+    if (!resolvedSelectedId || !selectedUnreadKey) {
       if (!selectedUnreadKey) lastMarkedUnreadKeyRef.current = "";
       return;
     }
     if (lastMarkedUnreadKeyRef.current === selectedUnreadKey) return;
     lastMarkedUnreadKeyRef.current = selectedUnreadKey;
-    markSelectedThreadRead(selectedId);
-  }, [selectedId, selectedUnreadKey, markSelectedThreadRead]);
+    markSelectedThreadRead(resolvedSelectedId);
+  }, [resolvedSelectedId, selectedUnreadKey, markSelectedThreadRead]);
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
@@ -187,7 +185,7 @@ export function CommsHub() {
                   onClick={() => selectThread(thread)}
                   className={cn(
                     "w-full border-b border-bone/50 p-4 text-left text-sm transition-colors hover:bg-field",
-                    selectedId === thread.id && "bg-field",
+                    resolvedSelectedId === thread.id && "bg-field",
                     isNew && "animate-slide-in border-l-2 border-l-orange"
                   )}
                 >

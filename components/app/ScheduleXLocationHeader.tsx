@@ -5,7 +5,7 @@ import "temporal-polyfill/global";
 import { useMemo } from "react";
 
 /** Day-of-week column headers for a 7-day facility schedule. */
-export function createWeekDayColumnHeader(anchorMonday: Temporal.PlainDate) {
+export function createWeekDayColumnHeader() {
   return function ScheduleXWeekDayHeader({ date }: { date: string }) {
     const label = useMemo(() => {
       const columnDate = Temporal.PlainDate.from(date);

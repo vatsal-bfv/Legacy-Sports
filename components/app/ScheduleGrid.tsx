@@ -114,10 +114,7 @@ function ScheduleXBlock({
     eventsService.set(events);
   }, [events, eventsService]);
 
-  const WeekDayHeader = useMemo(
-    () => createWeekDayColumnHeader(anchorDate),
-    [anchorDate]
-  );
+  const WeekDayHeader = useMemo(() => createWeekDayColumnHeader(), []);
 
   const customComponents = useMemo(
     () => ({
@@ -143,9 +140,10 @@ export function ScheduleGrid() {
   const { locationId: scopeLocationId, setLocationId } = useLocationScope();
   const timezone = getViewerTimezone();
 
-  const [facilityId, setFacilityId] = useState(
-    () => scopeLocationId ?? demoStore.locations[0].id
+  const [userFacilityId, setUserFacilityId] = useState(
+    () => demoStore.locations[0].id
   );
+  const facilityId = scopeLocationId ?? userFacilityId;
   const [weekAnchor, setWeekAnchor] = useState(() => getAnchorMonday());
   const [selectedAthleteId, setSelectedAthleteId] = useState("");
   const [rosterSession, setRosterSession] = useState<
@@ -154,13 +152,6 @@ export function ScheduleGrid() {
 
   const scheduleAthletes = useMemo(() => getScheduleAthleteFilterList(), []);
 
-  useEffect(() => {
-    if (scopeLocationId && scopeLocationId !== facilityId) {
-      setFacilityId(scopeLocationId);
-      setSelectedAthleteId("");
-    }
-  }, [scopeLocationId, facilityId]);
-
   const facility = demoStore.locations.find((l) => l.id === facilityId);
 
   const facilitySessions = useMemo(
@@ -168,13 +159,22 @@ export function ScheduleGrid() {
     [facilityId]
   );
 
-  const selectedAthlete = selectedAthleteId
-    ? demoStore.athletes.find((a) => a.id === selectedAthleteId)
+  const effectiveAthleteId = useMemo(() => {
+    if (!selectedAthleteId) return "";
+    return facilitySessions.some((s) =>
+      sessionIncludesAthlete(s, selectedAthleteId)
+    )
+      ? selectedAthleteId
+      : "";
+  }, [selectedAthleteId, facilitySessions]);
+
+  const selectedAthlete = effectiveAthleteId
+    ? demoStore.athletes.find((a) => a.id === effectiveAthleteId)
     : null;
 
   const handleFacilityChange = useCallback(
     (locationId: string) => {
-      setFacilityId(locationId);
+      setUserFacilityId(locationId);
       setLocationId(locationId);
       setSelectedAthleteId("");
     },
@@ -189,18 +189,18 @@ export function ScheduleGrid() {
       const athlete = demoStore.athletes.find((a) => a.id === athleteId);
       if (!athlete) return;
 
-      setFacilityId(athlete.home_location_id);
+      setUserFacilityId(athlete.home_location_id);
       setLocationId(athlete.home_location_id);
     },
     [setLocationId]
   );
 
   const visibleSessions = useMemo(() => {
-    if (!selectedAthleteId) return facilitySessions;
+    if (!effectiveAthleteId) return facilitySessions;
     return facilitySessions.filter((s) =>
-      sessionIncludesAthlete(s, selectedAthleteId)
+      sessionIncludesAthlete(s, effectiveAthleteId)
     );
-  }, [facilitySessions, selectedAthleteId]);
+  }, [facilitySessions, effectiveAthleteId]);
 
   const events = useMemo(
     () =>
@@ -234,7 +234,7 @@ export function ScheduleGrid() {
     ? demoStore.coaches.find((c) => c.id === rosterSession.coach_id)
     : null;
 
-  const calendarKey = `${facilityId}-${weekAnchor.toString()}-${selectedAthleteId || "all"}`;
+  const calendarKey = `${facilityId}-${weekAnchor.toString()}-${effectiveAthleteId || "all"}`;
 
   return (
     <div className="space-y-6">
@@ -298,7 +298,7 @@ export function ScheduleGrid() {
         <div className="ml-auto">
           <ScheduleAthletePicker
             athletes={scheduleAthletes}
-            value={selectedAthleteId}
+            value={effectiveAthleteId}
             onChange={handleAthleteChange}
           />
         </div>
@@ -338,7 +338,7 @@ export function ScheduleGrid() {
       <div className="legacy-command-schedule overflow-hidden rounded-lg border border-bone bg-chalk">
         {visibleSessions.length === 0 ? (
           <div className="flex h-[400px] items-center justify-center text-sm text-slate">
-            {selectedAthleteId
+            {effectiveAthleteId
               ? "This athlete has no sessions at this facility."
               : "No sessions scheduled for this facility."}
           </div>

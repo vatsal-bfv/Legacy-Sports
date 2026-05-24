@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { GripVertical } from "lucide-react";
 import {
   Kanban,
@@ -171,17 +171,27 @@ export function LeadsKanbanBoard() {
   const [selected, setSelected] = useState<Lead | null>(null);
 
   const mergedLeads = useMemo(() => applyStatusOverrides(leads), [leads]);
-
-  const [columns, setColumns] = useState<Record<LeadStatus, Lead[]>>(() =>
-    groupLeadsByStatus(mergedLeads)
+  const mergedKey = useMemo(
+    () => mergedLeads.map((lead) => `${lead.id}:${lead.status}`).join("|"),
+    [mergedLeads]
   );
 
-  useEffect(() => {
-    setColumns(groupLeadsByStatus(mergedLeads));
-  }, [mergedLeads]);
+  const groupedLeads = useMemo(
+    () => groupLeadsByStatus(mergedLeads),
+    [mergedLeads]
+  );
+
+  const [dragState, setDragState] = useState<{
+    key: string;
+    columns: Record<LeadStatus, Lead[]>;
+  } | null>(null);
+
+  const columns =
+    dragState?.key === mergedKey ? dragState.columns : groupedLeads;
 
   function handleValueChange(next: Record<string, Lead[]>) {
-    setColumns(next as Record<LeadStatus, Lead[]>);
+    const nextColumns = next as Record<LeadStatus, Lead[]>;
+    setDragState({ key: mergedKey, columns: nextColumns });
     persistColumnState(next);
   }
 

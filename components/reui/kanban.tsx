@@ -7,7 +7,6 @@ import {
   ReactNode,
   useCallback,
   useContext,
-  useLayoutEffect,
   useMemo,
   useState,
 } from "react"
@@ -46,6 +45,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
+import { useClientMounted } from "@/lib/hooks/use-client-mounted"
 
 interface KanbanContextProps<T> {
   columns: Record<string, T[]>
@@ -59,6 +59,7 @@ interface KanbanContextProps<T> {
   modifiers?: Modifiers
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- kanban columns hold arbitrary item types
 const KanbanContext = createContext<KanbanContextProps<any>>({
   columns: {},
   setColumns: () => {},
@@ -428,6 +429,7 @@ function KanbanColumn({
   ...props
 }: KanbanColumnProps) {
   const isOverlay = useContext(IsOverlayContext)
+  const { activeId, isColumn } = useContext(KanbanContext)
 
   const {
     setNodeRef,
@@ -442,66 +444,62 @@ function KanbanColumn({
     animateLayoutChanges,
   })
 
-  if (isOverlay) {
-    const defaultProps = {
-      "data-slot": "kanban-column",
-      "data-value": value,
-      "data-dragging": true,
-      className: cn("group/kanban-column flex flex-col", className),
-      children: props.children,
-    }
-
-    return (
-      <ColumnContext.Provider
-        value={{
-          attributes: {} as DraggableAttributes,
-          listeners: undefined,
-          isDragging: true,
-          disabled: false,
-        }}
-      >
-        {useRender({
-          defaultTagName: "div",
-          render,
-          props: mergeProps<"div">(defaultProps, props),
-        })}
-      </ColumnContext.Provider>
-    )
-  }
-
-  const { activeId, isColumn } = useContext(KanbanContext)
   const isColumnDragging = activeId ? isColumn(activeId) : false
 
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  } as CSSProperties
+  const style = isOverlay
+    ? undefined
+    : ({
+        transition,
+        transform: CSS.Transform.toString(transform),
+      } as CSSProperties)
 
-  const defaultProps = {
-    "data-slot": "kanban-column",
-    "data-value": value,
-    "data-dragging": isSortableDragging,
-    "data-disabled": disabled,
-    ref: setNodeRef,
-    style,
-    className: cn(
-      "group/kanban-column flex flex-col",
-      isSortableDragging && "opacity-50 z-50",
-      disabled && "opacity-50",
-      className
-    ),
-    children: props.children,
-  }
+  const defaultProps = isOverlay
+    ? {
+        "data-slot": "kanban-column",
+        "data-value": value,
+        "data-dragging": true,
+        className: cn("group/kanban-column flex flex-col", className),
+        children: props.children,
+      }
+    : {
+        "data-slot": "kanban-column",
+        "data-value": value,
+        "data-dragging": isSortableDragging,
+        "data-disabled": disabled,
+        ref: setNodeRef,
+        style,
+        className: cn(
+          "group/kanban-column flex flex-col",
+          isSortableDragging && "opacity-50 z-50",
+          disabled && "opacity-50",
+          className
+        ),
+        children: props.children,
+      }
+
+  const columnContextValue = isOverlay
+    ? {
+        attributes: {} as DraggableAttributes,
+        listeners: undefined,
+        isDragging: true,
+        disabled: false,
+      }
+    : {
+        attributes,
+        listeners,
+        isDragging: isColumnDragging,
+        disabled,
+      }
+
+  const rendered = useRender({
+    defaultTagName: "div",
+    render,
+    props: mergeProps<"div">(defaultProps, props),
+  })
 
   return (
-    <ColumnContext.Provider
-      value={{ attributes, listeners, isDragging: isColumnDragging, disabled }}
-    >
-      {useRender({
-        defaultTagName: "div",
-        render,
-        props: mergeProps<"div">(defaultProps, props),
-      })}
+    <ColumnContext.Provider value={columnContextValue}>
+      {rendered}
     </ColumnContext.Provider>
   )
 }
@@ -553,6 +551,7 @@ function KanbanItem({
   ...props
 }: KanbanItemProps) {
   const isOverlay = useContext(IsOverlayContext)
+  const { activeId, isColumn } = useContext(KanbanContext)
 
   const {
     setNodeRef,
@@ -567,61 +566,52 @@ function KanbanItem({
     animateLayoutChanges,
   })
 
-  if (isOverlay) {
-    const defaultProps = {
-      "data-slot": "kanban-item",
-      "data-value": value,
-      "data-dragging": true,
-      className: cn(className),
-      children: props.children,
-    }
-
-    return (
-      <ItemContext.Provider
-        value={{ listeners: undefined, isDragging: true, disabled: false }}
-      >
-        {useRender({
-          defaultTagName: "div",
-          render,
-          props: mergeProps<"div">(defaultProps, props),
-        })}
-      </ItemContext.Provider>
-    )
-  }
-
-  const { activeId, isColumn } = useContext(KanbanContext)
   const isItemDragging = activeId ? !isColumn(activeId) : false
 
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  } as CSSProperties
+  const style = isOverlay
+    ? undefined
+    : ({
+        transition,
+        transform: CSS.Transform.toString(transform),
+      } as CSSProperties)
 
-  const defaultProps = {
-    "data-slot": "kanban-item",
-    "data-value": value,
-    "data-dragging": isSortableDragging,
-    "data-disabled": disabled,
-    ref: setNodeRef,
-    style,
-    ...attributes,
-    className: cn(
-      isSortableDragging && "opacity-50 z-50",
-      disabled && "opacity-50",
-      className
-    ),
-    children: props.children,
-  }
+  const defaultProps = isOverlay
+    ? {
+        "data-slot": "kanban-item",
+        "data-value": value,
+        "data-dragging": true,
+        className: cn(className),
+        children: props.children,
+      }
+    : {
+        "data-slot": "kanban-item",
+        "data-value": value,
+        "data-dragging": isSortableDragging,
+        "data-disabled": disabled,
+        ref: setNodeRef,
+        style,
+        ...attributes,
+        className: cn(
+          isSortableDragging && "opacity-50 z-50",
+          disabled && "opacity-50",
+          className
+        ),
+        children: props.children,
+      }
+
+  const itemContextValue = isOverlay
+    ? { listeners: undefined, isDragging: true, disabled: false }
+    : { listeners, isDragging: isItemDragging, disabled }
+
+  const rendered = useRender({
+    defaultTagName: "div",
+    render,
+    props: mergeProps<"div">(defaultProps, props),
+  })
 
   return (
-    <ItemContext.Provider
-      value={{ listeners, isDragging: isItemDragging, disabled }}
-    >
-      {useRender({
-        defaultTagName: "div",
-        render,
-        props: mergeProps<"div">(defaultProps, props),
-      })}
+    <ItemContext.Provider value={itemContextValue}>
+      {rendered}
     </ItemContext.Provider>
   )
 }
@@ -705,9 +695,7 @@ export interface KanbanOverlayProps extends Omit<
 
 function KanbanOverlay({ children, className, ...props }: KanbanOverlayProps) {
   const { activeId, isColumn, modifiers } = useContext(KanbanContext)
-  const [mounted, setMounted] = useState(false)
-
-  useLayoutEffect(() => setMounted(true), [])
+  const mounted = useClientMounted()
 
   const variant = activeId ? (isColumn(activeId) ? "column" : "item") : "item"
 

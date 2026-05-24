@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { demoStore } from "@/lib/demo/store";
@@ -43,16 +43,22 @@ export default function ScoutSearchPage() {
   const [gpaMin, setGpaMin] = useState("");
   const [gradYear, setGradYear] = useState("");
   const [sport, setSport] = useState("");
-  const [saved, setSaved] = useState<SavedSearch[]>(DEFAULT_SAVED);
+  const [saved, setSaved] = useState<SavedSearch[]>(() => {
+    if (typeof window === "undefined") {
+      return DEFAULT_SAVED;
+    }
 
-  useEffect(() => {
     try {
       const raw = localStorage.getItem("legacy-scout-saved-searches");
-      if (raw) setSaved(JSON.parse(raw));
+      if (raw) {
+        return JSON.parse(raw) as SavedSearch[];
+      }
     } catch {
       /* ignore */
     }
-  }, []);
+
+    return DEFAULT_SAVED;
+  });
 
   function persistSaved(next: SavedSearch[]) {
     setSaved(next);

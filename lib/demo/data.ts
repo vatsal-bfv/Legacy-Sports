@@ -936,6 +936,15 @@ export const coachNotes: CoachNote[] = [
 ];
 
 export function generateWearables(athleteId: string): WearableData[] {
+  function noise(metric: string, dayIndex: number): number {
+    let hash = 0;
+    const key = `${athleteId}:${metric}:${dayIndex}`;
+    for (let i = 0; i < key.length; i++) {
+      hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    }
+    return (hash % 10000) / 10000;
+  }
+
   const data: WearableData[] = [];
   for (let i = 89; i >= 0; i--) {
     const d = new Date();
@@ -947,7 +956,7 @@ export function generateWearables(athleteId: string): WearableData[] {
         recorded_at: d.toISOString(),
         source: "whoop",
         metric: "sleep_hours",
-        value: 6.5 + Math.random() * 2,
+        value: 6.5 + noise("sleep_hours", i) * 2,
       },
       {
         id: `w-${athleteId}-hrv-${i}`,
@@ -955,7 +964,7 @@ export function generateWearables(athleteId: string): WearableData[] {
         recorded_at: d.toISOString(),
         source: "whoop",
         metric: "hrv",
-        value: 45 + Math.random() * 30,
+        value: 45 + noise("hrv", i) * 30,
       },
       {
         id: `w-${athleteId}-strain-${i}`,
@@ -963,7 +972,7 @@ export function generateWearables(athleteId: string): WearableData[] {
         recorded_at: d.toISOString(),
         source: "whoop",
         metric: "strain",
-        value: 8 + Math.random() * 8,
+        value: 8 + noise("strain", i) * 8,
       },
       {
         id: `w-${athleteId}-recovery-${i}`,
@@ -971,7 +980,7 @@ export function generateWearables(athleteId: string): WearableData[] {
         recorded_at: d.toISOString(),
         source: "whoop",
         metric: "recovery_score",
-        value: 50 + Math.random() * 45,
+        value: 50 + noise("recovery_score", i) * 45,
       }
     );
   }

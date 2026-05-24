@@ -143,7 +143,6 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
   }, [overlayActive]);
 
   const streamingMarkdown = streamSnapshot.text;
-  const answerStreaming = streamingMarkdown.trim().length > 0;
   const liveResponse = buildLiveStreamingResponse(streamSnapshot.text);
   const hasStreamedContent = liveResponse != null;
   const toolsExpanded = loading && !hasStreamedContent;
@@ -212,6 +211,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
                 <button
                   type="button"
                   role="option"
+                  aria-selected={false}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => selectSuggestion(s)}
                   className="w-full rounded-md px-2 py-2 text-left text-sm text-pitch hover:bg-bone"
