@@ -82,14 +82,11 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const log = apiLog("GET /api/leads");
   const since = new URL(request.url).searchParams.get("since");
-  log.request({ since });
 
   try {
     await requireStaff();
   } catch {
-    log.warn(401, "unauthorized");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -103,19 +100,15 @@ export async function GET(request: Request) {
           .gt("created_at", since)
           .order("created_at", { ascending: false });
         if (error) {
-          log.error(500, error, { since, source: "supabase" });
           return NextResponse.json({ error: error.message }, { status: 500 });
         }
-        log.response(200, { count: data?.length ?? 0, source: "supabase" });
         return NextResponse.json({ leads: data ?? [] });
       }
     }
 
     const leads = since ? demoStore.getLeadsSince(since) : demoStore.leads;
-    log.response(200, { count: leads.length, source: "demo" });
     return NextResponse.json({ leads });
-  } catch (error) {
-    log.error(500, error, { since });
+  } catch {
     return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
   }
 }

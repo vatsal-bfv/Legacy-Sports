@@ -1,27 +1,72 @@
-import { tool, stepCountIs, generateText, streamText } from "ai";
+import { tool, stepCountIs, streamText, generateText } from "ai";
 import { z } from "zod";
 import { getModel, isAiConfigured } from "./model";
 import {
   athleteToListItem,
   compareLocations,
-  getAtRiskAthletes,
+  findAthleteByName,
   getAthleteAttendance,
   getAthleteMeasurables,
+  getAthleteProfile,
+  getAtRiskAthletes,
   getCoachPerformance,
   getFailedPayments,
+  getLeads,
+  getMessages,
+  getSessions,
+  listLocations,
+  listPrograms,
+  listScoutUsers,
   queryAthletes,
   searchNotesByQuery,
   summarizeAthleteProgression,
   type QueryScope,
 } from "./data-access";
-import { lookupCachedQuery, type QueryResponse } from "./query-cache";
-import { HERO_IDS } from "@/lib/constants";
-import { demoStore } from "@/lib/demo/store";
+import { buildDomainContext } from "./domain-context";
+import { presentChartInputSchema } from "./chart-spec";
+import { logGeminiStep } from "./gemini-logger";
+
+function buildSystemPrompt(scope: QueryScope = {}) {
+  return `You are Legacy Command AI for Legacy Sports — a multi-location youth performance training company.
+
+Always use the provided tools to fetch real data before answering. Never invent athletes, metrics, locations, or schedules.
+
+${buildDomainContext(scope.location_id)}
+
+## Charts (required when data supports it)
+Proactively call \`present_chart\` whenever numeric data would be clearer as a visualization — do not wait for the user to ask for a chart.
+
+Call \`present_chart\` after fetching data for:
+- Location comparisons (revenue, retention, utilization) — use bar for single-metric snapshots, line for trends over time
+- Athlete measurable progression over time (line)
+- Coach performance or facility utilization comparisons (bar)
+- Any multi-row numeric result where a chart adds insight
+
+Rules:
+- Pass only real values from prior tool results. Never invent data points.
+- Use \`bar\` for categorical comparisons; \`line\` for time series or progression.
+- Set \`x\` to the category/time field key and \`y\` to the primary numeric field. Extra numeric columns in each row become additional line series.
+- Call \`present_chart\` before writing your final answer. You may include multiple charts when useful.
+- Do not duplicate chart data in markdown tables — summarize insights in prose instead.
+
+Respond in clear markdown. Be concise and cite specific numbers from tool results. If data is missing, say so and suggest which tool or filter might help.`;
+}
 
 export function createLegacyTools(scope: QueryScope = {}) {
   const locationDefault = scope.location_id;
 
   return {
+    find_athlete_by_name: tool({
+      description:
+        "Resolve athlete id(s) from a partial or full name. Call this before other athlete-specific tools when the user mentions a name.",
+      inputSchema: z.object({ name: z.string() }),
+      execute: async ({ name }) => findAthleteByName(name),
+    }),
+    get_athlete_profile: tool({
+      description: "Full profile for one athlete by id",
+      inputSchema: z.object({ athlete_id: z.string() }),
+      execute: async ({ athlete_id }) => getAthleteProfile(athlete_id),
+    }),
     query_athletes: tool({
       description: "Search athletes by filters",
       inputSchema: z.object({
@@ -85,6 +130,57 @@ export function createLegacyTools(scope: QueryScope = {}) {
       }),
       execute: async ({ metric, period }) => compareLocations(metric, period),
     }),
+    list_locations: tool({
+      description: "All training facilities",
+      inputSchema: z.object({}),
+      execute: async () => listLocations(),
+    }),
+    list_programs: tool({
+      description: "All training programs and pricing",
+      inputSchema: z.object({}),
+      execute: async () => listPrograms(),
+    }),
+    get_sessions: tool({
+      description: "Weekly session schedule by location, coach, or program",
+      inputSchema: z.object({
+        location_id: z.string().optional(),
+        coach_id: z.string().optional(),
+        program_id: z.string().optional(),
+        day_of_week: z.number().min(1).max(7).optional(),
+      }),
+      execute: async (filters) =>
+        getSessions({
+          ...filters,
+          location_id: filters.location_id ?? locationDefault,
+        }),
+    }),
+    get_leads: tool({
+      description: "Sales leads in the pipeline",
+      inputSchema: z.object({
+        status: z.string().optional(),
+        location_id: z.string().optional(),
+        assigned_coach_id: z.string().optional(),
+      }),
+      execute: async (filters) =>
+        getLeads({
+          ...filters,
+          location_id: filters.location_id ?? locationDefault,
+        }),
+    }),
+    get_messages: tool({
+      description: "Recent comms messages for an athlete or lead thread",
+      inputSchema: z.object({
+        athlete_id: z.string().optional(),
+        lead_id: z.string().optional(),
+        limit: z.number().optional(),
+      }),
+      execute: async (filters) => getMessages(filters),
+    }),
+    list_scout_users: tool({
+      description: "Scout portal users and recruiting focus",
+      inputSchema: z.object({}),
+      execute: async () => listScoutUsers(),
+    }),
     get_coach_performance: tool({
       description: "Coach retention and performance stats",
       inputSchema: z.object({ coach_id: z.string().optional() }),
@@ -110,254 +206,31 @@ export function createLegacyTools(scope: QueryScope = {}) {
       inputSchema: z.object({ query: z.string() }),
       execute: async ({ query }) => searchNotesByQuery(query),
     }),
+    present_chart: tool({
+      description:
+        "Render an interactive bar or line chart in the UI. Call proactively when tool results contain numeric comparisons or trends. Data must come from prior tool calls.",
+      inputSchema: presentChartInputSchema,
+      execute: async (input) => presentChartInputSchema.parse(input),
+    }),
   };
 }
 
-function buildResponseFromQuery(query: string): QueryResponse | null {
-  const q = query.toLowerCase();
-
-  if (/at.?risk|churn/.test(q)) {
-    const items = getAtRiskAthletes().slice(0, 8).map(athleteToListItem);
-    return {
-      type: "list",
-      title: "At-risk athletes this week",
-      columns: [
-        { key: "name", label: "Athlete" },
-        { key: "sport", label: "Sport" },
-        { key: "location", label: "Location" },
-        { key: "risk_score", label: "Risk %" },
-      ],
-      items,
-    };
-  }
-
-  if (/revenue.*location|location.*revenue/.test(q)) {
-    return {
-      type: "chart",
-      chartType: "bar",
-      title: "Revenue by location — Q2",
-      x: "location",
-      y: "revenue",
-      data: compareLocations("revenue", "quarter") as Record<string, unknown>[],
-    };
-  }
-
-  if (/phoenix.*mesa.*retention|compare.*retention/.test(q)) {
-    return {
-      type: "chart",
-      chartType: "line",
-      title: "Retention rate — Phoenix vs Mesa",
-      x: "month",
-      y: "rate",
-      data: compareLocations("retention", "quarter") as Record<string, unknown>[],
-    };
-  }
-
-  if (/marcus.*vertical|vertical.*2027|2027.*recruit/.test(q)) {
-    const meas = getAthleteMeasurables(HERO_IDS.marcus, "vertical");
-    const cohort = [
-      { month: "Dec", marcus: 31, cohort_avg: 29 },
-      { month: "Jan", marcus: 32, cohort_avg: 29.5 },
-      { month: "Feb", marcus: 33, cohort_avg: 30 },
-      { month: "Mar", marcus: 34, cohort_avg: 30.2 },
-      { month: "Apr", marcus: 35, cohort_avg: 30.5 },
-      { month: "May", marcus: 36, cohort_avg: 30.8 },
-    ];
-    void meas;
-    return {
-      type: "chart",
-      chartType: "line",
-      title: "Vertical progression — Marcus vs 2027 QB cohort",
-      x: "month",
-      y: "inches",
-      data: cohort,
-    };
-  }
-
-  if (/quarterback.*40|40.*under|qb.*4\.?7/.test(q)) {
-    const qbs = queryAthletes({
-      sport: "football",
-      position: "quarterback",
-      measurable_threshold: { metric: "forty_yard", max: 4.7 },
-    });
-    return {
-      type: "list",
-      title: "Quarterbacks — 40 yard under 4.7s",
-      columns: [
-        { key: "name", label: "Athlete" },
-        { key: "forty", label: "40-yd" },
-        { key: "grad_year", label: "Class" },
-        { key: "location", label: "Location" },
-      ],
-      items: qbs.map((a) => ({
-        ...athleteToListItem(a),
-        forty: String(
-          demoStore.measurables.find(
-            (m) =>
-              m.athlete_id === a.id && m.metric === "forty_yard" && m.is_pr
-          )?.value ?? "—"
-        ),
-      })),
-    };
-  }
-
-  if (/marcus.*trend|how.*marcus/.test(q)) {
-    return {
-      type: "mixed",
-      blocks: [
-        {
-          type: "narrative",
-          markdown: summarizeAthleteProgression(HERO_IDS.marcus),
-        },
-        {
-          type: "chart",
-          chartType: "line",
-          title: "40-yard dash progression",
-          x: "month",
-          y: "seconds",
-          data: [
-            { month: "Dec", seconds: 4.78 },
-            { month: "Jan", seconds: 4.74 },
-            { month: "Feb", seconds: 4.71 },
-            { month: "Mar", seconds: 4.68 },
-            { month: "Apr", seconds: 4.65 },
-            { month: "May", seconds: 4.62 },
-          ],
-        },
-      ],
-    };
-  }
-
-  if (/coach.*retention|retention.*coach/.test(q)) {
-    const items = getCoachPerformance().map(({ coach, retention, location }) => ({
-      coach,
-      retention,
-      location,
-    }));
-    return {
-      type: "list",
-      title: "Coach retention rankings",
-      columns: [
-        { key: "coach", label: "Coach" },
-        { key: "retention", label: "Retention %" },
-        { key: "location", label: "Location" },
-      ],
-      items,
-    };
-  }
-
-  if (/mobility|coach.*flag|qualitative|notes/.test(q)) {
-    const notes = searchNotesByQuery(query);
-    if (notes.length) {
-      return {
-        type: "list",
-        title: "Coach notes matching your query",
-        columns: [
-          { key: "content", label: "Note" },
-          { key: "tags", label: "Tags" },
-          { key: "date", label: "Date" },
-        ],
-        items: notes.map((n) => ({
-          content: n.content,
-          tags: n.tags.join(", "),
-          date: new Date(n.created_at).toLocaleDateString(),
-        })),
-      };
-    }
-  }
-
-  return null;
-}
-
-const SYSTEM_PROMPT = `You are Legacy Command AI for a multi-location youth sports training company.
-Use the provided tools to fetch real athlete, location, and operations data.
-Be concise and specific. When answering, prefer citing actual numbers from tool results.`;
-
-export async function runQuery(
-  query: string,
-  scope: QueryScope = {}
-): Promise<{ response: QueryResponse; cached: boolean; stream?: boolean }> {
-  const cached = lookupCachedQuery(query);
-  if (cached) {
-    console.log("[api] ai/query cache hit", {
-      query: query.slice(0, 120),
-      responseType: cached.type,
-    });
-    return { response: cached, cached: true };
-  }
-
-  const local = buildResponseFromQuery(query);
-  if (local) {
-    console.log("[api] ai/query local match", {
-      query: query.slice(0, 120),
-      responseType: local.type,
-    });
-    return { response: local, cached: false };
-  }
-
-  if (isAiConfigured()) {
-    console.log("[api] ai/query gemini start", { query: query.slice(0, 120) });
-    try {
-      const result = await generateText({
-        model: getModel(),
-        system: SYSTEM_PROMPT,
-        tools: createLegacyTools(scope),
-        stopWhen: stepCountIs(5),
-        prompt: query,
-      });
-
-      const rebuilt = buildResponseFromQuery(query);
-      if (rebuilt) {
-        console.log("[api] ai/query gemini rebuilt local", {
-          responseType: rebuilt.type,
-        });
-        return { response: rebuilt, cached: false };
-      }
-
-      if (result.text?.trim()) {
-        console.log("[api] ai/query gemini success", {
-          textLength: result.text.length,
-          toolSteps: result.steps?.length ?? 0,
-        });
-        return {
-          response: { type: "narrative", markdown: result.text },
-          cached: false,
-        };
-      }
-
-      console.warn("[api] ai/query gemini empty text", {
-        toolSteps: result.steps?.length ?? 0,
-      });
-    } catch (error) {
-      console.error("[api] ai/query gemini failed", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  } else {
-    console.warn("[api] ai/query fallback — no API key (set GEMINI_API_KEY)", {
-      query: query.slice(0, 120),
-    });
-  }
-
-  return {
-    response: {
-      type: "narrative",
-      markdown:
-        "I found relevant data across your locations. Try asking about at-risk athletes, revenue by location, or Marcus Johnson's progression.",
-    },
-    cached: true,
-    stream: isAiConfigured(),
-  };
-}
-
-export function streamNarrativeQuery(query: string) {
+export function streamLegacyQuery(query: string, scope: QueryScope = {}) {
   return streamText({
     model: getModel(),
-    system: SYSTEM_PROMPT + " Respond in markdown, 2-3 paragraphs max.",
-    tools: createLegacyTools(),
-    stopWhen: stepCountIs(3),
+    system:
+      buildSystemPrompt(scope) +
+      "\n\nRespond in markdown, 2-4 paragraphs max.",
+    tools: createLegacyTools(scope),
+    stopWhen: stepCountIs(50),
     prompt: query,
+    onStepFinish: logGeminiStep,
   });
+}
+
+/** @deprecated use streamLegacyQuery */
+export function streamNarrativeQuery(query: string, scope: QueryScope = {}) {
+  return streamLegacyQuery(query, scope);
 }
 
 export async function generateDraftMessage(prompt: string): Promise<string> {

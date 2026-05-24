@@ -3,32 +3,31 @@
 import "temporal-polyfill/global";
 
 import { useMemo } from "react";
-import type { Location } from "@/lib/demo/types";
 
-export function createLocationColumnHeader(
-  locations: Location[],
-  anchorMonday: Temporal.PlainDate
-) {
-  return function ScheduleXLocationHeader({ date }: { date: string }) {
+/** Day-of-week column headers for a 7-day facility schedule. */
+export function createWeekDayColumnHeader(anchorMonday: Temporal.PlainDate) {
+  return function ScheduleXWeekDayHeader({ date }: { date: string }) {
     const label = useMemo(() => {
       const columnDate = Temporal.PlainDate.from(date);
-      const dayOffset = anchorMonday.until(columnDate).days;
-      return (
-        locations[dayOffset]?.name ??
-        columnDate.toLocaleString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        })
-      );
+      const weekday = columnDate.toLocaleString("en-US", { weekday: "short" });
+      const dateLabel = columnDate.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      return { weekday, dateLabel };
     }, [date]);
+
+    const isToday =
+      Temporal.PlainDate.from(date).equals(Temporal.Now.plainDateISO());
 
     return (
       <div className="flex flex-col items-center gap-0.5 py-1">
-        <span className="text-sm font-semibold text-pitch">{label}</span>
-        {locations.length > 1 ? (
-          <span className="text-[10px] text-slate">Today&apos;s sessions</span>
-        ) : null}
+        <span
+          className={`text-sm font-semibold ${isToday ? "text-orange" : "text-pitch"}`}
+        >
+          {label.weekday}
+        </span>
+        <span className="text-[10px] text-slate">{label.dateLabel}</span>
       </div>
     );
   };

@@ -25,7 +25,6 @@ import {
   Settings,
   LogOut,
   Heart,
-  DollarSign,
   Menu,
 } from "lucide-react";
 
@@ -38,7 +37,6 @@ const nav = [
   { href: "/command-os/operations", label: "Operations", icon: Building2 },
   { href: "/command-os/scouts", label: "Scouts", icon: Eye },
   { href: "/command-os/retention", label: "Retention", icon: Heart },
-  { href: "/command-os/cost-comparison", label: "Cost Comparison", icon: DollarSign },
   { href: "/command-os/settings", label: "Settings", icon: Settings },
 ];
 

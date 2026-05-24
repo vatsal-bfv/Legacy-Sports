@@ -5,14 +5,11 @@ import { demoStore } from "@/lib/demo/store";
 import { apiLog } from "@/lib/server/api-logger";
 
 export async function GET(request: Request) {
-  const log = apiLog("GET /api/messages");
   const since = new URL(request.url).searchParams.get("since");
-  log.request({ since });
 
   try {
     await requireStaff();
   } catch {
-    log.warn(401, "unauthorized");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -28,10 +25,8 @@ export async function GET(request: Request) {
         }
         const { data, error } = await query;
         if (error) {
-          log.error(500, error, { since, source: "supabase" });
           return NextResponse.json({ error: error.message }, { status: 500 });
         }
-        log.response(200, { count: data?.length ?? 0, source: "supabase" });
         return NextResponse.json({ messages: data ?? [] });
       }
     }
@@ -40,10 +35,8 @@ export async function GET(request: Request) {
       ? demoStore.getMessagesSince(since)
       : demoStore.messages;
 
-    log.response(200, { count: messages.length, source: "demo" });
     return NextResponse.json({ messages });
-  } catch (error) {
-    log.error(500, error, { since });
+  } catch {
     return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
   }
 }
