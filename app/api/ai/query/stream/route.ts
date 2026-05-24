@@ -18,16 +18,16 @@ export async function POST(request: Request) {
     return new Response("AI not configured", { status: 503 });
   }
 
-  const { query } = await request.json();
+  const { query, scope } = await request.json();
   if (!query || typeof query !== "string") {
     log.warn(400, "query required");
     return new Response("Query required", { status: 400 });
   }
 
-  log.request({ query: query.slice(0, 120) });
+  log.request({ query: query.slice(0, 120), scope: scope ?? null });
 
   try {
-    const result = streamNarrativeQuery(query);
+    const result = streamNarrativeQuery(query, scope ?? {});
     log.response(200, { streaming: true });
     return result.toTextStreamResponse();
   } catch (error) {

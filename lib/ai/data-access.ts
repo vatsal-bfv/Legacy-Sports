@@ -88,12 +88,16 @@ export function compareLocations(
     }));
   }
   if (metric === "retention") {
+    const a = locs[0]?.name ?? "Suwanee";
+    const b = locs[1]?.name ?? "Lawrenceville";
+    const aKey = a.toLowerCase().replace(/\s+/g, "_");
+    const bKey = b.toLowerCase().replace(/\s+/g, "_");
     return [
-      { month: "Jan", phoenix: 94, mesa: 91 },
-      { month: "Feb", phoenix: 93, mesa: 90 },
-      { month: "Mar", phoenix: 95, mesa: 88 },
-      { month: "Apr", phoenix: 94, mesa: 87 },
-      { month: "May", phoenix: 96, mesa: 86 },
+      { month: "Jan", [aKey]: 94, [bKey]: 91 },
+      { month: "Feb", [aKey]: 93, [bKey]: 90 },
+      { month: "Mar", [aKey]: 95, [bKey]: 88 },
+      { month: "Apr", [aKey]: 94, [bKey]: 87 },
+      { month: "May", [aKey]: 96, [bKey]: 86 },
     ];
   }
   return locs.map((l, i) => ({
@@ -161,5 +165,172 @@ export function athleteToListItem(a: Athlete) {
     )?.value,
     grad_year: String(a.graduation_year),
     status: a.status,
+    star_rating: a.star_rating,
+  };
+}
+
+export function findAthleteByName(name: string) {
+  const q = name.toLowerCase().trim();
+  return demoStore.athletes.filter((a) => {
+    const full = `${a.first_name} ${a.last_name}`.toLowerCase();
+    return full.includes(q) || a.first_name.toLowerCase().includes(q);
+  });
+}
+
+export function listLocations() {
+  return demoStore.locations.map((l) => ({
+    id: l.id,
+    name: l.name,
+    slug: l.slug,
+    address: l.address,
+    square_footage: l.square_footage,
+  }));
+}
+
+export function listPrograms() {
+  return demoStore.programs.map((p) => ({
+    id: p.id,
+    name: p.name,
+    monthly_price: p.monthly_price,
+    description: p.description,
+    target_age_min: p.target_age_min,
+    target_age_max: p.target_age_max,
+  }));
+}
+
+const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+export function getSessions(filters?: {
+  location_id?: string;
+  coach_id?: string;
+  program_id?: string;
+  day_of_week?: number;
+}) {
+  return demoStore.sessions
+    .filter((s) => {
+      if (filters?.location_id && s.location_id !== filters.location_id)
+        return false;
+      if (filters?.coach_id && s.coach_id !== filters.coach_id) return false;
+      if (filters?.program_id && s.program_id !== filters.program_id)
+        return false;
+      if (
+        filters?.day_of_week != null &&
+        s.day_of_week !== filters.day_of_week
+      )
+        return false;
+      return true;
+    })
+    .map((s) => {
+      const loc = demoStore.locations.find((l) => l.id === s.location_id);
+      const coach = demoStore.coaches.find((c) => c.id === s.coach_id);
+      const program = demoStore.programs.find((p) => p.id === s.program_id);
+      return {
+        id: s.id,
+        location: loc?.name ?? "",
+        location_id: s.location_id,
+        coach: coach ? `${coach.first_name} ${coach.last_name}` : "",
+        program: program?.name ?? "",
+        day: DAY_NAMES[s.day_of_week - 1] ?? "",
+        hour: s.hour,
+        room: s.room,
+        capacity: s.capacity,
+      };
+    });
+}
+
+export function getLeads(filters?: {
+  status?: string;
+  location_id?: string;
+  assigned_coach_id?: string;
+}) {
+  return demoStore.leads
+    .filter((l) => {
+      if (filters?.status && l.status !== filters.status) return false;
+      if (
+        filters?.location_id &&
+        l.interested_location_id !== filters.location_id
+      )
+        return false;
+      if (
+        filters?.assigned_coach_id &&
+        l.assigned_coach_id !== filters.assigned_coach_id
+      )
+        return false;
+      return true;
+    })
+    .map((l) => ({
+      id: l.id,
+      name: `${l.first_name} ${l.last_name}`,
+      athlete_name: l.athlete_name,
+      status: l.status,
+      source: l.source,
+      location:
+        demoStore.locations.find((x) => x.id === l.interested_location_id)
+          ?.name ?? "",
+      program:
+        demoStore.programs.find((x) => x.id === l.interested_program_id)
+          ?.name ?? "",
+      created_at: l.created_at,
+    }));
+}
+
+export function getMessages(filters?: {
+  athlete_id?: string;
+  lead_id?: string;
+  limit?: number;
+}) {
+  const limit = filters?.limit ?? 20;
+  return demoStore.messages
+    .filter((m) => {
+      if (filters?.athlete_id && m.athlete_id !== filters.athlete_id)
+        return false;
+      if (filters?.lead_id && m.lead_id !== filters.lead_id) return false;
+      return true;
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
+    .slice(0, limit)
+    .map((m) => ({
+      id: m.id,
+      created_at: m.created_at,
+      channel: m.channel,
+      direction: m.direction,
+      from_party: m.from_party,
+      to_party: m.to_party,
+      body: m.body.slice(0, 500),
+      ai_generated: m.ai_generated,
+      athlete_id: m.athlete_id,
+      lead_id: m.lead_id,
+    }));
+}
+
+export function listScoutUsers() {
+  return demoStore.scoutUsers.map((s) => ({
+    id: s.id,
+    name: s.name,
+    organization: s.organization,
+    role: s.role,
+    geographic_focus: s.geographic_focus,
+    interested_positions: s.interested_positions,
+  }));
+}
+
+export function getAthleteProfile(athleteId: string) {
+  const athlete = demoStore.athletes.find((a) => a.id === athleteId);
+  if (!athlete) return null;
+  const program = demoStore.programs.find((p) => p.id === athlete.program_id);
+  return {
+    ...athleteToListItem(athlete),
+    position: athlete.position,
+    graduation_year: athlete.graduation_year,
+    gpa: athlete.gpa,
+    school: athlete.school,
+    program: program?.name ?? "",
+    parent_name: athlete.parent_name,
+    parent_email: athlete.parent_email,
+    ai_summary: athlete.ai_summary,
+    recruit_status: athlete.recruit_status,
   };
 }

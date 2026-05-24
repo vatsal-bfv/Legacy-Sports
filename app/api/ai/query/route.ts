@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { query, scope } = await request.json();
+  const { query, scope, use_demo_cache } = await request.json();
   if (!query || typeof query !== "string") {
     log.warn(400, "query required");
     return NextResponse.json({ error: "Query required" }, { status: 400 });
@@ -22,10 +22,13 @@ export async function POST(request: Request) {
   log.request({
     query: query.slice(0, 120),
     scope: scope ?? null,
+    use_demo_cache: Boolean(use_demo_cache),
   });
 
   try {
-    const result = await runQuery(query, scope ?? {});
+    const result = await runQuery(query, scope ?? {}, {
+      use_demo_cache: Boolean(use_demo_cache),
+    });
     log.response(200, {
       cached: result.cached,
       stream: result.stream ?? false,

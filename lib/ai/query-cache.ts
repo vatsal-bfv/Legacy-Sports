@@ -16,7 +16,8 @@ export type QueryResponse =
   | { type: "narrative"; markdown: string }
   | { type: "mixed"; blocks: QueryResponse[] };
 
-function normalizeQuery(q: string): string {
+/** Normalize for exact cache key lookup (suggestion clicks only). */
+export function normalizeQuery(q: string): string {
   return q
     .toLowerCase()
     .replace(/[^\w\s]/g, "")
@@ -39,20 +40,20 @@ const CACHE: Record<string, QueryResponse> = {
       {
         name: "Tyler Chen",
         sport: "Basketball",
-        location: "Mesa",
+        location: "Lawrenceville",
         risk_score: "87%",
         id: "a0000001-0001-4000-8000-000000000002",
       },
       {
         name: "Jordan Baker",
         sport: "Football",
-        location: "Phoenix",
+        location: "Suwanee",
         risk_score: "72%",
       },
       {
         name: "Taylor Clark",
         sport: "Basketball",
-        location: "Gilbert",
+        location: "Hoschton",
         risk_score: "68%",
       },
     ],
@@ -64,25 +65,25 @@ const CACHE: Record<string, QueryResponse> = {
     x: "location",
     y: "revenue",
     data: [
-      { location: "Phoenix", revenue: 142000 },
-      { location: "Mesa", revenue: 118000 },
-      { location: "Scottsdale", revenue: 105000 },
-      { location: "Gilbert", revenue: 89000 },
-      { location: "Chandler", revenue: 76000 },
+      { location: "Suwanee", revenue: 142000 },
+      { location: "Lawrenceville", revenue: 118000 },
+      { location: "Canton", revenue: 105000 },
+      { location: "Hoschton", revenue: 89000 },
+      { location: "Alpharetta", revenue: 76000 },
     ],
   },
-  "compare phoenix and mesa member retention": {
+  "compare suwanee and lawrenceville member retention": {
     type: "chart",
     chartType: "line",
-    title: "Retention rate — Phoenix vs Mesa",
+    title: "Retention rate — Suwanee vs Lawrenceville",
     x: "month",
     y: "rate",
     data: [
-      { month: "Jan", phoenix: 94, mesa: 91 },
-      { month: "Feb", phoenix: 93, mesa: 90 },
-      { month: "Mar", phoenix: 95, mesa: 88 },
-      { month: "Apr", phoenix: 94, mesa: 87 },
-      { month: "May", phoenix: 96, mesa: 86 },
+      { month: "Jan", suwanee: 94, lawrenceville: 91 },
+      { month: "Feb", suwanee: 93, lawrenceville: 90 },
+      { month: "Mar", suwanee: 95, lawrenceville: 88 },
+      { month: "Apr", suwanee: 94, lawrenceville: 87 },
+      { month: "May", suwanee: 96, lawrenceville: 86 },
     ],
   },
   "compare marcus vertical progression to other 2027 recruits in our system": {
@@ -114,14 +115,14 @@ const CACHE: Record<string, QueryResponse> = {
         name: "Marcus Johnson",
         forty: "4.62",
         grad_year: "2027",
-        location: "Phoenix",
+        location: "Suwanee",
         id: "a0000001-0001-4000-8000-000000000001",
       },
       {
         name: "Alex Garcia",
         forty: "4.68",
         grad_year: "2027",
-        location: "Scottsdale",
+        location: "Canton",
       },
     ],
   },
@@ -159,24 +160,15 @@ const CACHE: Record<string, QueryResponse> = {
       { key: "location", label: "Location" },
     ],
     items: [
-      { coach: "James Mitchell", retention: "96%", location: "Phoenix" },
-      { coach: "Mike Rodriguez", retention: "94%", location: "Mesa" },
-      { coach: "Sarah Kim", retention: "93%", location: "Gilbert" },
-      { coach: "David Thompson", retention: "91%", location: "Scottsdale" },
+      { coach: "James Mitchell", retention: "96%", location: "Suwanee" },
+      { coach: "Mike Rodriguez", retention: "94%", location: "Lawrenceville" },
+      { coach: "Sarah Kim", retention: "93%", location: "Hoschton" },
+      { coach: "David Thompson", retention: "91%", location: "Canton" },
     ],
   },
 };
 
-const PATTERNS: { pattern: RegExp; key: string }[] = [
-  { pattern: /at.?risk|churn/i, key: "which athletes are at risk of churning this week" },
-  { pattern: /revenue.*location|location.*revenue/i, key: "show me revenue by location this quarter" },
-  { pattern: /phoenix.*mesa.*retention|mesa.*phoenix.*retention|compare.*retention/i, key: "compare phoenix and mesa member retention" },
-  { pattern: /marcus.*vertical|vertical.*marcus|2027.*recruit/i, key: "compare marcus vertical progression to other 2027 recruits in our system" },
-  { pattern: /quarterback.*40|40.*under.*4\.?7|qb.*4\.?7/i, key: "show me every quarterback with a 40 under 47" },
-  { pattern: /marcus.*trend|how.*marcus|marcus.*johnson|what.*marcus|marcus.*up to|marcus.*doing|\bmarcus\b/i, key: "how is marcus johnson trending" },
-  { pattern: /coach.*retention|retention.*coach/i, key: "which coaches have the highest member retention" },
-];
-
+/** Display labels shown in the UI (must map 1:1 to CACHE keys via normalizeQuery). */
 export function getCachedQuerySuggestions(): string[] {
   return Object.keys(CACHE).map((key) => {
     const label = key.charAt(0).toUpperCase() + key.slice(1);
@@ -184,11 +176,8 @@ export function getCachedQuerySuggestions(): string[] {
   });
 }
 
+/** Exact-match demo cache — only when the client sets use_demo_cache (suggestion click). */
 export function lookupCachedQuery(query: string): QueryResponse | null {
   const normalized = normalizeQuery(query);
-  if (CACHE[normalized]) return CACHE[normalized];
-  for (const { pattern, key } of PATTERNS) {
-    if (pattern.test(query)) return CACHE[key];
-  }
-  return null;
+  return CACHE[normalized] ?? null;
 }

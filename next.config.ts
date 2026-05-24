@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  logging: {
+    incomingRequests: {
+      ignore: [/\/api\/leads/, /\/api\/messages/],
+    },
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "randomuser.me" },

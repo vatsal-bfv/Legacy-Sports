@@ -33,7 +33,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
   function selectSuggestion(suggestion: string) {
     setQuery(suggestion);
     setFocused(false);
-    runQuery(suggestion);
+    runQuery(suggestion, true);
   }
 
   async function streamNarrative(q: string) {
@@ -41,7 +41,10 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     const res = await fetch("/api/ai/query/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: q }),
+      body: JSON.stringify({
+        query: q,
+        scope: { location_id: locationId ?? undefined },
+      }),
     });
     if (!res.ok || !res.body) {
       setLoading(false);
@@ -61,7 +64,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     setLoading(false);
   }
 
-  async function runQuery(q: string) {
+  async function runQuery(q: string, useDemoCache = false) {
     setLoading(true);
     setResponse(null);
     setStreamingText("");
@@ -72,6 +75,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: q,
+        use_demo_cache: useDemoCache,
         scope: { location_id: locationId ?? undefined },
       }),
     });
@@ -162,7 +166,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (query.trim()) runQuery(query);
+          if (query.trim()) runQuery(query, false);
         }}
         className="flex gap-2"
       >
