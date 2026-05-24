@@ -132,6 +132,7 @@ export function LeadDetailDialog({
             <MessageThread messages={threadMessages} compact />
             <CommsReplyBox
               leadId={lead.id}
+              threadMessages={threadMessages}
               onSent={(msg?: Message) => {
                 if (msg) appendMessage(msg);
               }}

@@ -10,10 +10,12 @@ import type { Message } from "@/lib/demo/types";
 export function CommsReplyBox({
   athleteId,
   leadId,
+  threadMessages = [],
   onSent,
 }: {
   athleteId?: string | null;
   leadId?: string | null;
+  threadMessages?: Message[];
   onSent?: (message?: Message) => void;
 }) {
   const [body, setBody] = useState("");
@@ -21,6 +23,7 @@ export function CommsReplyBox({
   const [loading, setLoading] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [aiDrafted, setAiDrafted] = useState(false);
 
   async function handleSuggest() {
     setSuggesting(true);
@@ -31,10 +34,19 @@ export function CommsReplyBox({
         athlete_id: athleteId,
         lead_id: leadId,
         thread_type: leadId ? "lead" : "athlete",
+        thread_messages: threadMessages.map((m) => ({
+          direction: m.direction,
+          from_party: m.from_party,
+          body: m.body,
+          created_at: m.created_at,
+        })),
       }),
     });
     const data = await res.json();
-    if (data.suggestion) setBody(data.suggestion);
+    if (data.suggestion) {
+      setBody(data.suggestion);
+      setAiDrafted(true);
+    }
     setSuggesting(false);
   }
 
@@ -49,12 +61,13 @@ export function CommsReplyBox({
         channel,
         athlete_id: athleteId,
         lead_id: leadId,
-        ai_generated: false,
+        ai_generated: aiDrafted,
       }),
     });
     if (res.ok) {
       const data = await res.json();
       setBody("");
+      setAiDrafted(false);
       setSent(true);
       setTimeout(() => setSent(false), 2000);
       onSent?.(data.message);
@@ -83,10 +96,11 @@ export function CommsReplyBox({
             if (tpl) {
               setBody(tpl.body);
               setChannel(tpl.channel);
+              setAiDrafted(false);
             }
             e.target.value = "";
           }}
-          className="h-9 flex-1 min-w-[160px] rounded-md border border-bone bg-field px-3 text-sm text-pitch"
+          className="h-9 min-w-[160px] flex-1 rounded-md border border-bone bg-field px-3 text-sm text-pitch"
         >
           <option value="">Insert template…</option>
           {MESSAGE_TEMPLATES.map((t) => (
@@ -108,7 +122,10 @@ export function CommsReplyBox({
       </div>
       <Textarea
         value={body}
-        onChange={(e) => setBody(e.target.value)}
+        onChange={(e) => {
+          setBody(e.target.value);
+          setAiDrafted(false);
+        }}
         placeholder="Write a reply…"
         rows={3}
         className="border-bone bg-field text-pitch"

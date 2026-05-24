@@ -367,9 +367,8 @@ export async function generateDraftMessage(prompt: string): Promise<string> {
   const { text } = await generateText({
     model: getModel(),
     prompt,
-    maxOutputTokens: 120,
   });
-  return text.slice(0, 320);
+  return text.trim();
 }
 
 /** @deprecated use generateDraftMessage */

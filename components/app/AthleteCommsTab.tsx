@@ -28,6 +28,7 @@ export function AthleteCommsTab({ athleteId }: { athleteId: string }) {
       <MessageThread messages={messages} />
       <CommsReplyBox
         athleteId={athleteId}
+        threadMessages={messages}
         onSent={(msg) => {
           if (msg) setMessages((prev) => [...prev, msg]);
         }}

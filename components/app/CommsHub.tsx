@@ -236,6 +236,7 @@ export function CommsHub() {
                 <CommsReplyBox
                   athleteId={selected.athleteId}
                   leadId={selected.leadId}
+                  threadMessages={selected.messages}
                   onSent={(msg) => {
                     if (msg) appendMessage(msg);
                     void refresh();
