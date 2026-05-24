@@ -7,7 +7,7 @@ import { Sparkles, X } from "lucide-react";
 import { QueryResultRenderer } from "@/components/app/QueryResultRenderer";
 import { AiQueryToolTrace } from "@/components/app/AiQueryToolTrace";
 import { useLocationScope } from "@/components/app/LocationProvider";
-import { buildQueryResponseFromStream } from "@/lib/ai/chart-spec";
+import { buildLiveStreamingResponse } from "@/lib/ai/chart-spec";
 import {
   consumeQueryStream,
   type QueryStreamSnapshot,
@@ -145,10 +145,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
 
   const streamingMarkdown = streamSnapshot.text;
   const answerStreaming = streamingMarkdown.trim().length > 0;
-  const liveResponse = buildQueryResponseFromStream(
-    streamSnapshot.text,
-    streamSnapshot.tools
-  );
+  const liveResponse = buildLiveStreamingResponse(streamSnapshot.text);
   const hasStreamedContent = liveResponse != null;
   const toolsExpanded = loading && !hasStreamedContent;
   const displayResponse: QueryResponse | null =

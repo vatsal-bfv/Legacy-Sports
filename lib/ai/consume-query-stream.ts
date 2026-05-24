@@ -1,5 +1,5 @@
 import { parseJsonEventStream } from "@ai-sdk/provider-utils";
-import { buildQueryResponseFromStream } from "@/lib/ai/chart-spec";
+import { buildFinalQueryResponse } from "@/lib/ai/chart-spec";
 import { formatToolOutputSummary } from "@/lib/ai/tool-output-summary";
 import type { QueryResponse } from "@/lib/ai/query-cache";
 import {
@@ -80,22 +80,17 @@ export async function consumeQueryStream(
   );
 
   let finalText = "";
-  let finalTools: QueryToolTraceItem[] = [];
+  let finalParts: UIMessage["parts"] = [];
   const messageStream = readUIMessageStream({ stream: chunkStream });
 
   for await (const message of messageStream) {
     const snapshot = snapshotFromMessage(message);
     finalText = snapshot.text;
-    finalTools = snapshot.tools;
+    finalParts = message.parts;
     onUpdate(snapshot);
   }
 
-  const built =
-    buildQueryResponseFromStream(finalText, finalTools) ??
-    ({
-      type: "narrative",
-      markdown: finalText.trim() || "No response.",
-    } satisfies QueryResponse);
+  const built = buildFinalQueryResponse(finalParts, finalText);
 
   return { text: finalText, response: built };
 }

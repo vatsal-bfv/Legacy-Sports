@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getToolName, isToolUIPart, type UIMessage } from "ai";
 import type { QueryResponse } from "@/lib/ai/query-cache";
 
 export const presentChartInputSchema = z.object({
@@ -19,40 +20,89 @@ export function parseChartOutput(output: unknown): ChartResponse | null {
   return { type: "chart", ...parsed.data };
 }
 
-type ToolWithOutput = {
-  toolName: string;
-  state: string;
-  output?: unknown;
-};
-
-export function chartsFromTools(tools: ToolWithOutput[]): ChartResponse[] {
-  return tools
-    .filter(
-      (t) =>
-        t.toolName === "present_chart" &&
-        t.state === "output-available" &&
-        t.output != null
-    )
-    .map((t) => parseChartOutput(t.output))
-    .filter((c): c is ChartResponse => c != null);
+/** While the agent is still running — narrative only, charts stay in the tool trace. */
+export function buildLiveStreamingResponse(text: string): QueryResponse | null {
+  const markdown = text.trim();
+  if (!markdown) return null;
+  return { type: "narrative", markdown: text };
 }
 
-/** Merge streamed charts + markdown into a QueryResponse for the UI. */
-export function buildQueryResponseFromStream(
-  text: string,
-  tools: ToolWithOutput[]
-): QueryResponse | null {
-  const charts = chartsFromTools(tools);
-  const markdown = text.trim();
+function buildOrderedBlocksFromParts(
+  parts: UIMessage["parts"]
+): QueryResponse[] {
+  const blocks: QueryResponse[] = [];
+  let textBuffer = "";
 
-  if (charts.length === 0 && !markdown) return null;
-  if (charts.length === 0) return { type: "narrative", markdown: text };
+  const flushText = () => {
+    const markdown = textBuffer.trim();
+    if (markdown) {
+      blocks.push({ type: "narrative", markdown: textBuffer });
+    }
+    textBuffer = "";
+  };
 
-  const blocks: QueryResponse[] = [...charts];
-  if (markdown) {
-    blocks.push({ type: "narrative", markdown: text });
+  for (const part of parts) {
+    if (part.type === "text") {
+      textBuffer += part.text ?? "";
+      continue;
+    }
+
+    if (
+      isToolUIPart(part) &&
+      getToolName(part) === "present_chart" &&
+      part.state === "output-available" &&
+      "output" in part
+    ) {
+      flushText();
+      const chart = parseChartOutput(part.output);
+      if (chart) blocks.push(chart);
+    }
   }
 
+  flushText();
+  return blocks;
+}
+
+function isInterleaved(blocks: QueryResponse[]): boolean {
+  let seenChart = false;
+  let seenNarrativeAfterChart = false;
+
+  for (const block of blocks) {
+    if (block.type === "chart") seenChart = true;
+    if (block.type === "narrative" && seenChart) seenNarrativeAfterChart = true;
+    if (block.type === "chart" && seenNarrativeAfterChart) return true;
+  }
+
+  return false;
+}
+
+function toMixed(blocks: QueryResponse[]): QueryResponse {
   if (blocks.length === 1) return blocks[0];
   return { type: "mixed", blocks };
+}
+
+/**
+ * Final response after the stream completes.
+ * Preserves part order when narrative and charts are truly interleaved;
+ * otherwise puts the full narrative first and charts after (typical tool-then-answer flow).
+ */
+export function buildFinalQueryResponse(
+  parts: UIMessage["parts"],
+  fullText: string
+): QueryResponse {
+  const ordered = buildOrderedBlocksFromParts(parts);
+  const charts = ordered.filter(
+    (block): block is ChartResponse => block.type === "chart"
+  );
+  const markdown = fullText.trim() || "No response.";
+
+  if (charts.length === 0) {
+    return { type: "narrative", markdown };
+  }
+
+  if (isInterleaved(ordered)) {
+    return toMixed(ordered);
+  }
+
+  return toMixed([{ type: "narrative", markdown: fullText }, ...charts]);
 }
