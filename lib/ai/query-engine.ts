@@ -228,7 +228,7 @@ export function streamLegacyQuery(query: string, scope: QueryScope = {}) {
       buildSystemPrompt(scope) +
       "\n\nRespond in markdown, 2-4 paragraphs max.",
     tools: createLegacyTools(scope),
-    stopWhen: stepCountIs(8),
+    stopWhen: stepCountIs(50),
     prompt: query,
     onStepFinish: logGeminiStep,
   });

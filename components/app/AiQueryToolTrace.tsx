@@ -1,10 +1,17 @@
 "use client";
 
-import { Check, Loader2, Wrench, AlertCircle } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  CircleSlash,
+  Loader2,
+  Wrench,
+} from "lucide-react";
 import {
   formatToolInputSummary,
   formatToolLabel,
 } from "@/lib/ai/tool-labels";
+import { isEmptyToolResult } from "@/lib/ai/tool-output-summary";
 import type { QueryToolTraceItem } from "@/lib/ai/consume-query-stream";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +49,11 @@ export function AiQueryToolTrace({
             tool.state === "input-streaming" ||
             tool.state === "input-available";
           const inputSummary = formatToolInputSummary(tool.toolName, tool.input);
+          const emptyResult =
+            done &&
+            tool.state === "output-available" &&
+            tool.output !== undefined &&
+            isEmptyToolResult(tool.toolName, tool.output);
 
           return (
             <li
@@ -51,6 +63,8 @@ export function AiQueryToolTrace({
               <span className="mt-0.5 shrink-0">
                 {tool.state === "output-error" ? (
                   <AlertCircle className="size-4 text-red-500" />
+                ) : emptyResult ? (
+                  <CircleSlash className="size-4 text-amber-600" />
                 ) : done ? (
                   <Check className="size-4 text-orange" />
                 ) : (
@@ -66,6 +80,16 @@ export function AiQueryToolTrace({
                 ) : null}
                 {running ? (
                   <span className="block text-xs text-slate">Running…</span>
+                ) : null}
+                {done && tool.resultSummary ? (
+                  <span
+                    className={cn(
+                      "block text-xs",
+                      emptyResult ? "text-amber-700" : "text-slate"
+                    )}
+                  >
+                    → {tool.resultSummary}
+                  </span>
                 ) : null}
                 {tool.state === "output-error" && tool.errorText ? (
                   <span className="block text-xs text-red-600">

@@ -1,4 +1,5 @@
 import { parseJsonEventStream } from "@ai-sdk/provider-utils";
+import { formatToolOutputSummary } from "@/lib/ai/tool-output-summary";
 import {
   getToolName,
   isToolUIPart,
@@ -13,6 +14,8 @@ export type QueryToolTraceItem = {
   toolName: string;
   state: string;
   input?: unknown;
+  output?: unknown;
+  resultSummary?: string | null;
   errorText?: string;
 };
 
@@ -27,13 +30,26 @@ function snapshotFromMessage(message: UIMessage): QueryStreamSnapshot {
     .map((p) => p.text ?? "")
     .join("");
 
-  const tools = message.parts.filter(isToolUIPart).map((part) => ({
-    id: part.toolCallId,
-    toolName: getToolName(part),
-    state: part.state,
-    input: "input" in part ? part.input : undefined,
-    errorText: "errorText" in part ? part.errorText : undefined,
-  }));
+  const tools = message.parts.filter(isToolUIPart).map((part) => {
+    const output =
+      part.state === "output-available" && "output" in part
+        ? part.output
+        : undefined;
+    const input = "input" in part ? part.input : undefined;
+
+    return {
+      id: part.toolCallId,
+      toolName: getToolName(part),
+      state: part.state,
+      input,
+      output,
+      resultSummary:
+        output !== undefined
+          ? formatToolOutputSummary(getToolName(part), input, output)
+          : null,
+      errorText: "errorText" in part ? part.errorText : undefined,
+    };
+  });
 
   return { text, tools };
 }
