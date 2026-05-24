@@ -140,6 +140,8 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
   }, [overlayActive]);
 
   const streamingMarkdown = streamSnapshot.text;
+  const answerStreaming = streamingMarkdown.trim().length > 0;
+  const toolsExpanded = loading && !answerStreaming;
   const displayResponse: QueryResponse | null =
     loading && streamingMarkdown && !response
       ? { type: "narrative", markdown: streamingMarkdown }
@@ -256,7 +258,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
           {showToolTrace ? (
             <AiQueryToolTrace
               tools={loading ? streamSnapshot.tools : toolTrace}
-              isStreaming={loading}
+              isActive={toolsExpanded}
               className="mb-3"
             />
           ) : null}
@@ -276,7 +278,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
           {showToolTrace ? (
             <AiQueryToolTrace
               tools={loading ? streamSnapshot.tools : toolTrace}
-              isStreaming={loading}
+              isActive={toolsExpanded}
             />
           ) : null}
           {displayResponse ? (
