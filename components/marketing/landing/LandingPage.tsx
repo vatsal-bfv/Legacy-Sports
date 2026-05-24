@@ -797,7 +797,8 @@ function OriginsSection({ reducedMotion }: { reducedMotion: boolean }) {
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const heroImage = heroRevealRef.current?.querySelector("img");
+      const heroImage =
+        heroRevealRef.current?.querySelector<HTMLImageElement>("img") ?? null;
 
       if (!section) {
         return;
@@ -805,7 +806,7 @@ function OriginsSection({ reducedMotion }: { reducedMotion: boolean }) {
 
       if (reducedMotion) {
         gsap.set(heroRevealRef.current, { clipPath: "inset(0 0 0 0)" });
-        gsap.set(heroImage, { scale: 1 });
+        if (heroImage) gsap.set(heroImage, { scale: 1 });
         gsap.set(ownerRefs.current, { opacity: 1, x: 0 });
         gsap.set(
           [leadRef.current, ...paragraphRefs.current, ...milestoneRefs.current],
@@ -815,7 +816,7 @@ function OriginsSection({ reducedMotion }: { reducedMotion: boolean }) {
       }
 
       gsap.set(heroRevealRef.current, { clipPath: "inset(100% 0 0 0)" });
-      gsap.set(heroImage, { scale: 1.06 });
+      if (heroImage) gsap.set(heroImage, { scale: 1.06 });
       gsap.set(ownerRefs.current, { opacity: 0, x: 20 });
       gsap.set(
         [leadRef.current, ...paragraphRefs.current, ...milestoneRefs.current],
@@ -862,8 +863,10 @@ function OriginsSection({ reducedMotion }: { reducedMotion: boolean }) {
             ease: "legacyEase",
           },
           0.1
-        )
-        .to(
+        );
+
+      if (heroImage) {
+        proofTl.to(
           heroImage,
           {
             scale: 1,
@@ -871,8 +874,10 @@ function OriginsSection({ reducedMotion }: { reducedMotion: boolean }) {
             ease: "legacyEase",
           },
           0.1
-        )
-        .to(
+        );
+      }
+
+      proofTl.to(
           milestoneRefs.current,
           {
             opacity: 1,

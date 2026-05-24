@@ -48,7 +48,9 @@ export function LeadCaptureForm({
       .to(node, { text: "..", duration: 0.12, ease: "none" })
       .to(node, { text: ".", duration: 0.12, ease: "none" });
 
-    return () => tl.kill();
+    return () => {
+      tl.kill();
+    };
   }, [loading, variant]);
 
   useEffect(() => {
@@ -91,7 +93,9 @@ export function LeadCaptureForm({
         ">-0.05"
       );
 
-    return () => tl.kill();
+    return () => {
+      tl.kill();
+    };
   }, [submitted, variant]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
