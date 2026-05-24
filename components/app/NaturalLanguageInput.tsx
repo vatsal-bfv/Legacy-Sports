@@ -51,10 +51,10 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
   function selectSuggestion(suggestion: string) {
     setQuery(suggestion);
     setFocused(false);
-    runQuery(suggestion, true);
+    runQuery(suggestion);
   }
 
-  async function runQuery(q: string, useDemoCache = false) {
+  async function runQuery(q: string) {
     setLoading(true);
     setResponse(null);
     setStreamSnapshot(EMPTY_SNAPSHOT);
@@ -67,7 +67,6 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: q,
-          use_demo_cache: useDemoCache,
           scope: { location_id: locationId ?? undefined },
         }),
       });
@@ -171,7 +170,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (query.trim()) runQuery(query, false);
+          if (query.trim()) runQuery(query);
         }}
         className="flex gap-2"
       >

@@ -25,12 +25,6 @@ import {
 import { buildDomainContext } from "./domain-context";
 import { presentChartInputSchema } from "./chart-spec";
 import { logGeminiStep } from "./gemini-logger";
-import { lookupCachedQuery, type QueryResponse } from "./query-cache";
-
-export type QueryOptions = {
-  /** Set true only when the user clicked a suggested demo query. */
-  use_demo_cache?: boolean;
-};
 
 function buildSystemPrompt(scope: QueryScope = {}) {
   return `You are Legacy Command AI for Legacy Sports — a multi-location youth performance training company.
@@ -219,29 +213,6 @@ export function createLegacyTools(scope: QueryScope = {}) {
       execute: async (input) => presentChartInputSchema.parse(input),
     }),
   };
-}
-
-export async function runQuery(
-  query: string,
-  scope: QueryScope = {},
-  options: QueryOptions = {}
-): Promise<{ response: QueryResponse; cached: boolean } | null> {
-  void scope;
-  if (!options.use_demo_cache) return null;
-
-  const cached = lookupCachedQuery(query);
-  if (cached) {
-    console.log("[api] ai/query demo cache hit", {
-      query: query.slice(0, 120),
-      responseType: cached.type,
-    });
-    return { response: cached, cached: true };
-  }
-
-  console.warn("[api] ai/query demo cache miss on suggestion click", {
-    query: query.slice(0, 120),
-  });
-  return null;
 }
 
 export function streamLegacyQuery(query: string, scope: QueryScope = {}) {
