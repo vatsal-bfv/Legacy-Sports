@@ -1,4 +1,5 @@
 import { demoStore } from "@/lib/demo/store";
+import { formatSnakeCaseLabel } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ScoutsPage() {
@@ -48,7 +49,9 @@ export default function ScoutsPage() {
                   <p className="font-medium">{s.name}</p>
                   <p className="text-sm text-slate">{s.organization}</p>
                 </div>
-                <span className="text-xs text-slate capitalize">{s.role}</span>
+                <span className="text-xs text-slate">
+                  {formatSnakeCaseLabel(s.role)}
+                </span>
               </li>
             ))}
           </ul>

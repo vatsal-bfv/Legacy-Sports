@@ -20,3 +20,11 @@ export function formatCurrency(n: number) {
     maximumFractionDigits: 0,
   }).format(n);
 }
+
+export function formatSnakeCaseLabel(value: string) {
+  return value
+    .split("_")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
