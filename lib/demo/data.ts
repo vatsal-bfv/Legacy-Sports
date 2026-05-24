@@ -4,6 +4,7 @@ import {
   LOCATION_IDS,
 } from "@/lib/constants";
 import { featuredAthletes } from "@/lib/marketing/featured-athletes";
+import { heroMeasurables } from "./hero-measurables";
 import type {
   Athlete,
   Attendance,
@@ -530,88 +531,7 @@ export const athletes: Athlete[] = [
   ...generateBackgroundAthletes(),
 ];
 
-const sixMonths = (() => {
-  const dates: string[] = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - i);
-    dates.push(d.toISOString());
-  }
-  return dates;
-})();
-
-function generateMarcusMeasurables(): Measurable[] {
-  const metrics: Measurable[] = [];
-  const fortyValues = [4.78, 4.74, 4.71, 4.68, 4.65, 4.62];
-  const vertValues = [31, 32, 33, 34, 35, 36];
-  for (let i = 0; i < sixMonths.length; i++) {
-    metrics.push({
-      id: `m-marcus-40-${i}`,
-      athlete_id: HERO_IDS.marcus,
-      recorded_at: sixMonths[i],
-      metric: "forty_yard",
-      value: fortyValues[i],
-      unit: "seconds",
-      is_pr: i === fortyValues.length - 1,
-      recorded_by_coach_id: coaches[0].id,
-    });
-    metrics.push({
-      id: `m-marcus-v-${i}`,
-      athlete_id: HERO_IDS.marcus,
-      recorded_at: sixMonths[i],
-      metric: "vertical",
-      value: vertValues[i],
-      unit: "inches",
-      is_pr: i === vertValues.length - 1,
-      recorded_by_coach_id: coaches[0].id,
-    });
-  }
-  metrics.push({
-    id: "m-marcus-h",
-    athlete_id: HERO_IDS.marcus,
-    recorded_at: new Date().toISOString(),
-    metric: "height",
-    value: 74,
-    unit: "inches",
-    is_pr: false,
-    recorded_by_coach_id: coaches[0].id,
-  });
-  metrics.push({
-    id: "m-marcus-w",
-    athlete_id: HERO_IDS.marcus,
-    recorded_at: new Date().toISOString(),
-    metric: "weight",
-    value: 195,
-    unit: "pounds",
-    is_pr: false,
-    recorded_by_coach_id: coaches[0].id,
-  });
-  return metrics;
-}
-
-export const measurables: Measurable[] = [
-  ...generateMarcusMeasurables(),
-  {
-    id: "m-tyler-squat",
-    athlete_id: HERO_IDS.tyler,
-    recorded_at: new Date(Date.now() - 21 * 86400000).toISOString(),
-    metric: "squat_max",
-    value: 245,
-    unit: "pounds",
-    is_pr: true,
-    recorded_by_coach_id: COACH_RODRIGUEZ_ID,
-  },
-  {
-    id: "m-tyler-squat-old",
-    athlete_id: HERO_IDS.tyler,
-    recorded_at: new Date(Date.now() - 90 * 86400000).toISOString(),
-    metric: "squat_max",
-    value: 225,
-    unit: "pounds",
-    is_pr: false,
-    recorded_by_coach_id: COACH_RODRIGUEZ_ID,
-  },
-];
+export const measurables: Measurable[] = [...heroMeasurables];
 
 export const scoutUsers: ScoutUser[] = [
   {
@@ -800,6 +720,87 @@ export const videoClips: VideoClip[] = [
     ai_tags: ["route precision", "separation"],
     recorded_at: new Date(Date.now() - 20 * 86400000).toISOString(),
   },
+  {
+    id: "v-006",
+    athlete_id: HERO_IDS.deshawn,
+    title: "40-Yard Dash PR",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["acceleration", "top-end speed", "PR"],
+    recorded_at: new Date(Date.now() - 35 * 86400000).toISOString(),
+  },
+  {
+    id: "v-007",
+    athlete_id: HERO_IDS.deshawn,
+    title: "Catch & Release Drill",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["hands", "body control", "contested catch"],
+    recorded_at: new Date(Date.now() - 50 * 86400000).toISOString(),
+  },
+  {
+    id: "v-008",
+    athlete_id: HERO_IDS.tyler,
+    title: "Court Agility",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["lateral quickness", "first step", "defensive slide"],
+    recorded_at: new Date(Date.now() - 25 * 86400000).toISOString(),
+  },
+  {
+    id: "v-009",
+    athlete_id: HERO_IDS.tyler,
+    title: "Vertical Jump Test",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["vertical power", "explosive first step"],
+    recorded_at: new Date(Date.now() - 40 * 86400000).toISOString(),
+  },
+  {
+    id: "v-010",
+    athlete_id: HERO_IDS.sofia,
+    title: "Sprint Mechanics",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["stride length", "acceleration", "track form"],
+    recorded_at: new Date(Date.now() - 28 * 86400000).toISOString(),
+  },
+  {
+    id: "v-011",
+    athlete_id: HERO_IDS.sofia,
+    title: "Agility & Change of Direction",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["lateral cut", "soccer footwork", "balance"],
+    recorded_at: new Date(Date.now() - 42 * 86400000).toISOString(),
+  },
+  {
+    id: "v-012",
+    athlete_id: HERO_IDS.sofia,
+    title: "Vertical Jump Test",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["vertical power", "explosive first step"],
+    recorded_at: new Date(Date.now() - 55 * 86400000).toISOString(),
+  },
+  {
+    id: "v-013",
+    athlete_id: HERO_IDS.emma,
+    title: "Approach Jump",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["approach footwork", "vertical power", "arm swing"],
+    recorded_at: new Date(Date.now() - 18 * 86400000).toISOString(),
+  },
+  {
+    id: "v-014",
+    athlete_id: HERO_IDS.emma,
+    title: "Block Jump Mechanics",
+    thumbnail_url: STOCK_THUMB,
+    video_url: STOCK_VIDEO,
+    ai_tags: ["block timing", "lateral movement", "explosive first step"],
+    recorded_at: new Date(Date.now() - 33 * 86400000).toISOString(),
+  },
 ];
 
 export const coachNotes: CoachNote[] = [
@@ -823,12 +824,120 @@ export const coachNotes: CoachNote[] = [
   },
   {
     id: "n-003",
+    athlete_id: HERO_IDS.marcus,
+    coach_id: coaches[0].id,
+    created_at: new Date(Date.now() - 28 * 86400000).toISOString(),
+    content:
+      "10-yard split down to 1.63s. Bench climbing steadily — up 80 lbs in 9 months.",
+    tags: ["speed", "strength", "combine"],
+  },
+  {
+    id: "n-004",
+    athlete_id: HERO_IDS.marcus,
+    coach_id: coaches[0].id,
+    created_at: new Date(Date.now() - 42 * 86400000).toISOString(),
+    content:
+      "Broad jump hit 122 inches today. Full measurable battery complete for spring showcase.",
+    tags: ["power", "broad jump", "PR"],
+  },
+  {
+    id: "n-005",
     athlete_id: HERO_IDS.tyler,
     coach_id: COACH_RODRIGUEZ_ID,
     created_at: new Date(Date.now() - 21 * 86400000).toISOString(),
     content:
       "Tyler hit squat PR at 245 lbs. Lower body strength translating to court speed.",
     tags: ["strength", "PR"],
+  },
+  {
+    id: "n-006",
+    athlete_id: HERO_IDS.tyler,
+    coach_id: COACH_RODRIGUEZ_ID,
+    created_at: new Date(Date.now() - 35 * 86400000).toISOString(),
+    content:
+      "Vertical up to 29 inches — 5 inch gain since enrollment. Broad jump trending well.",
+    tags: ["vertical", "improvement"],
+  },
+  {
+    id: "n-007",
+    athlete_id: HERO_IDS.tyler,
+    coach_id: COACH_RODRIGUEZ_ID,
+    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
+    content:
+      "Missed Tuesday and Thursday sessions. Flagged for re-engagement outreach.",
+    tags: ["attendance", "at_risk"],
+  },
+  {
+    id: "n-008",
+    athlete_id: HERO_IDS.sofia,
+    coach_id: coaches[2].id,
+    created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
+    content:
+      "Sprint times dropping consistently — clear soccer specialization signal emerging.",
+    tags: ["speed", "soccer", "specialization"],
+  },
+  {
+    id: "n-009",
+    athlete_id: HERO_IDS.sofia,
+    coach_id: coaches[2].id,
+    created_at: new Date(Date.now() - 24 * 86400000).toISOString(),
+    content:
+      "Vertical at 31 inches, broad jump 114. GPA 4.0 — elite academic + athletic profile.",
+    tags: ["vertical", "academics", "PR"],
+  },
+  {
+    id: "n-010",
+    athlete_id: HERO_IDS.sofia,
+    coach_id: coaches[2].id,
+    created_at: new Date(Date.now() - 38 * 86400000).toISOString(),
+    content:
+      "40-yard equivalent down to 5.05s. Recommend club soccer showcase referral.",
+    tags: ["speed", "recruitment"],
+  },
+  {
+    id: "n-011",
+    athlete_id: HERO_IDS.deshawn,
+    coach_id: coaches[3].id,
+    created_at: new Date(Date.now() - 12 * 86400000).toISOString(),
+    content:
+      "40-yard at 4.52 — down 0.40s from baseline 12 months ago. Two D1 offers confirmed.",
+    tags: ["speed", "recruitment", "transformation"],
+  },
+  {
+    id: "n-012",
+    athlete_id: HERO_IDS.deshawn,
+    coach_id: coaches[3].id,
+    created_at: new Date(Date.now() - 26 * 86400000).toISOString(),
+    content:
+      "Vertical now 39 inches. Bench 295 — one of the steepest WR progression curves we track.",
+    tags: ["vertical", "strength", "improvement"],
+  },
+  {
+    id: "n-013",
+    athlete_id: HERO_IDS.deshawn,
+    coach_id: coaches[3].id,
+    created_at: new Date(Date.now() - 40 * 86400000).toISOString(),
+    content:
+      "Route running video tagged for scout portal. Separation improving every session.",
+    tags: ["video", "wide receiver"],
+  },
+  {
+    id: "n-014",
+    athlete_id: HERO_IDS.emma,
+    coach_id: coaches[4].id,
+    created_at: new Date(Date.now() - 8 * 86400000).toISOString(),
+    content:
+      "Vertical hit 30 inches — 8 inch gain since enrollment. Approach jump mechanics cleaned up.",
+    tags: ["vertical", "volleyball", "PR"],
+  },
+  {
+    id: "n-015",
+    athlete_id: HERO_IDS.emma,
+    coach_id: coaches[4].id,
+    created_at: new Date(Date.now() - 22 * 86400000).toISOString(),
+    content:
+      "Squat at 215 lbs for a 13-year-old — excellent power base. Parent very engaged in comms.",
+    tags: ["strength", "parent engagement"],
   },
 ];
 
@@ -880,6 +989,7 @@ export const wearables: WearableData[] = [
   ...generateWearables(HERO_IDS.tyler),
   ...generateWearables(HERO_IDS.sofia),
   ...generateWearables(HERO_IDS.deshawn),
+  ...generateWearables(HERO_IDS.emma),
 ];
 
 export const payments: Payment[] = athletes

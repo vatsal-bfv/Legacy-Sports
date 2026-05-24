@@ -20,7 +20,39 @@ const METRIC_LABELS: Record<string, string> = {
   squat_max: "squat max",
   bench_max: "bench max",
   broad_jump: "broad jump",
+  ten_yard_split: "10-yard split",
 };
+
+const HIGHLIGHT_METRICS: {
+  metric: string;
+  format: (v: number) => string;
+}[] = [
+  { metric: "forty_yard", format: (v) => `40: ${v.toFixed(2)}s` },
+  { metric: "vertical", format: (v) => `Vert: ${v}"` },
+  { metric: "squat_max", format: (v) => `Squat: ${v} lbs` },
+  { metric: "bench_max", format: (v) => `Bench: ${v} lbs` },
+  { metric: "broad_jump", format: (v) => `Broad: ${v}"` },
+  { metric: "ten_yard_split", format: (v) => `10-yd: ${v.toFixed(2)}s` },
+];
+
+export function getAthleteHighlightMetrics(
+  athleteId: string,
+  allMeasurables: Measurable[],
+  max = 3
+): string[] {
+  const athleteMeasurables = allMeasurables.filter(
+    (m) => m.athlete_id === athleteId && m.is_pr
+  );
+  const highlights: string[] = [];
+
+  for (const { metric, format } of HIGHLIGHT_METRICS) {
+    const pr = athleteMeasurables.find((m) => m.metric === metric);
+    if (pr) highlights.push(format(pr.value));
+    if (highlights.length >= max) break;
+  }
+
+  return highlights;
+}
 
 /** Demo-stable percentile badges when cohort data is too sparse. */
 const HERO_PERCENTILE_BADGES: Record<string, PercentileBadge[]> = {
@@ -33,6 +65,10 @@ const HERO_PERCENTILE_BADGES: Record<string, PercentileBadge[]> = {
   ],
   [HERO_IDS.sofia]: [
     { label: "Top 3%", metric: "GPA among multi-sport athletes" },
+    { label: "Top 10%", metric: "Vertical jump among 2029 athletes" },
+  ],
+  [HERO_IDS.tyler]: [
+    { label: "Top 15%", metric: "Squat max among 2028 point guards" },
   ],
 };
 

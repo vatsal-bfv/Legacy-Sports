@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth/guards";
 import { isScoutRole } from "@/lib/auth/roles";
 import { demoStore } from "@/lib/demo/store";
 import { HERO_IDS } from "@/lib/constants";
+import { getAthleteHighlightMetrics } from "@/lib/scout/profile-helpers";
 
 export default async function ScoutDashboardPage() {
   const session = await getSession();
@@ -31,18 +32,33 @@ export default async function ScoutDashboardPage() {
       <section className="mt-12">
         <h2 className="text-lg font-semibold">Recently viewed</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {visible.slice(0, 4).map((a) => (
-            <Link
-              key={a.id}
-              href={`/scout/athletes/${a.id}`}
-              className="rounded-lg border border-gray-200 bg-white p-4 hover:border-[#1A2332]"
-            >
-              <p className="font-medium">
-                {a.first_name} {a.last_name}
-              </p>
-              <p className="text-sm text-gray-500 capitalize">{a.sport}</p>
-            </Link>
-          ))}
+          {visible.slice(0, 4).map((a) => {
+            const highlights = getAthleteHighlightMetrics(
+              a.id,
+              demoStore.measurables
+            );
+            return (
+              <Link
+                key={a.id}
+                href={`/scout/athletes/${a.id}`}
+                className="rounded-lg border border-gray-200 bg-white p-4 hover:border-[#1A2332]"
+              >
+                <p className="font-medium">
+                  {a.first_name} {a.last_name}
+                </p>
+                <p className="text-sm text-gray-500 capitalize">
+                  {a.sport}
+                  {a.position ? ` · ${a.position}` : ""} · Class of{" "}
+                  {a.graduation_year}
+                </p>
+                {highlights.length > 0 && (
+                  <p className="mt-2 text-xs text-gray-600">
+                    {highlights.join(" · ")}
+                  </p>
+                )}
+              </Link>
+            );
+          })}
         </div>
       </section>
 

@@ -49,6 +49,21 @@ const METRIC_DISPLAY: Record<
     color: "#1A2332",
     format: (v) => `${v} lbs`,
   },
+  broad_jump: {
+    title: "Broad jump",
+    color: "#10B981",
+    format: (v) => `${v}"`,
+  },
+  ten_yard_split: {
+    title: "10-yard split",
+    color: "#FF5A1F",
+    format: (v) => `${v.toFixed(2)}s`,
+  },
+  weight: {
+    title: "Weight",
+    color: "#6B7280",
+    format: (v) => `${v} lbs`,
+  },
 };
 
 function ScoutCard({
@@ -193,6 +208,21 @@ export function ScoutAthleteProfile({
     demoStore.measurables
   );
   const historyMetrics = metricsWithHistory(measurables);
+  const chartMetrics = useMemo(() => {
+    const priority = [
+      "forty_yard",
+      "vertical",
+      "ten_yard_split",
+      "broad_jump",
+      "squat_max",
+      "bench_max",
+      "weight",
+    ];
+    return [
+      ...priority.filter((m) => historyMetrics.includes(m)),
+      ...historyMetrics.filter((m) => !priority.includes(m)),
+    ];
+  }, [historyMetrics]);
   const prMeasurables = measurables.filter((m) => m.is_pr);
   const brief = scoutBrief(athlete);
 
@@ -304,7 +334,7 @@ export function ScoutAthleteProfile({
                 self-reported
               </p>
               <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                {historyMetrics.map((metric) => (
+                {chartMetrics.map((metric) => (
                   <ProgressionChart
                     key={metric}
                     metric={metric}
