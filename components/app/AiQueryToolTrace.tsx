@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   AlertCircle,
   Check,
+  ChevronDown,
   CircleSlash,
   Loader2,
   Wrench,
@@ -13,7 +15,80 @@ import {
 } from "@/lib/ai/tool-labels";
 import { isEmptyToolResult } from "@/lib/ai/tool-output-summary";
 import type { QueryToolTraceItem } from "@/lib/ai/consume-query-stream";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+
+function ToolTraceList({ tools, isStreaming }: { tools: QueryToolTraceItem[]; isStreaming?: boolean }) {
+  return (
+    <ul className="flex flex-col gap-1.5 pt-2">
+      {tools.map((tool) => {
+        const done =
+          tool.state === "output-available" || tool.state === "output-error";
+        const running =
+          tool.state === "input-streaming" ||
+          tool.state === "input-available";
+        const inputSummary = formatToolInputSummary(tool.toolName, tool.input);
+        const emptyResult =
+          done &&
+          tool.state === "output-available" &&
+          tool.output !== undefined &&
+          isEmptyToolResult(tool.toolName, tool.output);
+
+        return (
+          <li
+            key={tool.id}
+            className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm"
+          >
+            <span className="mt-0.5 shrink-0">
+              {tool.state === "output-error" ? (
+                <AlertCircle className="size-4 text-red-500" />
+              ) : emptyResult ? (
+                <CircleSlash className="size-4 text-amber-600" />
+              ) : done ? (
+                <Check className="size-4 text-orange" />
+              ) : (
+                <Loader2 className="size-4 animate-spin text-slate" />
+              )}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="font-medium text-pitch">
+                {formatToolLabel(tool.toolName)}
+              </span>
+              {inputSummary ? (
+                <span className="text-slate"> · {inputSummary}</span>
+              ) : null}
+              {running ? (
+                <span className="block text-xs text-slate">Running…</span>
+              ) : null}
+              {done && tool.resultSummary ? (
+                <span
+                  className={cn(
+                    "block text-xs",
+                    emptyResult ? "text-amber-700" : "text-slate"
+                  )}
+                >
+                  → {tool.resultSummary}
+                </span>
+              ) : null}
+              {tool.state === "output-error" && tool.errorText ? (
+                <span className="block text-xs text-red-600">
+                  {tool.errorText}
+                </span>
+              ) : null}
+            </span>
+          </li>
+        );
+      })}
+      {isStreaming && tools.length === 0 ? (
+        <li className="px-2 py-1 text-sm text-slate">Planning next step…</li>
+      ) : null}
+    </ul>
+  );
+}
 
 export function AiQueryToolTrace({
   tools,
@@ -24,86 +99,54 @@ export function AiQueryToolTrace({
   isStreaming?: boolean;
   className?: string;
 }) {
+  const [open, setOpen] = useState(isStreaming ?? false);
+
+  useEffect(() => {
+    if (isStreaming) {
+      setOpen(true);
+    } else if (tools.length > 0) {
+      setOpen(false);
+    }
+  }, [isStreaming, tools.length]);
+
   if (tools.length === 0 && !isStreaming) return null;
 
+  const title = isStreaming ? "Working through your question…" : "How I answered";
+  const stepCount = tools.length;
+
   return (
-    <div
+    <Collapsible
+      open={isStreaming ? true : open}
+      onOpenChange={(next) => {
+        if (!isStreaming) setOpen(next);
+      }}
       className={cn(
-        "rounded-lg border border-bone bg-chalk/80 p-3",
+        "rounded-lg border border-bone bg-chalk/80",
         className
       )}
     >
-      <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-slate">
+      <CollapsibleTrigger className="flex w-full items-center gap-1.5 px-3 py-2.5 text-left text-xs font-medium text-slate hover:bg-bone/40 [&[data-panel-open]_svg:last-child]:rotate-180">
         {isStreaming ? (
-          <Loader2 className="size-3.5 animate-spin text-orange" />
+          <Loader2 className="size-3.5 shrink-0 animate-spin text-orange" />
         ) : (
-          <Wrench className="size-3.5 text-orange" />
+          <Wrench className="size-3.5 shrink-0 text-orange" />
         )}
-        {isStreaming ? "Working through your question…" : "How I answered"}
-      </p>
-      <ul className="flex flex-col gap-1.5">
-        {tools.map((tool) => {
-          const done =
-            tool.state === "output-available" || tool.state === "output-error";
-          const running =
-            tool.state === "input-streaming" ||
-            tool.state === "input-available";
-          const inputSummary = formatToolInputSummary(tool.toolName, tool.input);
-          const emptyResult =
-            done &&
-            tool.state === "output-available" &&
-            tool.output !== undefined &&
-            isEmptyToolResult(tool.toolName, tool.output);
-
-          return (
-            <li
-              key={tool.id}
-              className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm"
-            >
-              <span className="mt-0.5 shrink-0">
-                {tool.state === "output-error" ? (
-                  <AlertCircle className="size-4 text-red-500" />
-                ) : emptyResult ? (
-                  <CircleSlash className="size-4 text-amber-600" />
-                ) : done ? (
-                  <Check className="size-4 text-orange" />
-                ) : (
-                  <Loader2 className="size-4 animate-spin text-slate" />
-                )}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="font-medium text-pitch">
-                  {formatToolLabel(tool.toolName)}
-                </span>
-                {inputSummary ? (
-                  <span className="text-slate"> · {inputSummary}</span>
-                ) : null}
-                {running ? (
-                  <span className="block text-xs text-slate">Running…</span>
-                ) : null}
-                {done && tool.resultSummary ? (
-                  <span
-                    className={cn(
-                      "block text-xs",
-                      emptyResult ? "text-amber-700" : "text-slate"
-                    )}
-                  >
-                    → {tool.resultSummary}
-                  </span>
-                ) : null}
-                {tool.state === "output-error" && tool.errorText ? (
-                  <span className="block text-xs text-red-600">
-                    {tool.errorText}
-                  </span>
-                ) : null}
-              </span>
-            </li>
-          );
-        })}
-        {isStreaming && tools.length === 0 ? (
-          <li className="px-2 py-1 text-sm text-slate">Planning next step…</li>
+        <span className="min-w-0 flex-1">
+          {title}
+          {!isStreaming && stepCount > 0 ? (
+            <span className="font-normal text-slate/80">
+              {" "}
+              · {stepCount} {stepCount === 1 ? "step" : "steps"}
+            </span>
+          ) : null}
+        </span>
+        {!isStreaming ? (
+          <ChevronDown className="size-3.5 shrink-0 text-slate transition-transform duration-200" />
         ) : null}
-      </ul>
-    </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="px-3 pb-3 data-[closed]:hidden">
+        <ToolTraceList tools={tools} isStreaming={isStreaming} />
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

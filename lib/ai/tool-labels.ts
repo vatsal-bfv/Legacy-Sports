@@ -26,6 +26,21 @@ export function formatToolLabel(toolName: string): string {
   );
 }
 
+/** Keys we never show in the tool trace UI (internal IDs). */
+const HIDDEN_INPUT_KEYS = new Set([
+  "athlete_id",
+  "lead_id",
+  "coach_id",
+]);
+
+/** Tools whose only meaningful arg is athlete_id — omit input line entirely. */
+const ATHLETE_ID_ONLY_TOOLS = new Set([
+  "get_athlete_profile",
+  "get_athlete_measurables",
+  "get_athlete_attendance",
+  "summarize_athlete_progression",
+]);
+
 export function formatToolInputSummary(
   toolName: string,
   input: unknown
@@ -49,9 +64,21 @@ export function formatToolInputSummary(
   if (toolName === "search_coach_notes" && typeof args.query === "string") {
     return `"${args.query.slice(0, 48)}${args.query.length > 48 ? "…" : ""}"`;
   }
+  if (
+    ATHLETE_ID_ONLY_TOOLS.has(toolName) &&
+    typeof args.athlete_id === "string"
+  ) {
+    return null;
+  }
+  if (toolName === "get_messages") {
+    if (typeof args.lead_id === "string") return "lead thread";
+    if (typeof args.athlete_id === "string") return null;
+  }
 
   const compact = Object.entries(args)
-    .filter(([, v]) => v != null && v !== "")
+    .filter(
+      ([k, v]) => v != null && v !== "" && !HIDDEN_INPUT_KEYS.has(k)
+    )
     .slice(0, 2)
     .map(([k, v]) => `${k}: ${String(v).slice(0, 24)}`)
     .join(" · ");
