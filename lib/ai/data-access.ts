@@ -1,5 +1,6 @@
 import { demoStore } from "@/lib/demo/store";
 import { HERO_IDS } from "@/lib/constants";
+import { LOCATION_UTILIZATION_PCT } from "@/lib/demo/location-utilization";
 import { searchCoachNotes } from "@/lib/demo/semantic-notes";
 import type { Athlete } from "@/lib/demo/types";
 
@@ -97,7 +98,7 @@ export function compareLocations(
   }
   return locs.map((l, i) => ({
     location: l.name,
-    utilization: [87, 75, 82, 91, 78][i],
+    utilization: LOCATION_UTILIZATION_PCT[i],
   }));
 }
 

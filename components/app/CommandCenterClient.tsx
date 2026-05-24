@@ -8,6 +8,10 @@ import { useLeads } from "@/components/app/LeadsRealtimeProvider";
 import { demoStore } from "@/lib/demo/store";
 import { HERO_IDS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
+import {
+  getLowestUtilizationLocation,
+  UTILIZATION_ANOMALY_DELTA,
+} from "@/lib/demo/location-utilization";
 import { useMemo } from "react";
 
 export function CommandCenterClient() {
@@ -30,6 +34,15 @@ export function CommandCenterClient() {
   const sessions = demoStore.sessions.filter(
     (s) => !locationId || s.location_id === locationId
   );
+
+  const utilizationAnomalyLocation = useMemo(
+    () => getLowestUtilizationLocation(),
+    []
+  );
+
+  const utilizationAnomalyValue = locationId
+    ? UTILIZATION_ANOMALY_DELTA
+    : `${utilizationAnomalyLocation.name} ${UTILIZATION_ANOMALY_DELTA}`;
 
   return (
     <div className="space-y-8">
@@ -79,7 +92,7 @@ export function CommandCenterClient() {
         />
         <InsightCard
           title="Utilization anomaly"
-          value={locationId ? "−12%" : "Mesa −12%"}
+          value={utilizationAnomalyValue}
           subtitle="Below 30-day average"
           accent="blue"
         />

@@ -4,17 +4,19 @@ import { useEffect, useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocationScope } from "@/components/app/LocationProvider";
-import { LOCATION_IDS } from "@/lib/constants";
 import { demoStore } from "@/lib/demo/store";
+import {
+  getLowestUtilizationLocation,
+  utilizationForLocationId,
+} from "@/lib/demo/location-utilization";
 import type { Location } from "@/lib/demo/types";
 import { formatCurrency } from "@/lib/utils";
 
-const UTILIZATION = [87, 75, 82, 91, 78];
 const HEATMAP_HOURS = ["7a", "9a", "12p", "3p", "6p", "9p"];
 
 function defaultHeatmapIds(locationId?: string | null): string[] {
   if (locationId) return [locationId];
-  return [LOCATION_IDS.phoenix];
+  return [getLowestUtilizationLocation().id];
 }
 
 function getRoomsForLocation(loc: Location): string[] {
@@ -30,8 +32,7 @@ function getRoomsForLocation(loc: Location): string[] {
 }
 
 function utilizationForLocation(locationId: string) {
-  const i = demoStore.locations.findIndex((l) => l.id === locationId);
-  return UTILIZATION[i >= 0 ? i % UTILIZATION.length : 0];
+  return utilizationForLocationId(locationId);
 }
 
 function UtilizationHeatmap({ location }: { location: Location }) {
