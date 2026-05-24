@@ -17,6 +17,7 @@ const TOOL_LABELS: Record<string, string> = {
   get_failed_payments: "Check failed payments",
   summarize_athlete_progression: "Summarize athlete progression",
   search_coach_notes: "Search coach notes",
+  present_chart: "Present chart",
 };
 
 export function formatToolLabel(toolName: string): string {
@@ -63,6 +64,10 @@ export function formatToolInputSummary(
   }
   if (toolName === "search_coach_notes" && typeof args.query === "string") {
     return `"${args.query.slice(0, 48)}${args.query.length > 48 ? "…" : ""}"`;
+  }
+  if (toolName === "present_chart" && typeof args.title === "string") {
+    const kind = args.chartType === "line" ? "line" : "bar";
+    return `"${args.title}" (${kind})`;
   }
   if (
     ATHLETE_ID_ONLY_TOOLS.has(toolName) &&

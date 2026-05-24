@@ -42,6 +42,14 @@ export function formatToolOutputSummary(
 ): string | null {
   if (output == null) return null;
 
+  if (toolName === "present_chart" && typeof output === "object") {
+    const o = output as Record<string, unknown>;
+    if (typeof o.title === "string") {
+      const kind = o.chartType === "line" ? "line chart" : "bar chart";
+      return `${kind}: ${o.title}`;
+    }
+  }
+
   if (typeof output === "string") {
     if (toolName === "summarize_athlete_progression") {
       const name = nameFromProgressionText(output);

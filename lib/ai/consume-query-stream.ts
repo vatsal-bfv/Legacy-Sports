@@ -1,5 +1,7 @@
 import { parseJsonEventStream } from "@ai-sdk/provider-utils";
+import { buildQueryResponseFromStream } from "@/lib/ai/chart-spec";
 import { formatToolOutputSummary } from "@/lib/ai/tool-output-summary";
+import type { QueryResponse } from "@/lib/ai/query-cache";
 import {
   getToolName,
   isToolUIPart,
@@ -58,7 +60,7 @@ function snapshotFromMessage(message: UIMessage): QueryStreamSnapshot {
 export async function consumeQueryStream(
   response: Response,
   onUpdate: (snapshot: QueryStreamSnapshot) => void
-): Promise<string> {
+): Promise<{ text: string; response: QueryResponse }> {
   if (!response.body) {
     throw new Error("Empty response body");
   }
@@ -78,13 +80,22 @@ export async function consumeQueryStream(
   );
 
   let finalText = "";
+  let finalTools: QueryToolTraceItem[] = [];
   const messageStream = readUIMessageStream({ stream: chunkStream });
 
   for await (const message of messageStream) {
     const snapshot = snapshotFromMessage(message);
     finalText = snapshot.text;
+    finalTools = snapshot.tools;
     onUpdate(snapshot);
   }
 
-  return finalText;
+  const built =
+    buildQueryResponseFromStream(finalText, finalTools) ??
+    ({
+      type: "narrative",
+      markdown: finalText.trim() || "No response.",
+    } satisfies QueryResponse);
+
+  return { text: finalText, response: built };
 }

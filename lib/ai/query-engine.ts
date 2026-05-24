@@ -23,6 +23,7 @@ import {
   type QueryScope,
 } from "./data-access";
 import { buildDomainContext } from "./domain-context";
+import { presentChartInputSchema } from "./chart-spec";
 import { logGeminiStep } from "./gemini-logger";
 import { lookupCachedQuery, type QueryResponse } from "./query-cache";
 
@@ -37,6 +38,22 @@ function buildSystemPrompt(scope: QueryScope = {}) {
 Always use the provided tools to fetch real data before answering. Never invent athletes, metrics, locations, or schedules.
 
 ${buildDomainContext(scope.location_id)}
+
+## Charts (required when data supports it)
+Proactively call \`present_chart\` whenever numeric data would be clearer as a visualization — do not wait for the user to ask for a chart.
+
+Call \`present_chart\` after fetching data for:
+- Location comparisons (revenue, retention, utilization) — use bar for single-metric snapshots, line for trends over time
+- Athlete measurable progression over time (line)
+- Coach performance or facility utilization comparisons (bar)
+- Any multi-row numeric result where a chart adds insight
+
+Rules:
+- Pass only real values from prior tool results. Never invent data points.
+- Use \`bar\` for categorical comparisons; \`line\` for time series or progression.
+- Set \`x\` to the category/time field key and \`y\` to the primary numeric field. Extra numeric columns in each row become additional line series.
+- Call \`present_chart\` before writing your final answer. You may include multiple charts when useful.
+- Do not duplicate chart data in markdown tables — summarize insights in prose instead.
 
 Respond in clear markdown. Be concise and cite specific numbers from tool results. If data is missing, say so and suggest which tool or filter might help.`;
 }
@@ -194,6 +211,12 @@ export function createLegacyTools(scope: QueryScope = {}) {
         "Semantic search on coach notes for qualitative observations",
       inputSchema: z.object({ query: z.string() }),
       execute: async ({ query }) => searchNotesByQuery(query),
+    }),
+    present_chart: tool({
+      description:
+        "Render an interactive bar or line chart in the UI. Call proactively when tool results contain numeric comparisons or trends. Data must come from prior tool calls.",
+      inputSchema: presentChartInputSchema,
+      execute: async (input) => presentChartInputSchema.parse(input),
     }),
   };
 }

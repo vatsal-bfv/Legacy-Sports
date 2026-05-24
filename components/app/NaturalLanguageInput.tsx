@@ -7,6 +7,7 @@ import { Sparkles, X } from "lucide-react";
 import { QueryResultRenderer } from "@/components/app/QueryResultRenderer";
 import { AiQueryToolTrace } from "@/components/app/AiQueryToolTrace";
 import { useLocationScope } from "@/components/app/LocationProvider";
+import { buildQueryResponseFromStream } from "@/lib/ai/chart-spec";
 import {
   consumeQueryStream,
   type QueryStreamSnapshot,
@@ -80,11 +81,14 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       }
 
       if (isUiMessageStream(res)) {
-        const markdown = await consumeQueryStream(res, (snapshot) => {
-          setStreamSnapshot(snapshot);
-          setToolTrace(snapshot.tools);
-        });
-        setResponse({ type: "narrative", markdown });
+        const { response: streamResponse } = await consumeQueryStream(
+          res,
+          (snapshot) => {
+            setStreamSnapshot(snapshot);
+            setToolTrace(snapshot.tools);
+          }
+        );
+        setResponse(streamResponse);
         setStreamSnapshot(EMPTY_SNAPSHOT);
         return;
       }
@@ -141,11 +145,14 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
 
   const streamingMarkdown = streamSnapshot.text;
   const answerStreaming = streamingMarkdown.trim().length > 0;
-  const toolsExpanded = loading && !answerStreaming;
+  const liveResponse = buildQueryResponseFromStream(
+    streamSnapshot.text,
+    streamSnapshot.tools
+  );
+  const hasStreamedContent = liveResponse != null;
+  const toolsExpanded = loading && !hasStreamedContent;
   const displayResponse: QueryResponse | null =
-    loading && streamingMarkdown && !response
-      ? { type: "narrative", markdown: streamingMarkdown }
-      : response;
+    loading && !response ? liveResponse : response;
 
   const showCompactPanel =
     compact && panelOpen && (loading || displayResponse);
@@ -157,7 +164,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     !loading;
 
   const showToolTrace =
-    loading || (toolTrace.length > 0 && displayResponse?.type === "narrative");
+    loading || (toolTrace.length > 0 && displayResponse != null);
 
   return (
     <div
