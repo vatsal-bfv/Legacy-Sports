@@ -1,6 +1,6 @@
 import "temporal-polyfill/global";
 
-import type { Location, Program, Session } from "@/lib/demo/types";
+import type { Coach, Program, Session } from "@/lib/demo/types";
 import type { CalendarEventExternal } from "@schedule-x/calendar";
 
 export function getViewerTimezone(): string {
@@ -14,47 +14,69 @@ export function getAnchorMonday(
   return reference.subtract({ days: reference.dayOfWeek - 1 });
 }
 
+export type ScheduleCalendarEventMeta = {
+  coachName: string;
+  room: string;
+  programName: string;
+  sessionId: string;
+};
+
 export function sessionsToCalendarEvents(
   sessions: Session[],
-  locations: Location[],
+  anchorMonday: Temporal.PlainDate,
+  timezone: string,
   programs: Program[],
+  coaches: Coach[]
+): CalendarEventExternal[] {
+  return sessions.map((session) => {
+    const columnDate = anchorMonday.add({ days: session.day_of_week - 1 });
+    const start = columnDate.toZonedDateTime({
+      timeZone: timezone,
+      plainTime: Temporal.PlainTime.from({
+        hour: session.hour,
+        minute: 0,
+      }),
+    });
+    const end = start.add({ minutes: session.duration_minutes });
+
+    const program = programs.find((p) => p.id === session.program_id);
+    const coach = coaches.find((c) => c.id === session.coach_id);
+    const coachName = coach
+      ? `${coach.first_name} ${coach.last_name}`
+      : "Staff";
+
+    return {
+      id: session.id,
+      title: program?.name ?? "Session",
+      description: `${coachName}|${session.room}`,
+      start,
+      end,
+      _options: { disableDND: true, disableResize: true },
+    };
+  });
+}
+
+export function parseEventDescription(description?: string) {
+  if (!description) return { coachName: "", room: "" };
+  const [coachName, room] = description.split("|");
+  return { coachName: coachName ?? "", room: room ?? "" };
+}
+
+/** Build ISO timestamps for the current calendar week (attendance / legacy use). */
+export function sessionTimesForWeek(
+  session: Session,
   anchorMonday: Temporal.PlainDate,
   timezone: string
-): CalendarEventExternal[] {
-  const locationIndex = new Map(locations.map((l, i) => [l.id, i]));
-
-  return sessions
-    .filter((s) => locationIndex.has(s.location_id))
-    .map((session) => {
-      const idx = locationIndex.get(session.location_id)!;
-      const columnDate = anchorMonday.add({ days: idx });
-      const startLocal = new Date(session.starts_at);
-      const endLocal = new Date(session.ends_at);
-
-      const start = columnDate.toZonedDateTime({
-        timeZone: timezone,
-        plainTime: Temporal.PlainTime.from({
-          hour: startLocal.getHours(),
-          minute: startLocal.getMinutes(),
-        }),
-      });
-      const end = columnDate.toZonedDateTime({
-        timeZone: timezone,
-        plainTime: Temporal.PlainTime.from({
-          hour: endLocal.getHours(),
-          minute: endLocal.getMinutes(),
-        }),
-      });
-
-      const program = programs.find((p) => p.id === session.program_id);
-
-      return {
-        id: session.id,
-        title: program?.name ?? "Session",
-        description: session.room,
-        start,
-        end,
-        _options: { disableDND: true, disableResize: true },
-      };
+) {
+  const start = anchorMonday
+    .add({ days: session.day_of_week - 1 })
+    .toZonedDateTime({
+      timeZone: timezone,
+      plainTime: Temporal.PlainTime.from({ hour: session.hour, minute: 0 }),
     });
+  const end = start.add({ minutes: session.duration_minutes });
+  return {
+    starts_at: start.toInstant().toString(),
+    ends_at: end.toInstant().toString(),
+  };
 }

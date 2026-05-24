@@ -55,6 +55,8 @@ export type Athlete = {
   ai_summary: string;
   scout_visible: boolean;
   recruit_status: string;
+  /** Internal talent tier (1–5). Five-star athletes are priority / elite prospects. */
+  star_rating: number;
   created_at: string;
   updated_at: string;
   risk_score?: number;
@@ -108,6 +110,10 @@ export type Session = {
   location_id: string;
   coach_id: string;
   program_id: string;
+  /** ISO weekday: 1 = Monday … 7 = Sunday */
+  day_of_week: number;
+  hour: number;
+  duration_minutes: number;
   starts_at: string;
   ends_at: string;
   room: string;

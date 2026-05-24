@@ -6,13 +6,14 @@ import "@schedule-x/theme-default/dist/index.css";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight, MapPin, Star } from "lucide-react";
 import { useNextCalendarApp, ScheduleXCalendar } from "@schedule-x/react";
-import { createViewWeek, createViewDay } from "@schedule-x/calendar";
+import { createViewWeek } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
 import { createCurrentTimePlugin } from "@schedule-x/current-time";
 import { useLocationScope } from "@/components/app/LocationProvider";
 import { ScheduleXTimeGridEvent } from "@/components/app/ScheduleXEvent";
-import { createLocationColumnHeader } from "@/components/app/ScheduleXLocationHeader";
+import { createWeekDayColumnHeader } from "@/components/app/ScheduleXLocationHeader";
 import {
   Sheet,
   SheetContent,
@@ -20,16 +21,23 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { demoStore } from "@/lib/demo/store";
-import type { Location } from "@/lib/demo/types";
 import type { CalendarEventExternal } from "@schedule-x/calendar";
 import {
   getAnchorMonday,
   getViewerTimezone,
   sessionsToCalendarEvents,
 } from "@/lib/schedule/map-sessions";
+import { ScheduleAthletePicker } from "@/components/app/ScheduleAthletePicker";
+import {
+  getScheduleAthleteFilterList,
+  getSessionRoster,
+  sessionIncludesAthlete,
+} from "@/lib/schedule/session-roster";
 
 const COMMAND_SHEET_CLASS =
   "w-full border-bone bg-chalk text-pitch sm:max-w-md [&_[data-slot=sheet-title]]:text-pitch [&_[data-slot=sheet-close]]:text-slate [&_[data-slot=sheet-close]]:hover:bg-bone [&_[data-slot=sheet-close]]:hover:text-pitch";
+
+const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function formatHour(h: number) {
   const period = h >= 12 ? "PM" : "AM";
@@ -37,23 +45,21 @@ function formatHour(h: number) {
   return `${hour12}:00 ${period}`;
 }
 
-function formatNowTime(d: Date) {
-  return d.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-function formatToday(d: Date) {
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
+function formatWeekRange(anchorMonday: Temporal.PlainDate) {
+  const end = anchorMonday.add({ days: 6 });
+  const startLabel = anchorMonday.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
   });
+  const endLabel = end.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  return `${startLabel} – ${endLabel}`;
 }
 
 type ScheduleXBlockProps = {
-  locations: Location[];
   events: CalendarEventExternal[];
   anchorDate: Temporal.PlainDate;
   timezone: string;
@@ -61,7 +67,6 @@ type ScheduleXBlockProps = {
 };
 
 function ScheduleXBlock({
-  locations,
   events,
   anchorDate,
   timezone,
@@ -73,25 +78,23 @@ function ScheduleXBlock({
   );
 
   const viewWeek = useMemo(() => createViewWeek(), []);
-  const viewDay = useMemo(() => createViewDay(), []);
-  const useDayView = locations.length === 1;
 
   const calendar = useNextCalendarApp(
     {
-      views: useDayView ? [viewDay] : [viewWeek],
-      defaultView: useDayView ? viewDay.name : viewWeek.name,
+      views: [viewWeek],
+      defaultView: viewWeek.name,
       selectedDate: anchorDate,
       firstDayOfWeek: 1,
       timezone,
       locale: "en-US",
-      isDark: true,
+      isDark: false,
       isResponsive: false,
       dayBoundaries: {
         start: "07:00",
         end: "20:00",
       },
       weekOptions: {
-        nDays: locations.length,
+        nDays: 7,
         gridHeight: 680,
         gridStep: 60,
         eventOverlap: false,
@@ -111,17 +114,17 @@ function ScheduleXBlock({
     eventsService.set(events);
   }, [events, eventsService]);
 
-  const LocationHeader = useMemo(
-    () => createLocationColumnHeader(locations, anchorDate),
-    [locations, anchorDate]
+  const WeekDayHeader = useMemo(
+    () => createWeekDayColumnHeader(anchorDate),
+    [anchorDate]
   );
 
   const customComponents = useMemo(
     () => ({
       timeGridEvent: ScheduleXTimeGridEvent,
-      weekGridDate: LocationHeader,
+      weekGridDate: WeekDayHeader,
     }),
-    [LocationHeader]
+    [WeekDayHeader]
   );
 
   if (!calendar) return null;
@@ -137,72 +140,88 @@ function ScheduleXBlock({
 const MemoScheduleXBlock = memo(ScheduleXBlock);
 
 export function ScheduleGrid() {
-  const { locationId } = useLocationScope();
+  const { locationId: scopeLocationId, setLocationId } = useLocationScope();
   const timezone = getViewerTimezone();
-  const [now, setNow] = useState(() => new Date());
+
+  const [facilityId, setFacilityId] = useState(
+    () => scopeLocationId ?? demoStore.locations[0].id
+  );
+  const [weekAnchor, setWeekAnchor] = useState(() => getAnchorMonday());
+  const [selectedAthleteId, setSelectedAthleteId] = useState("");
   const [rosterSession, setRosterSession] = useState<
     (typeof demoStore.sessions)[0] | null
   >(null);
 
-  const locations = useMemo(
-    () =>
-      demoStore.locations.filter(
-        (l) => !locationId || l.id === locationId
-      ),
-    [locationId]
+  const scheduleAthletes = useMemo(() => getScheduleAthleteFilterList(), []);
+
+  useEffect(() => {
+    if (scopeLocationId && scopeLocationId !== facilityId) {
+      setFacilityId(scopeLocationId);
+      setSelectedAthleteId("");
+    }
+  }, [scopeLocationId, facilityId]);
+
+  const facility = demoStore.locations.find((l) => l.id === facilityId);
+
+  const facilitySessions = useMemo(
+    () => demoStore.sessions.filter((s) => s.location_id === facilityId),
+    [facilityId]
   );
 
-  const visibleSessions = useMemo(
-    () =>
-      demoStore.sessions.filter(
-        (s) => !locationId || s.location_id === locationId
-      ),
-    [locationId]
+  const selectedAthlete = selectedAthleteId
+    ? demoStore.athletes.find((a) => a.id === selectedAthleteId)
+    : null;
+
+  const handleFacilityChange = useCallback(
+    (locationId: string) => {
+      setFacilityId(locationId);
+      setLocationId(locationId);
+      setSelectedAthleteId("");
+    },
+    [setLocationId]
   );
 
-  const anchorDate = useMemo(
-    () =>
-      locations.length === 1
-        ? Temporal.Now.plainDateISO()
-        : getAnchorMonday(),
-    [locations.length]
+  const handleAthleteChange = useCallback(
+    (athleteId: string) => {
+      setSelectedAthleteId(athleteId);
+      if (!athleteId) return;
+
+      const athlete = demoStore.athletes.find((a) => a.id === athleteId);
+      if (!athlete) return;
+
+      setFacilityId(athlete.home_location_id);
+      setLocationId(athlete.home_location_id);
+    },
+    [setLocationId]
   );
+
+  const visibleSessions = useMemo(() => {
+    if (!selectedAthleteId) return facilitySessions;
+    return facilitySessions.filter((s) =>
+      sessionIncludesAthlete(s, selectedAthleteId)
+    );
+  }, [facilitySessions, selectedAthleteId]);
 
   const events = useMemo(
     () =>
       sessionsToCalendarEvents(
         visibleSessions,
-        locations,
+        weekAnchor,
+        timezone,
         demoStore.programs,
-        anchorDate,
-        timezone
+        demoStore.coaches
       ),
-    [visibleSessions, locations, anchorDate, timezone]
+    [visibleSessions, weekAnchor, timezone]
   );
-
-  const scopeKey = `${locationId ?? "all"}-${locations.length}`;
 
   const handleEventClick = useCallback((eventId: string) => {
     const session = demoStore.sessions.find((s) => s.id === eventId);
     if (session) setRosterSession(session);
   }, []);
 
-  useEffect(() => {
-    const tick = () => setNow(new Date());
-    tick();
-    const id = setInterval(tick, 30_000);
-    return () => clearInterval(id);
-  }, []);
-
   const rosterAthletes = useMemo(() => {
     if (!rosterSession) return [];
-    return demoStore.athletes
-      .filter(
-        (a) =>
-          a.program_id === rosterSession.program_id &&
-          a.home_location_id === rosterSession.location_id
-      )
-      .slice(0, rosterSession.capacity);
+    return getSessionRoster(rosterSession);
   }, [rosterSession]);
 
   const rosterProgram = rosterSession
@@ -215,34 +234,123 @@ export function ScheduleGrid() {
     ? demoStore.coaches.find((c) => c.id === rosterSession.coach_id)
     : null;
 
+  const calendarKey = `${facilityId}-${weekAnchor.toString()}-${selectedAthleteId || "all"}`;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Schedule</h1>
           <p className="mt-1 text-sm text-slate">
-            {locations.length === 1
-              ? `${locations[0].name} · today`
-              : "All locations · today"}
-          </p>
-        </div>
-        <div className="text-right text-sm">
-          <p className="text-slate">{formatToday(now)}</p>
-          <p className="text-lg font-semibold tabular-nums text-pitch">
-            {formatNowTime(now)}
+            {selectedAthlete
+              ? `${selectedAthlete.first_name} ${selectedAthlete.last_name} · ${facility?.name ?? "Facility"}`
+              : `${facility?.name ?? "Facility"} · 7-day view`}
           </p>
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-smoke" />
+          <select
+            value={facilityId}
+            onChange={(e) => handleFacilityChange(e.target.value)}
+            className="rounded-[8px] border-[1.5px] border-bone bg-field px-3 py-1.5 text-sm text-pitch focus:border-orange focus:outline-none focus:ring-4 focus:ring-orange/10"
+          >
+            {demoStore.locations.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-1 rounded-[8px] border border-bone bg-field">
+          <button
+            type="button"
+            onClick={() => setWeekAnchor((w) => w.subtract({ weeks: 1 }))}
+            className="rounded-l-[8px] p-2 text-slate transition-colors hover:bg-bone hover:text-pitch"
+            aria-label="Previous week"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="min-w-[10rem] px-2 text-center text-sm font-medium text-pitch">
+            {formatWeekRange(weekAnchor)}
+          </span>
+          <button
+            type="button"
+            onClick={() => setWeekAnchor((w) => w.add({ weeks: 1 }))}
+            className="rounded-r-[8px] p-2 text-slate transition-colors hover:bg-bone hover:text-pitch"
+            aria-label="Next week"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setWeekAnchor(getAnchorMonday())}
+          className="rounded-[8px] border border-bone bg-field px-3 py-1.5 text-sm text-pitch transition-colors hover:bg-bone"
+        >
+          This week
+        </button>
+
+        <div className="ml-auto">
+          <ScheduleAthletePicker
+            athletes={scheduleAthletes}
+            value={selectedAthleteId}
+            onChange={handleAthleteChange}
+          />
+        </div>
+      </div>
+
+      {selectedAthlete && (
+        <div className="flex items-center gap-3 rounded-lg border border-orange/30 bg-orange/10 px-4 py-3">
+          <Image
+            src={selectedAthlete.photo_url}
+            alt=""
+            width={40}
+            height={40}
+            className="rounded-full ring-1 ring-bone"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-pitch">
+              Showing {visibleSessions.length} session
+              {visibleSessions.length === 1 ? "" : "s"} for{" "}
+              {selectedAthlete.first_name} {selectedAthlete.last_name}
+            </p>
+            <p className="text-xs capitalize text-slate">
+              {selectedAthlete.sport}
+              {selectedAthlete.position
+                ? ` · ${selectedAthlete.position}`
+                : ""}
+            </p>
+          </div>
+          <Link
+            href={`/command-os/athletes/${selectedAthlete.id}`}
+            className="shrink-0 text-sm font-medium text-orange hover:underline"
+          >
+            View profile
+          </Link>
+        </div>
+      )}
+
       <div className="legacy-command-schedule overflow-hidden rounded-lg border border-bone bg-chalk">
-        <MemoScheduleXBlock
-          key={scopeKey}
-          locations={locations}
-          events={events}
-          anchorDate={anchorDate}
-          timezone={timezone}
-          onEventClick={handleEventClick}
-        />
+        {visibleSessions.length === 0 ? (
+          <div className="flex h-[400px] items-center justify-center text-sm text-slate">
+            {selectedAthleteId
+              ? "This athlete has no sessions at this facility."
+              : "No sessions scheduled for this facility."}
+          </div>
+        ) : (
+          <MemoScheduleXBlock
+            key={calendarKey}
+            events={events}
+            anchorDate={weekAnchor}
+            timezone={timezone}
+            onEventClick={handleEventClick}
+          />
+        )}
       </div>
 
       <Sheet open={!!rosterSession} onOpenChange={() => setRosterSession(null)}>
@@ -263,8 +371,9 @@ export function ScheduleGrid() {
                   {rosterLocation?.name} · {rosterSession.room}
                 </p>
                 <p className="mt-1 text-xs text-slate">
-                  {formatHour(new Date(rosterSession.starts_at).getHours())} ·
-                  Coach {rosterCoach?.first_name} {rosterCoach?.last_name} ·{" "}
+                  {DAY_NAMES[rosterSession.day_of_week - 1]}{" "}
+                  {formatHour(rosterSession.hour)} · Coach{" "}
+                  {rosterCoach?.first_name} {rosterCoach?.last_name} ·{" "}
                   {rosterAthletes.length}/{rosterSession.capacity} enrolled
                 </p>
               </div>
@@ -283,9 +392,12 @@ export function ScheduleGrid() {
                         height={36}
                         className="rounded-full ring-1 ring-bone"
                       />
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <p className="font-medium text-pitch">
                           {a.first_name} {a.last_name}
+                          {a.star_rating === 5 ? (
+                            <Star className="ml-1 inline h-3 w-3 fill-orange text-orange" />
+                          ) : null}
                         </p>
                         <p className="text-xs capitalize text-slate">
                           {a.sport}
