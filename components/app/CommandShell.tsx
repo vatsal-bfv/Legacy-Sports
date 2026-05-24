@@ -66,13 +66,18 @@ function CommandNavLinks({
           href={href}
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+            "flex items-center gap-3 rounded-[8px] px-3 py-2.5 text-sm font-medium transition-colors",
             isNavActive(pathname, href)
-              ? "bg-[#1A1D24] text-[#F5F6F7]"
-              : "text-[#9DA3AE] hover:bg-[#15171B] hover:text-[#F5F6F7]"
+              ? "bg-orange/10 text-pitch"
+              : "text-slate hover:bg-bone hover:text-pitch"
           )}
         >
-          <Icon className="h-4 w-4 shrink-0" />
+          <Icon
+            className={cn(
+              "h-4 w-4 shrink-0",
+              isNavActive(pathname, href) ? "text-orange" : "text-smoke"
+            )}
+          />
           {label}
         </Link>
       ))}
@@ -99,24 +104,31 @@ export function CommandShell({
 
   return (
     <LocationProvider>
-      <div className="flex min-h-screen bg-[#0A0B0D] text-[#F5F6F7]">
-        <aside className="hidden w-56 shrink-0 flex-col border-r border-[#2A2D34] bg-[#0A0B0D] lg:flex">
-          <div className="flex h-16 items-center border-b border-[#2A2D34] px-4">
-            <span className="text-xs font-bold tracking-widest text-[#3B82F6]">
-              LEGACY COMMAND
-            </span>
+      <div className="flex min-h-screen bg-field text-pitch">
+        <aside className="hidden w-60 shrink-0 flex-col border-r border-bone bg-chalk lg:flex">
+          <div className="flex h-[68px] items-center border-b border-bone px-5">
+            <Link href="/command-os" className="flex items-center no-underline">
+              <span className="legacy-display text-[22px] uppercase tracking-[0.08em] text-pitch">
+                LEGACY
+              </span>
+              <span className="mx-2.5 h-4 w-px bg-orange/50" />
+              <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-smoke">
+                Command
+              </span>
+            </Link>
           </div>
-          <nav className="flex-1 space-y-1 p-3">
+          <nav className="flex-1 p-3">
             <CommandNavLinks pathname={pathname} />
           </nav>
         </aside>
-        <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-40 overflow-visible border-b border-[#2A2D34] bg-[#0A0B0D]/95 backdrop-blur">
-            <div className="flex min-h-16 items-center gap-3 px-4 py-2 lg:gap-4 lg:px-6">
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-40 overflow-visible border-b border-bone bg-field/95 backdrop-blur-xl">
+            <div className="flex min-h-[68px] items-center gap-3 px-4 py-2 lg:gap-4 lg:px-6">
               <button
                 type="button"
                 onClick={() => setMobileNavOpen(true)}
-                className="rounded-md p-2 text-[#9DA3AE] hover:bg-[#15171B] hover:text-[#F5F6F7] lg:hidden"
+                className="rounded-[8px] p-2 text-slate hover:bg-bone hover:text-pitch lg:hidden"
                 aria-label="Open navigation menu"
               >
                 <Menu className="h-5 w-5" />
@@ -127,12 +139,13 @@ export function CommandShell({
               </div>
               <div className="ml-auto flex items-center gap-3">
                 <NotificationsBell />
-                <span className="hidden text-sm text-[#9DA3AE] sm:inline">
+                <span className="hidden text-sm text-slate sm:inline">
                   {userName}
                 </span>
                 <button
                   onClick={logout}
-                  className="rounded-md p-2 text-[#9DA3AE] hover:bg-[#15171B] hover:text-[#F5F6F7]"
+                  className="rounded-[8px] p-2 text-slate hover:bg-bone hover:text-pitch"
+                  aria-label="Log out"
                 >
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -145,11 +158,17 @@ export function CommandShell({
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetContent
             side="left"
-            className="w-[min(100vw-2rem,18rem)] border-[#2A2D34] bg-[#0A0B0D] p-0 text-[#F5F6F7] [&_[data-slot=sheet-title]]:text-[#F5F6F7] [&_[data-slot=sheet-close]]:text-[#9DA3AE] [&_[data-slot=sheet-close]]:hover:bg-[#15171B] [&_[data-slot=sheet-close]]:hover:text-[#F5F6F7]"
+            className="w-[min(100vw-2rem,18rem)] border-bone bg-chalk p-0 text-pitch [&_[data-slot=sheet-title]]:text-pitch [&_[data-slot=sheet-close]]:text-slate [&_[data-slot=sheet-close]]:hover:bg-bone [&_[data-slot=sheet-close]]:hover:text-pitch"
           >
-            <SheetHeader className="border-b border-[#2A2D34] px-4 py-4 text-left">
-              <SheetTitle className="text-xs font-bold tracking-widest text-[#3B82F6]">
-                LEGACY COMMAND
+            <SheetHeader className="border-b border-bone px-5 py-5 text-left">
+              <SheetTitle className="flex items-center">
+                <span className="legacy-display text-[22px] uppercase tracking-[0.08em]">
+                  LEGACY
+                </span>
+                <span className="mx-2.5 h-4 w-px bg-orange/50" />
+                <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-smoke">
+                  Command
+                </span>
               </SheetTitle>
             </SheetHeader>
             <CommandNavLinks

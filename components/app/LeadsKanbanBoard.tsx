@@ -44,33 +44,33 @@ const STATUS_STYLES: Record<
   }
 > = {
   new: {
-    column: "border-t-2 border-t-[#3B82F6]",
-    card: "border-l-2 border-l-[#3B82F6] bg-[#3B82F6]/5",
-    label: "text-[#60A5FA]",
+    column: "border-t-2 border-t-orange",
+    card: "border-l-2 border-l-orange bg-orange/5",
+    label: "text-orange",
     badge: "default",
   },
   contacted: {
     column: "border-t-2 border-t-amber-500",
     card: "border-l-2 border-l-amber-500 bg-amber-500/5",
-    label: "text-amber-400",
+    label: "text-amber-600",
     badge: "warning",
   },
   scheduled: {
     column: "border-t-2 border-t-violet-500",
     card: "border-l-2 border-l-violet-500 bg-violet-500/5",
-    label: "text-violet-400",
+    label: "text-violet-600",
     badge: "default",
   },
   converted: {
     column: "border-t-2 border-t-emerald-500",
     card: "border-l-2 border-l-emerald-500 bg-emerald-500/5",
-    label: "text-emerald-400",
+    label: "text-emerald-600",
     badge: "success",
   },
   lost: {
     column: "border-t-2 border-t-red-500",
     card: "border-l-2 border-l-red-500 bg-red-500/5",
-    label: "text-red-400",
+    label: "text-red-600",
     badge: "danger",
   },
 };
@@ -94,7 +94,7 @@ function StatusColumn({
     <KanbanColumn
       value={status}
       className={cn(
-        "min-h-[280px] rounded-lg border border-[#2A2D34] bg-[#12141A] p-4",
+        "min-h-[280px] rounded-lg border border-bone bg-field p-4",
         styles.column,
         className
       )}
@@ -140,13 +140,13 @@ function LeadCard({
     <KanbanItem
       value={lead.id}
       className={cn(
-        "rounded-lg border border-[#2A2D34] bg-[#15171B] shadow-sm",
+        "rounded-lg border border-bone bg-chalk shadow-sm",
         styles.card,
-        isNew && "animate-slide-in animate-highlight border-[#3B82F6]"
+        isNew && "animate-slide-in animate-highlight border-orange"
       )}
     >
       <div className="flex items-stretch">
-        <KanbanItemHandle className="flex shrink-0 items-center px-2 text-[#9DA3AE] hover:text-[#F5F6F7]">
+        <KanbanItemHandle className="flex shrink-0 items-center px-2 text-slate hover:text-pitch">
           <GripVertical className="size-4" />
         </KanbanItemHandle>
         <button
@@ -154,10 +154,10 @@ function LeadCard({
           onClick={() => onSelect(lead)}
           className="flex flex-1 flex-col gap-1 p-3 pl-0 text-left"
         >
-          <p className="font-medium text-[#F5F6F7]">
+          <p className="font-medium text-pitch">
             {lead.first_name} {lead.last_name}
           </p>
-          <p className="text-xs text-[#9DA3AE]">
+          <p className="text-xs text-slate">
             {lead.athlete_name || "No athlete"} · age {lead.athlete_age || "—"}
           </p>
         </button>
@@ -188,8 +188,8 @@ export function LeadsKanbanBoard() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-[#F5F6F7]">Leads</h1>
-        <p className="text-sm text-[#9DA3AE]">
+        <h1 className="text-2xl font-bold text-pitch">Leads</h1>
+        <p className="text-sm text-slate">
           Drag cards to update status · saved for this session
         </p>
       </div>
@@ -221,20 +221,20 @@ export function LeadsKanbanBoard() {
 
             if (!lead) {
               return (
-                <div className="size-full rounded-lg border border-[#3B82F6] bg-[#15171B] opacity-90" />
+                <div className="size-full rounded-lg border border-orange bg-chalk opacity-90" />
               );
             }
             return (
               <div
                 className={cn(
-                  "w-[220px] rounded-lg border border-[#2A2D34] bg-[#15171B] p-4 shadow-xl",
+                  "w-[220px] rounded-lg border border-bone bg-chalk p-4 shadow-xl",
                   styles?.card
                 )}
               >
-                <p className="font-medium text-[#F5F6F7]">
+                <p className="font-medium text-pitch">
                   {lead.first_name} {lead.last_name}
                 </p>
-                <p className="mt-1 text-xs text-[#9DA3AE]">
+                <p className="mt-1 text-xs text-slate">
                   {lead.athlete_name || "No athlete"}
                 </p>
               </div>

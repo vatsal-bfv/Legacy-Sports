@@ -104,8 +104,8 @@ export function CommsHub() {
     <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F5F6F7]">Communications</h1>
-          <p className="text-sm text-[#9DA3AE]">
+          <h1 className="text-2xl font-bold text-pitch">Communications</h1>
+          <p className="text-sm text-slate">
             Unified inbox — athletes, parents, and leads
           </p>
         </div>
@@ -155,14 +155,14 @@ export function CommsHub() {
               })),
             ]}
           />
-          <label className="flex h-9 items-center gap-2 rounded-md border border-[#2A2D34] bg-[#0A0B0D] px-3 text-sm text-[#F5F6F7]">
+          <label className="flex h-9 items-center gap-2 rounded-md border border-bone bg-field px-3 text-sm text-pitch">
             <input
               type="checkbox"
               checked={filters.unreadOnly}
               onChange={(e) =>
                 setFilters((f) => ({ ...f, unreadOnly: e.target.checked }))
               }
-              className="rounded border-[#2A2D34]"
+              className="rounded border-bone"
             />
             Unread only
           </label>
@@ -170,8 +170,8 @@ export function CommsHub() {
       </div>
 
       <div className="flex min-h-0 flex-1 gap-4">
-        <div className="flex w-80 shrink-0 flex-col overflow-hidden rounded-lg border border-[#2A2D34] bg-[#15171B]">
-          <h2 className="border-b border-[#2A2D34] p-4 text-sm font-semibold text-[#9DA3AE]">
+        <div className="flex w-80 shrink-0 flex-col overflow-hidden rounded-lg border border-bone bg-chalk">
+          <h2 className="border-b border-bone p-4 text-sm font-semibold text-slate">
             Threads ({filtered.length})
           </h2>
           <div className="flex-1 overflow-y-auto">
@@ -186,19 +186,19 @@ export function CommsHub() {
                   type="button"
                   onClick={() => selectThread(thread)}
                   className={cn(
-                    "w-full border-b border-[#2A2D34]/50 p-4 text-left text-sm transition-colors hover:bg-[#12141A]",
-                    selectedId === thread.id && "bg-[#12141A]",
-                    isNew && "animate-slide-in border-l-2 border-l-[#3B82F6]"
+                    "w-full border-b border-bone/50 p-4 text-left text-sm transition-colors hover:bg-field",
+                    selectedId === thread.id && "bg-field",
+                    isNew && "animate-slide-in border-l-2 border-l-orange"
                   )}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="font-medium text-[#F5F6F7]">{thread.title}</p>
+                    <p className="font-medium text-pitch">{thread.title}</p>
                     {thread.unreadCount > 0 && (
                       <Badge variant="warning">{thread.unreadCount}</Badge>
                     )}
                   </div>
-                  <p className="text-xs text-[#9DA3AE]">{thread.subtitle}</p>
-                  <p className="mt-1 truncate text-xs text-[#9DA3AE]">
+                  <p className="text-xs text-slate">{thread.subtitle}</p>
+                  <p className="mt-1 truncate text-xs text-slate">
                     {thread.messages[thread.messages.length - 1]?.body}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-1">
@@ -213,21 +213,21 @@ export function CommsHub() {
               );
             })}
             {!filtered.length && (
-              <p className="p-4 text-sm text-[#9DA3AE]">
+              <p className="p-4 text-sm text-slate">
                 No threads match these filters.
               </p>
             )}
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col rounded-lg border border-[#2A2D34] bg-[#15171B]">
+        <div className="flex min-w-0 flex-1 flex-col rounded-lg border border-bone bg-chalk">
           {selected ? (
             <>
-              <div className="border-b border-[#2A2D34] p-4">
-                <h2 className="text-lg font-semibold text-[#F5F6F7]">
+              <div className="border-b border-bone p-4">
+                <h2 className="text-lg font-semibold text-pitch">
                   {selected.title}
                 </h2>
-                <p className="text-sm text-[#9DA3AE]">{selected.subtitle}</p>
+                <p className="text-sm text-slate">{selected.subtitle}</p>
               </div>
               <div className="flex-1 overflow-y-auto p-6">
                 <MessageThread messages={selected.messages} />
@@ -244,7 +244,7 @@ export function CommsHub() {
               </div>
             </>
           ) : (
-            <p className="p-6 text-[#9DA3AE]">Select a thread</p>
+            <p className="p-6 text-slate">Select a thread</p>
           )}
         </div>
       </div>
@@ -268,7 +268,7 @@ function FilterSelect({
       aria-label={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="h-9 rounded-md border border-[#2A2D34] bg-[#0A0B0D] px-3 text-sm text-[#F5F6F7]"
+      className="h-9 rounded-md border border-bone bg-field px-3 text-sm text-pitch"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>

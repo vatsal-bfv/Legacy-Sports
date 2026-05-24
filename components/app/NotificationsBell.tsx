@@ -42,7 +42,7 @@ export function NotificationsBell() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative rounded-md p-2 text-[#9DA3AE] hover:bg-[#15171B] hover:text-[#F5F6F7]"
+        className="relative rounded-md p-2 text-slate hover:bg-chalk hover:text-pitch"
         aria-label="Notifications"
       >
         <Bell className="h-4 w-4" />
@@ -53,8 +53,8 @@ export function NotificationsBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-[#2A2D34] bg-[#15171B] shadow-xl">
-          <div className="border-b border-[#2A2D34] px-4 py-3 text-sm font-semibold">
+        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-bone bg-chalk shadow-xl">
+          <div className="border-b border-bone px-4 py-3 text-sm font-semibold">
             Notifications
           </div>
           <div className="max-h-80 overflow-y-auto">
@@ -63,10 +63,10 @@ export function NotificationsBell() {
                 key={lead.id}
                 href="/command-os/leads"
                 onClick={() => setOpen(false)}
-                className="block border-b border-[#2A2D34]/50 px-4 py-3 text-sm hover:bg-[#12141A]"
+                className="block border-b border-bone/50 px-4 py-3 text-sm hover:bg-field"
               >
-                <p className="font-medium text-[#3B82F6]">New lead</p>
-                <p className="text-[#9DA3AE]">
+                <p className="font-medium text-orange">New lead</p>
+                <p className="text-slate">
                   {lead.first_name} {lead.last_name}
                 </p>
               </Link>
@@ -85,25 +85,25 @@ export function NotificationsBell() {
                   key={m.id}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className="block border-b border-[#2A2D34]/50 px-4 py-3 text-sm hover:bg-[#12141A]"
+                  className="block border-b border-bone/50 px-4 py-3 text-sm hover:bg-field"
                 >
                   <p className="font-medium">
                     {athlete
                       ? `${athlete.first_name} ${athlete.last_name}`
                       : "Lead message"}
                   </p>
-                  <p className="truncate text-[#9DA3AE]">{m.body}</p>
+                  <p className="truncate text-slate">{m.body}</p>
                 </Link>
               );
             })}
             {total === 0 && (
-              <p className="px-4 py-6 text-center text-sm text-[#9DA3AE]">
+              <p className="px-4 py-6 text-center text-sm text-slate">
                 All caught up
               </p>
             )}
           </div>
           {newThreadKeys.size > 0 && (
-            <div className="border-t border-[#2A2D34] px-4 py-2 text-xs text-[#9DA3AE]">
+            <div className="border-t border-bone px-4 py-2 text-xs text-slate">
               {newThreadKeys.size} new thread
               {newThreadKeys.size > 1 ? "s" : ""}
             </div>

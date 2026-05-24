@@ -80,7 +80,7 @@ export function LeadDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-[#2A2D34] bg-[#15171B] text-[#F5F6F7]">
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto border-bone bg-chalk text-pitch">
         <DialogHeader>
           <DialogTitle>
             {lead.first_name} {lead.last_name}
@@ -88,7 +88,7 @@ export function LeadDetailDialog({
         </DialogHeader>
 
         <div className="flex flex-col gap-4 text-sm">
-          <div className="flex flex-col gap-1 text-[#9DA3AE]">
+          <div className="flex flex-col gap-1 text-slate">
             <p>{lead.email}</p>
             <p>{lead.phone}</p>
             {lead.athlete_name && (
@@ -103,7 +103,7 @@ export function LeadDetailDialog({
           </div>
 
           {lead.notes && (
-            <p className="rounded-lg bg-[#0A0B0D] p-3">{lead.notes}</p>
+            <p className="rounded-lg bg-field p-3">{lead.notes}</p>
           )}
 
           <div>
@@ -112,7 +112,7 @@ export function LeadDetailDialog({
               <select
                 value={assignedCoachId}
                 onChange={(e) => setAssignedCoachId(e.target.value)}
-                className="h-9 flex-1 rounded-md border border-[#2A2D34] bg-[#0A0B0D] px-3 text-sm"
+                className="h-9 flex-1 rounded-md border border-bone bg-field px-3 text-sm"
               >
                 <option value="">Unassigned</option>
                 {demoStore.coaches.map((c) => (

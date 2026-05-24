@@ -66,7 +66,7 @@ export default function AthletesListPage() {
   ]);
 
   const selectClass =
-    "rounded-md border border-[#2A2D34] bg-[#15171B] px-3 py-2 text-sm";
+    "rounded-md border border-bone bg-chalk px-3 py-2 text-sm";
 
   return (
     <div className="space-y-6">
@@ -129,10 +129,10 @@ export default function AthletesListPage() {
           <option value="30">Within 30 days</option>
         </select>
       </div>
-      <p className="text-sm text-[#9DA3AE]">{athletes.length} athletes</p>
-      <div className="overflow-hidden rounded-lg border border-[#2A2D34]">
+      <p className="text-sm text-slate">{athletes.length} athletes</p>
+      <div className="overflow-hidden rounded-lg border border-bone">
         <table className="w-full text-sm">
-          <thead className="bg-[#12141A] text-left text-[#9DA3AE]">
+          <thead className="bg-field text-left text-slate">
             <tr>
               <th className="p-4">Athlete</th>
               <th className="p-4">Sport</th>
@@ -150,12 +150,12 @@ export default function AthletesListPage() {
               return (
                 <tr
                   key={a.id}
-                  className="border-t border-[#2A2D34]/50 hover:bg-[#15171B]"
+                  className="border-t border-bone/50 hover:bg-chalk"
                 >
                   <td className="p-4">
                     <Link
                       href={`/command-os/athletes/${a.id}`}
-                      className="flex items-center gap-3 font-medium hover:text-[#3B82F6]"
+                      className="flex items-center gap-3 font-medium hover:text-orange"
                     >
                       <Image
                         src={a.photo_url}

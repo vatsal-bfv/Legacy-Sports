@@ -25,9 +25,9 @@ export function createLocationColumnHeader(
 
     return (
       <div className="flex flex-col items-center gap-0.5 py-1">
-        <span className="text-sm font-semibold text-[#F5F6F7]">{label}</span>
+        <span className="text-sm font-semibold text-pitch">{label}</span>
         {locations.length > 1 ? (
-          <span className="text-[10px] text-[#9DA3AE]">Today&apos;s sessions</span>
+          <span className="text-[10px] text-slate">Today&apos;s sessions</span>
         ) : null}
       </div>
     );

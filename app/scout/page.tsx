@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getSession } from "@/lib/auth/guards";
 import { isScoutRole } from "@/lib/auth/roles";
@@ -63,20 +64,29 @@ export default async function ScoutDashboardPage() {
               );
               return (
                 <Link key={a.id} href={`/scout/athletes/${a.id}`}>
-                  <ScoutCard className="p-5" hover>
-                    <p className="font-semibold text-pitch">
-                      {a.first_name} {a.last_name}
-                    </p>
-                    <p className="mt-1 text-sm capitalize text-slate">
-                      {a.sport}
-                      {a.position ? ` · ${a.position}` : ""} · Class of{" "}
-                      {a.graduation_year}
-                    </p>
-                    {highlights.length > 0 && (
-                      <p className="mt-2 text-xs text-smoke">
-                        {highlights.join(" · ")}
+                  <ScoutCard className="flex gap-4 p-4" hover>
+                    <Image
+                      src={a.photo_url}
+                      alt=""
+                      width={72}
+                      height={72}
+                      className="h-[72px] w-[72px] shrink-0 rounded-[8px] object-cover"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-pitch">
+                        {a.first_name} {a.last_name}
                       </p>
-                    )}
+                      <p className="mt-0.5 text-sm capitalize text-slate">
+                        {a.sport}
+                        {a.position ? ` · ${a.position}` : ""} · Class of{" "}
+                        {a.graduation_year}
+                      </p>
+                      {highlights.length > 0 && (
+                        <p className="mt-2 text-xs text-smoke">
+                          {highlights.join(" · ")}
+                        </p>
+                      )}
+                    </div>
                   </ScoutCard>
                 </Link>
               );

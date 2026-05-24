@@ -10,13 +10,13 @@ export function LocationSwitcher() {
 
   return (
     <div className="flex items-center gap-2">
-      <MapPin className="h-4 w-4 text-[#9DA3AE]" />
+      <MapPin className="h-4 w-4 text-smoke" />
       <select
         value={locationId ?? "all"}
         onChange={(e) =>
           setLocationId(e.target.value === "all" ? null : e.target.value)
         }
-        className="rounded-md border border-[#2A2D34] bg-[#12141A] px-3 py-1.5 text-sm text-[#F5F6F7]"
+        className="rounded-[8px] border-[1.5px] border-bone bg-field px-3 py-1.5 text-sm text-pitch focus:border-orange focus:outline-none focus:ring-4 focus:ring-orange/10"
       >
         <option value="all">All locations</option>
         {locations.map((l) => (

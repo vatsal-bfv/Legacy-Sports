@@ -63,14 +63,14 @@ export function CommsReplyBox({
   }
 
   return (
-    <div className="flex flex-col gap-3 border-t border-[#2A2D34] pt-4">
+    <div className="flex flex-col gap-3 border-t border-bone pt-4">
       <div className="flex flex-wrap gap-2">
         <select
           value={channel}
           onChange={(e) =>
             setChannel(e.target.value as "sms" | "email" | "in_app")
           }
-          className="h-9 rounded-md border border-[#2A2D34] bg-[#0A0B0D] px-3 text-sm text-[#F5F6F7]"
+          className="h-9 rounded-md border border-bone bg-field px-3 text-sm text-pitch"
         >
           <option value="sms">SMS</option>
           <option value="email">Email</option>
@@ -86,7 +86,7 @@ export function CommsReplyBox({
             }
             e.target.value = "";
           }}
-          className="h-9 flex-1 min-w-[160px] rounded-md border border-[#2A2D34] bg-[#0A0B0D] px-3 text-sm text-[#F5F6F7]"
+          className="h-9 flex-1 min-w-[160px] rounded-md border border-bone bg-field px-3 text-sm text-pitch"
         >
           <option value="">Insert template…</option>
           {MESSAGE_TEMPLATES.map((t) => (
@@ -111,10 +111,10 @@ export function CommsReplyBox({
         onChange={(e) => setBody(e.target.value)}
         placeholder="Write a reply…"
         rows={3}
-        className="border-[#2A2D34] bg-[#0A0B0D] text-[#F5F6F7]"
+        className="border-bone bg-field text-pitch"
       />
       <div className="flex items-center justify-between">
-        <p className="text-xs text-[#9DA3AE]">
+        <p className="text-xs text-slate">
           {sent ? "Sent ✓" : "Messages are logged for demo — not sent externally"}
         </p>
         <Button

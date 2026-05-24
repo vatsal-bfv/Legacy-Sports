@@ -78,10 +78,10 @@ export default function CostComparisonPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Cost Comparison</h1>
-        <p className="mt-1 text-[#9DA3AE]">
+        <p className="mt-1 text-slate">
           Why it matters: Legacy runs Mindbody × 5 locations plus Mailchimp,
           Smart Waiver, ScreenCloud, and Firstbeat — about{" "}
-          <span className="text-[#F5F6F7]">
+          <span className="text-pitch">
             {formatCurrency(CURRENT_STACK_ANNUAL)}/year
           </span>{" "}
           in fragmented software today.
@@ -89,9 +89,9 @@ export default function CostComparisonPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border border-[#2A2D34] bg-[#15171B] p-6">
+        <div className="rounded-lg border border-bone bg-chalk p-6">
           <h2 className="mb-1 font-semibold text-red-400">Current stack</h2>
-          <p className="mb-4 text-xs text-[#9DA3AE]">
+          <p className="mb-4 text-xs text-slate">
             Published list pricing · 5 Arizona locations
           </p>
           <ul className="space-y-3">
@@ -101,21 +101,21 @@ export default function CostComparisonPage() {
                   <span>{i.item}</span>
                   <span className="shrink-0">{formatCurrency(i.cost)}/mo</span>
                 </div>
-                <p className="mt-0.5 text-xs text-[#9DA3AE]">{i.detail}</p>
+                <p className="mt-0.5 text-xs text-slate">{i.detail}</p>
               </li>
             ))}
           </ul>
-          <p className="mt-4 border-t border-[#2A2D34] pt-4 font-bold">
+          <p className="mt-4 border-t border-bone pt-4 font-bold">
             Total: {formatCurrency(currentTotal)}/mo ·{" "}
             {formatCurrency(CURRENT_STACK_ANNUAL)}/yr
           </p>
         </div>
 
-        <div className="rounded-lg border border-[#3B82F6]/30 bg-[#15171B] p-6">
-          <h2 className="mb-1 font-semibold text-[#3B82F6]">
+        <div className="rounded-lg border border-orange/30 bg-chalk p-6">
+          <h2 className="mb-1 font-semibold text-orange">
             Legacy Command unified
           </h2>
-          <p className="mb-4 text-xs text-[#9DA3AE]">
+          <p className="mb-4 text-xs text-slate">
             One platform + Scout data revenue
           </p>
           <ul className="space-y-3">
@@ -130,46 +130,46 @@ export default function CostComparisonPage() {
                     {formatCurrency(Math.abs(i.cost))}/mo
                   </span>
                 </div>
-                <p className="mt-0.5 text-xs text-[#9DA3AE]">{i.detail}</p>
+                <p className="mt-0.5 text-xs text-slate">{i.detail}</p>
               </li>
             ))}
           </ul>
-          <p className="mt-4 border-t border-[#2A2D34] pt-4 font-bold text-emerald-400">
+          <p className="mt-4 border-t border-bone pt-4 font-bold text-emerald-400">
             Net at scale: {formatCurrency(Math.abs(legacyNetMonthly))}/mo
             {legacyNetMonthly < 0 ? " projected revenue" : " cost"}
           </p>
-          <p className="mt-2 text-sm text-[#9DA3AE]">
+          <p className="mt-2 text-sm text-slate">
             Scout Portal licensing offsets platform cost as scout seats ramp
             through month 18.
           </p>
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#2A2D34] bg-[#15171B] p-6">
+      <div className="rounded-lg border border-bone bg-chalk p-6">
         <h2 className="mb-1 font-semibold">24-month net projection</h2>
-        <p className="mb-4 text-xs text-[#9DA3AE]">
+        <p className="mb-4 text-xs text-slate">
           Red: current stack spend ({formatCurrency(CURRENT_STACK_MONTHLY)}/mo).
           Green: Legacy net position (platform minus Scout revenue).
         </p>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={projection}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E2DB" />
             <XAxis
               dataKey="month"
-              stroke="#9DA3AE"
+              stroke="#8C8880"
               interval={2}
               tick={{ fontSize: 10 }}
             />
             <YAxis
-              stroke="#9DA3AE"
+              stroke="#8C8880"
               tickFormatter={(v) =>
                 v >= 1000 || v <= -1000 ? `$${Math.round(v / 1000)}k` : `$${v}`
               }
             />
             <Tooltip
               contentStyle={{
-                background: "#15171B",
-                border: "1px solid #2A2D34",
+                background: "#F0EEE9",
+                border: "1px solid #E5E2DB",
               }}
               formatter={(value, name) => {
                 const numeric =

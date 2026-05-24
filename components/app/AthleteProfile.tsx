@@ -215,7 +215,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
               <h1 className="text-3xl font-bold">
                 {athlete.first_name} {athlete.last_name}
               </h1>
-              <p className="text-[#9DA3AE]">
+              <p className="text-slate">
                 {athlete.sport}
                 {athlete.position ? ` · ${athlete.position}` : ""} · {program?.name}{" "}
                 · {location?.name}
@@ -228,7 +228,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                 </Badge>
                 <Badge>{athlete.recruit_status}</Badge>
               </div>
-              <p className="mt-2 text-sm text-[#9DA3AE]">
+              <p className="mt-2 text-sm text-slate">
                 Parent: {athlete.parent_name} · {athlete.parent_email}
               </p>
             </div>
@@ -265,8 +265,8 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
               <CardContent>
                 <div className="flex flex-wrap gap-4">
                   {measurables.slice(-4).map((m) => (
-                    <div key={m.id} className="rounded-lg bg-[#0A0B0D] px-4 py-3">
-                      <p className="text-xs text-[#9DA3AE]">
+                    <div key={m.id} className="rounded-lg bg-field px-4 py-3">
+                      <p className="text-xs text-slate">
                         {m.metric.replace("_", " ")}
                         {m.is_pr && " · PR"}
                       </p>
@@ -283,7 +283,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
           <TabsContent value="measurables" className="space-y-6">
             {verticalChart.length === 0 && fortyChart.length === 0 ? (
               <Card>
-                <CardContent className="py-8 text-center text-sm text-[#9DA3AE]">
+                <CardContent className="py-8 text-center text-sm text-slate">
                   No performance trend data yet
                 </CardContent>
               </Card>
@@ -297,10 +297,10 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                     <CardContent>
                       <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={verticalChart}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
-                          <XAxis dataKey="label" stroke="#9DA3AE" fontSize={12} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E2DB" />
+                          <XAxis dataKey="label" stroke="#8C8880" fontSize={12} />
                           <YAxis
-                            stroke="#9DA3AE"
+                            stroke="#8C8880"
                             fontSize={12}
                             domain={verticalDomain}
                             tickFormatter={(v) => `${Math.round(v)}"`}
@@ -308,15 +308,15 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                           />
                           <Tooltip
                             contentStyle={{
-                              background: "#15171B",
-                              border: "1px solid #2A2D34",
+                              background: "#F0EEE9",
+                              border: "1px solid #E5E2DB",
                             }}
                             formatter={(value) => [`${Number(value)}"`, "Vertical"]}
                           />
                           <Line
                             type="monotone"
                             dataKey="value"
-                            stroke="#3B82F6"
+                            stroke="#FF5A1F"
                             strokeWidth={2}
                             dot={{ r: 3 }}
                           />
@@ -333,10 +333,10 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                     <CardContent>
                       <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={fortyChart}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
-                          <XAxis dataKey="label" stroke="#9DA3AE" fontSize={12} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E2DB" />
+                          <XAxis dataKey="label" stroke="#8C8880" fontSize={12} />
                           <YAxis
-                            stroke="#9DA3AE"
+                            stroke="#8C8880"
                             fontSize={12}
                             domain={fortyDomain}
                             tickFormatter={(v) => `${Number(v).toFixed(2)}s`}
@@ -344,8 +344,8 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                           />
                           <Tooltip
                             contentStyle={{
-                              background: "#15171B",
-                              border: "1px solid #2A2D34",
+                              background: "#F0EEE9",
+                              border: "1px solid #E5E2DB",
                             }}
                             formatter={(value) => [`${Number(value)}s`, "40-yd"]}
                           />
@@ -366,11 +366,11 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
 
             {hasWearables ? (
               <div className="space-y-4">
-                <h2 className="text-sm font-semibold text-[#9DA3AE]">Wearables</h2>
+                <h2 className="text-sm font-semibold text-slate">Wearables</h2>
                 <div className="grid gap-4 sm:grid-cols-3">
                   <Card>
                     <CardContent className="pt-6">
-                      <p className="text-sm text-[#9DA3AE]">Recovery score</p>
+                      <p className="text-sm text-slate">Recovery score</p>
                       <p className="text-3xl font-bold">
                         {latestRecovery?.value.toFixed(0) ?? "—"}%
                       </p>
@@ -378,7 +378,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                   </Card>
                   <Card>
                     <CardContent className="pt-6">
-                      <p className="text-sm text-[#9DA3AE]">Last night sleep</p>
+                      <p className="text-sm text-slate">Last night sleep</p>
                       <p className="text-3xl font-bold">
                         {latestSleep ? `${latestSleep.value.toFixed(1)}h` : "—"}
                       </p>
@@ -386,7 +386,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                   </Card>
                   <Card>
                     <CardContent className="pt-6">
-                      <p className="text-sm text-[#9DA3AE]">Connected device</p>
+                      <p className="text-sm text-slate">Connected device</p>
                       <p className="text-lg font-medium">WHOOP</p>
                     </CardContent>
                   </Card>
@@ -399,13 +399,13 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                     <CardContent>
                       <ResponsiveContainer width="100%" height={220}>
                         <LineChart data={recovery30}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
-                          <XAxis dataKey="date" stroke="#9DA3AE" fontSize={10} />
-                          <YAxis stroke="#9DA3AE" fontSize={12} domain={[0, 100]} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E2DB" />
+                          <XAxis dataKey="date" stroke="#8C8880" fontSize={10} />
+                          <YAxis stroke="#8C8880" fontSize={12} domain={[0, 100]} />
                           <Tooltip
                             contentStyle={{
-                              background: "#15171B",
-                              border: "1px solid #2A2D34",
+                              background: "#F0EEE9",
+                              border: "1px solid #E5E2DB",
                             }}
                             formatter={(value) => [`${value}%`, "Recovery"]}
                           />
@@ -427,10 +427,10 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                     <CardContent>
                       <ResponsiveContainer width="100%" height={220}>
                         <LineChart data={sleep30}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#2A2D34" />
-                          <XAxis dataKey="date" stroke="#9DA3AE" fontSize={10} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E2DB" />
+                          <XAxis dataKey="date" stroke="#8C8880" fontSize={10} />
                           <YAxis
-                            stroke="#9DA3AE"
+                            stroke="#8C8880"
                             fontSize={12}
                             domain={sleepDomain}
                             tickFormatter={(v) => `${Number(v).toFixed(1)}h`}
@@ -438,8 +438,8 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                           />
                           <Tooltip
                             contentStyle={{
-                              background: "#15171B",
-                              border: "1px solid #2A2D34",
+                              background: "#F0EEE9",
+                              border: "1px solid #E5E2DB",
                             }}
                             formatter={(value) => [`${Number(value).toFixed(1)}h`, "Sleep"]}
                           />
@@ -461,7 +461,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                 <CardHeader>
                   <CardTitle className="text-base">Wearables</CardTitle>
                 </CardHeader>
-                <CardContent className="py-8 text-center text-[#9DA3AE]">
+                <CardContent className="py-8 text-center text-slate">
                   Not connected — invite to link wearable
                 </CardContent>
               </Card>
@@ -486,7 +486,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                               ? "bg-emerald-500/70"
                               : day.status === "no_show"
                                 ? "bg-red-500/70"
-                                : "bg-[#2A2D34]"
+                                : "bg-bone"
                           }`}
                           title={`${day.date}: ${day.status}`}
                         />
@@ -512,18 +512,18 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                   Add note
                 </Button>
               </div>
-              <label className="flex items-center gap-2 text-sm text-[#9DA3AE]">
+              <label className="flex items-center gap-2 text-sm text-slate">
                 <input
                   type="checkbox"
                   checked={showAiSummary}
                   onChange={(e) => setShowAiSummary(e.target.checked)}
-                  className="h-4 w-4 rounded border-[#2A2D34]"
+                  className="h-4 w-4 rounded border-bone"
                 />
                 Show AI summary of notes
               </label>
               {showAiSummary && notes.length > 0 && (
-                <Card className="border-[#3B82F6]/30 bg-[#3B82F6]/5">
-                  <CardContent className="pt-4 text-sm text-[#9DA3AE]">
+                <Card className="border-orange/30 bg-orange/5">
+                  <CardContent className="pt-4 text-sm text-slate">
                     AI summary: {notes.length} notes logged. Recent themes:{" "}
                     {[...new Set(notes.flatMap((n) => n.tags))].join(", ") ||
                       "training progress, engagement"}
@@ -534,8 +534,8 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
               {notes.map((n) => (
                 <Card key={n.id}>
                   <CardContent className="pt-4">
-                    <p className="text-sm text-[#F5F6F7]">{n.content}</p>
-                    <p className="mt-2 text-xs text-[#9DA3AE]">
+                    <p className="text-sm text-pitch">{n.content}</p>
+                    <p className="mt-2 text-xs text-slate">
                       {new Date(n.created_at).toLocaleDateString()}
                     </p>
                   </CardContent>
@@ -562,7 +562,7 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
                   </Card>
                 ))
               ) : (
-                <p className="text-[#9DA3AE]">No video clips</p>
+                <p className="text-slate">No video clips</p>
               )}
             </div>
           </TabsContent>
@@ -576,10 +576,10 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
       <div className="space-y-4">
         <Card className="sticky top-24">
           <CardHeader>
-            <CardTitle className="text-sm text-[#9DA3AE]">AI Summary</CardTitle>
+            <CardTitle className="text-sm text-slate">AI Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm leading-relaxed text-[#F5F6F7]">
+            <p className="text-sm leading-relaxed text-pitch">
               {athlete.ai_summary}
             </p>
           </CardContent>
@@ -590,13 +590,13 @@ export function AthleteProfile({ athlete }: { athlete: Athlete }) {
               <CardTitle className="text-sm">Suggested actions</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-[#9DA3AE]">
+              <p className="text-sm text-slate">
                 Recommend introducing to Coach Mike Chen — Sun Devil State
                 University (active scout viewing your data).
               </p>
               <Link
                 href="/command-os/scouts"
-                className="mt-2 inline-block text-sm text-[#3B82F6] hover:underline"
+                className="mt-2 inline-block text-sm text-orange hover:underline"
               >
                 View scouts →
               </Link>

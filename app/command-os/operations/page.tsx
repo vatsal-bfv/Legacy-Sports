@@ -39,9 +39,9 @@ function UtilizationHeatmap({ location }: { location: Location }) {
   const locIndex = demoStore.locations.findIndex((l) => l.id === location.id);
 
   return (
-    <div className="rounded-lg border border-[#2A2D34] bg-[#12141A] p-4">
+    <div className="rounded-lg border border-bone bg-field p-4">
       <div className="mb-3 flex items-baseline justify-between gap-2">
-        <h3 className="font-semibold text-[#F5F6F7]">{location.name}</h3>
+        <h3 className="font-semibold text-pitch">{location.name}</h3>
         <span className="text-xs text-emerald-400">
           {utilizationForLocation(location.id)}% avg today
         </span>
@@ -50,9 +50,9 @@ function UtilizationHeatmap({ location }: { location: Location }) {
         <table className="text-xs">
           <thead>
             <tr>
-              <th className="p-2 text-left text-[#9DA3AE]">Room</th>
+              <th className="p-2 text-left text-slate">Room</th>
               {HEATMAP_HOURS.map((h) => (
-                <th key={h} className="p-2 text-[#9DA3AE]">
+                <th key={h} className="p-2 text-slate">
                   {h}
                 </th>
               ))}
@@ -68,7 +68,7 @@ function UtilizationHeatmap({ location }: { location: Location }) {
                     pct > 85
                       ? "bg-emerald-500/60"
                       : pct > 65
-                        ? "bg-[#3B82F6]/50"
+                        ? "bg-orange/50"
                         : pct > 45
                           ? "bg-amber-500/40"
                           : "bg-red-500/30";
@@ -135,7 +135,7 @@ export default function OperationsPage() {
                   <CardTitle>{loc.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-[#9DA3AE]">{loc.address}</p>
+                  <p className="text-sm text-slate">{loc.address}</p>
                   <p className="mt-2 text-sm">
                     {loc.square_footage.toLocaleString()} sq ft
                   </p>
@@ -150,7 +150,7 @@ export default function OperationsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Facility utilization</CardTitle>
-              <p className="text-sm text-[#9DA3AE]">
+              <p className="text-sm text-slate">
                 Choose which locations to include in today&apos;s room-by-room
                 heatmaps.
               </p>
@@ -162,13 +162,13 @@ export default function OperationsPage() {
                   return (
                     <label
                       key={loc.id}
-                      className="flex cursor-pointer items-center gap-2 text-sm text-[#F5F6F7]"
+                      className="flex cursor-pointer items-center gap-2 text-sm text-pitch"
                     >
                       <input
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleHeatmap(loc.id)}
-                        className="h-4 w-4 rounded border-[#2A2D34] bg-[#15171B] accent-[#3B82F6]"
+                        className="h-4 w-4 rounded border-bone bg-chalk accent-orange"
                       />
                       {loc.name}
                     </label>
@@ -183,7 +183,7 @@ export default function OperationsPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[#9DA3AE]">
+                <p className="text-sm text-slate">
                   Select at least one location to view utilization heatmaps.
                 </p>
               )}
@@ -199,12 +199,12 @@ export default function OperationsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-[#9DA3AE]">{c.bio}</p>
+                <p className="text-sm text-slate">{c.bio}</p>
                 <div className="mt-2 flex flex-wrap gap-1">
                   {c.specialties.map((s) => (
                     <span
                       key={s}
-                      className="rounded bg-[#0A0B0D] px-2 py-0.5 text-xs"
+                      className="rounded bg-field px-2 py-0.5 text-xs"
                     >
                       {s}
                     </span>
@@ -221,7 +221,7 @@ export default function OperationsPage() {
                 <CardTitle>{p.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-[#9DA3AE]">{p.description}</p>
+                <p className="text-sm text-slate">{p.description}</p>
                 <p className="mt-2 font-semibold">
                   {formatCurrency(p.monthly_price)}/mo
                 </p>

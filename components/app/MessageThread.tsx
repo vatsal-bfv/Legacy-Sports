@@ -18,7 +18,7 @@ export function MessageThread({
 }) {
   if (!messages.length) {
     return (
-      <p className="text-sm text-[#9DA3AE]">No messages in this thread yet.</p>
+      <p className="text-sm text-slate">No messages in this thread yet.</p>
     );
   }
 
@@ -36,7 +36,7 @@ export function MessageThread({
               isOutbound ? "items-end" : "items-start"
             )}
           >
-            <div className="flex flex-wrap items-center gap-2 text-xs text-[#9DA3AE]">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate">
               <span>{partyLabel(m.from_party)}</span>
               <Badge variant="default">{channelLabel(m.channel)}</Badge>
               <span>{formatMessageTime(m.created_at)}</span>
@@ -52,7 +52,7 @@ export function MessageThread({
             {m.subject && (
               <p
                 className={cn(
-                  "text-xs font-medium text-[#9DA3AE]",
+                  "text-xs font-medium text-slate",
                   isOutbound ? "text-right" : "text-left"
                 )}
               >
@@ -63,8 +63,8 @@ export function MessageThread({
               className={cn(
                 "max-w-[85%] rounded-lg p-3 text-sm",
                 isOutbound
-                  ? "bg-[#3B82F6]/20 text-[#F5F6F7]"
-                  : "bg-[#0A0B0D] text-[#F5F6F7]",
+                  ? "bg-orange/20 text-pitch"
+                  : "bg-field text-pitch",
                 unread && "ring-1 ring-amber-500/50"
               )}
             >

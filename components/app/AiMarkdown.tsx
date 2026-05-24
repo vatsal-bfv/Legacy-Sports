@@ -21,7 +21,7 @@ export function AiMarkdown({
     <Streamdown
       isAnimating={isAnimating}
       className={cn(
-        "legacy-ai-markdown text-sm leading-relaxed text-[#F5F6F7]",
+        "legacy-ai-markdown text-sm leading-relaxed text-pitch",
         className
       )}
     >

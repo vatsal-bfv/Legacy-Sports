@@ -64,13 +64,13 @@ export default function RetentionPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Retention</h1>
-        <p className="text-[#9DA3AE]">
+        <p className="text-slate">
           {atRisk.length} at-risk members · Churn rate 4.2%
         </p>
       </div>
-      <div className="overflow-hidden rounded-lg border border-[#2A2D34]">
+      <div className="overflow-hidden rounded-lg border border-bone">
         <table className="w-full text-sm">
-          <thead className="bg-[#12141A] text-left text-[#9DA3AE]">
+          <thead className="bg-field text-left text-slate">
             <tr>
               <th className="p-4">Athlete</th>
               <th className="p-4">Risk score</th>
@@ -85,7 +85,7 @@ export default function RetentionPage() {
                   att.athlete_id === a.id && att.status === "no_show"
               ).length;
               return (
-                <tr key={a.id} className="border-t border-[#2A2D34]/50">
+                <tr key={a.id} className="border-t border-bone/50">
                   <td className="p-4">
                     <Link
                       href={`/command-os/athletes/${a.id}`}
@@ -104,7 +104,7 @@ export default function RetentionPage() {
                   <td className="p-4">
                     <Badge variant="danger">{a.risk_score ?? 70}%</Badge>
                   </td>
-                  <td className="p-4 text-[#9DA3AE]">{missed}</td>
+                  <td className="p-4 text-slate">{missed}</td>
                   <td className="p-4">
                     <Button size="sm" onClick={() => draftMessage(a.id)}>
                       Draft re-engagement message
@@ -120,9 +120,9 @@ export default function RetentionPage() {
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
           side="right"
-          className="w-full border-[#2A2D34] bg-[#15171B] text-[#F5F6F7] sm:max-w-lg [&_[data-slot=sheet-title]]:text-[#F5F6F7] [&_[data-slot=sheet-close]]:text-[#9DA3AE] [&_[data-slot=sheet-close]]:hover:bg-[#1A1D24] [&_[data-slot=sheet-close]]:hover:text-[#F5F6F7]"
+          className="w-full border-bone bg-chalk text-pitch sm:max-w-lg [&_[data-slot=sheet-title]]:text-pitch [&_[data-slot=sheet-close]]:text-slate [&_[data-slot=sheet-close]]:hover:bg-bone [&_[data-slot=sheet-close]]:hover:text-pitch"
         >
-          <SheetHeader className="border-b border-[#2A2D34] pb-4">
+          <SheetHeader className="border-b border-bone pb-4">
             <SheetTitle>
               {selectedId === HERO_IDS.tyler
                 ? "Re-engage Tyler Chen"
@@ -146,12 +146,12 @@ export default function RetentionPage() {
                     />
                   ))}
                 </div>
-                <p className="mt-1 text-xs text-[#9DA3AE]">
+                <p className="mt-1 text-xs text-slate">
                   Last 14 sessions · green = attended, red = missed
                 </p>
               </div>
               {loading ? (
-                <p className="text-[#9DA3AE]">Generating with AI...</p>
+                <p className="text-slate">Generating with AI...</p>
               ) : (
                 <>
                   <Textarea

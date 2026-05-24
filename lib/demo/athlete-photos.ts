@@ -14,12 +14,12 @@ export function pexelsPhoto(
 export const HERO_ATHLETE_PHOTOS = {
   /** Young man in sports jersey — QB recruit profile photo */
   marcus: pexelsPhoto(17583378),
-  /** School-age boy in classroom — 15-yr point guard */
-  tyler: pexelsPhoto(5211473),
-  /** Teen girl in youth soccer kit — multi-sport athlete */
-  sofia: pexelsPhoto(16399923),
-  /** Teenage boy portrait — senior WR prospect */
-  deshawn: pexelsPhoto(5325898),
+  /** HS basketball player in jersey — indoor court practice */
+  tyler: pexelsPhoto(3755449),
+  /** Youth soccer player on match day — HS football (soccer) */
+  sofia: pexelsPhoto(8941650, { crop: "center" }),
+  /** Young Black man in varsity jacket — senior WR prospect */
+  deshawn: pexelsPhoto(13438105),
   /** Beach volleyball — matches Emma's drill clips */
   emma: pexelsPhoto(3621104),
 } as const;

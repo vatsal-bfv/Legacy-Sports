@@ -167,13 +167,13 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
         className="flex gap-2"
       >
         <div className="relative flex-1">
-          <Sparkles className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3B82F6]" />
+          <Sparkles className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-orange" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             placeholder="Ask anything about your athletes, locations, revenue..."
-            className="h-11 border-[#2A2D34] bg-[#12141A] pl-10"
+            className="h-11 border-bone bg-field pl-10"
             aria-expanded={showSuggestions}
             aria-controls={showSuggestions ? "nl-suggestions" : undefined}
             aria-autocomplete="list"
@@ -189,13 +189,13 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
           id="nl-suggestions"
           role="listbox"
           className={cn(
-            "z-50 rounded-lg border border-[#2A2D34] bg-[#12141A] shadow-2xl",
+            "z-50 rounded-lg border border-bone bg-field shadow-2xl",
             compact
               ? "absolute left-0 top-[calc(100%+0.5rem)] w-[min(42rem,calc(100vw-3rem))] max-h-[min(50vh,20rem)] overflow-y-auto p-2"
               : "mt-2 p-2"
           )}
         >
-          <p className="px-2 py-1 text-xs font-medium text-[#9DA3AE]">
+          <p className="px-2 py-1 text-xs font-medium text-slate">
             Suggested queries
           </p>
           <ul className="space-y-0.5">
@@ -206,7 +206,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
                   role="option"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => selectSuggestion(s)}
-                  className="w-full rounded-md px-2 py-2 text-left text-sm text-[#F5F6F7] hover:bg-[#1A1D24]"
+                  className="w-full rounded-md px-2 py-2 text-left text-sm text-pitch hover:bg-bone"
                 >
                   {s}
                 </button>
@@ -223,7 +223,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
               key={s}
               type="button"
               onClick={() => selectSuggestion(s)}
-              className="text-xs text-[#9DA3AE] underline-offset-2 hover:text-[#3B82F6] hover:underline"
+              className="text-xs text-slate underline-offset-2 hover:text-orange hover:underline"
             >
               {s}
             </button>
@@ -235,16 +235,16 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
         <div
           role="dialog"
           aria-label="Query results"
-          className="absolute left-0 top-[calc(100%+0.5rem)] z-50 w-[min(42rem,calc(100vw-3rem))] max-h-[min(70vh,32rem)] overflow-y-auto rounded-lg border border-[#2A2D34] bg-[#12141A] p-4 shadow-2xl"
+          className="absolute left-0 top-[calc(100%+0.5rem)] z-50 w-[min(42rem,calc(100vw-3rem))] max-h-[min(70vh,32rem)] overflow-y-auto rounded-lg border border-bone bg-field p-4 shadow-2xl"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="truncate text-xs text-[#9DA3AE]">
+            <p className="truncate text-xs text-slate">
               {loading && !displayResponse ? "Thinking…" : query}
             </p>
             <button
               type="button"
               onClick={closePanel}
-              className="shrink-0 rounded-md p-1 text-[#9DA3AE] hover:bg-[#1A1D24] hover:text-[#F5F6F7]"
+              className="shrink-0 rounded-md p-1 text-slate hover:bg-bone hover:text-pitch"
               aria-label="Close results"
             >
               <X className="h-4 w-4" />
@@ -256,13 +256,13 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
               isAnimating={Boolean(streamingText && !response)}
             />
           ) : (
-            <p className="text-sm text-[#9DA3AE]">Fetching answer…</p>
+            <p className="text-sm text-slate">Fetching answer…</p>
           )}
         </div>
       )}
 
       {!compact && displayResponse && (
-        <div className="mt-4 rounded-lg border border-[#2A2D34] bg-[#12141A] p-4">
+        <div className="mt-4 rounded-lg border border-bone bg-field p-4">
           <QueryResultRenderer
             response={displayResponse}
             isAnimating={Boolean(streamingText && !response)}

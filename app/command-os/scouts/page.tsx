@@ -10,7 +10,7 @@ export default function ScoutsPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#9DA3AE]">Active scout seats</CardTitle>
+            <CardTitle className="text-sm text-slate">Active scout seats</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">6</p>
@@ -18,7 +18,7 @@ export default function ScoutsPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#9DA3AE]">Monthly revenue</CardTitle>
+            <CardTitle className="text-sm text-slate">Monthly revenue</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">$4,200</p>
@@ -26,7 +26,7 @@ export default function ScoutsPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#9DA3AE]">Top searched athlete</CardTitle>
+            <CardTitle className="text-sm text-slate">Top searched athlete</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-lg font-bold">Marcus Johnson</p>
@@ -42,13 +42,13 @@ export default function ScoutsPage() {
             {scouts.map((s) => (
               <li
                 key={s.id}
-                className="flex items-center justify-between border-b border-[#2A2D34]/50 pb-3"
+                className="flex items-center justify-between border-b border-bone/50 pb-3"
               >
                 <div>
                   <p className="font-medium">{s.name}</p>
-                  <p className="text-sm text-[#9DA3AE]">{s.organization}</p>
+                  <p className="text-sm text-slate">{s.organization}</p>
                 </div>
-                <span className="text-xs text-[#9DA3AE] capitalize">{s.role}</span>
+                <span className="text-xs text-slate capitalize">{s.role}</span>
               </li>
             ))}
           </ul>

@@ -18,29 +18,29 @@ export function InsightCard({
   const content = (
     <Card
       className={cn(
-        "transition-all hover:border-[#3B82F6]/50 hover:bg-[#1A1D24]",
+        "transition-all duration-300 hover:-translate-y-0.5 hover:border-orange hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]",
         href && "cursor-pointer"
       )}
     >
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-[#9DA3AE]">
+        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p
           className={cn(
-            "text-2xl font-bold",
-            accent === "red" && "text-red-400",
-            accent === "green" && "text-emerald-400",
-            accent === "orange" && "text-[#FF5A1F]",
-            (!accent || accent === "blue") && "text-[#F5F6F7]"
+            "text-2xl font-extrabold tracking-[-0.02em]",
+            accent === "red" && "text-red-600",
+            accent === "green" && "text-emerald-600",
+            accent === "orange" && "text-orange",
+            (!accent || accent === "blue") && "text-pitch"
           )}
         >
           {value}
         </p>
         {subtitle && (
-          <p className="mt-1 text-xs text-[#9DA3AE]">{subtitle}</p>
+          <p className="mt-1 text-xs text-smoke">{subtitle}</p>
         )}
       </CardContent>
     </Card>

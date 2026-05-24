@@ -34,12 +34,12 @@
   --marketing-accent: #ff5a1f;
   --marketing-success: #10b981;
 
-  --os-bg: #0a0b0d;
-  --os-surface: #12141a;
-  --os-surface-elevated: #1a1d24;
-  --os-border: #2a2d34;
-  --os-accent: #3b82f6;
-  --os-accent-orange: #ff5a1f;
+  --os-bg: var(--legacy-field);
+  --os-surface: var(--legacy-chalk);
+  --os-surface-elevated: var(--legacy-bone);
+  --os-border: var(--legacy-bone);
+  --os-accent: var(--legacy-orange);
+  --os-accent-orange: var(--legacy-orange);
 
   --scout-bg: var(--legacy-field);
   --scout-surface: var(--legacy-chalk);
@@ -302,10 +302,10 @@ body {
 @keyframes highlight-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 0 rgba(255, 90, 31, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 8px rgba(255, 90, 31, 0);
   }
 }
 
@@ -433,7 +433,7 @@ html.legacy-cursor * {
   color: #ff5a1f;
 }
 
-/* Schedule-X — Command OS theme */
+/* Schedule-X — Command OS theme (light) */
 .legacy-command-schedule {
   --sx-z-index-week-header: 1;
 }
@@ -447,41 +447,41 @@ html.legacy-cursor * {
   max-width: 100%;
   height: 700px;
   max-height: 85vh;
-  background-color: #15171b;
+  background-color: #f0eee9;
 }
 
 .legacy-command-schedule .sx__calendar-wrapper {
-  background-color: #15171b;
+  background-color: #f0eee9;
 }
 
 .legacy-command-schedule.is-dark,
 .legacy-command-schedule .is-dark,
 .legacy-command-schedule .sx__calendar-wrapper.is-dark {
-  --sx-color-primary: #3b82f6;
-  --sx-color-on-primary: #f5f6f7;
-  --sx-color-primary-container: #1e3a5f;
-  --sx-color-on-primary-container: #dbeafe;
-  --sx-color-secondary: #9da3ae;
-  --sx-color-on-secondary: #0a0b0d;
-  --sx-color-secondary-container: #1a1d24;
-  --sx-color-on-secondary-container: #f5f6f7;
-  --sx-color-background: #15171b;
-  --sx-color-on-background: #f5f6f7;
-  --sx-color-surface: #12141a;
-  --sx-color-on-surface: #f5f6f7;
-  --sx-color-surface-container: #15171b;
-  --sx-color-surface-container-low: #0a0b0d;
-  --sx-color-surface-container-high: #1a1d24;
-  --sx-color-outline: #2a2d34;
-  --sx-color-outline-variant: #2a2d34;
+  --sx-color-primary: #ff5a1f;
+  --sx-color-on-primary: #f8f7f4;
+  --sx-color-primary-container: #ffe8de;
+  --sx-color-on-primary-container: #111111;
+  --sx-color-secondary: #4a4744;
+  --sx-color-on-secondary: #f8f7f4;
+  --sx-color-secondary-container: #e5e2db;
+  --sx-color-on-secondary-container: #111111;
+  --sx-color-background: #f0eee9;
+  --sx-color-on-background: #111111;
+  --sx-color-surface: #f8f7f4;
+  --sx-color-on-surface: #111111;
+  --sx-color-surface-container: #f0eee9;
+  --sx-color-surface-container-low: #f8f7f4;
+  --sx-color-surface-container-high: #e5e2db;
+  --sx-color-outline: #e5e2db;
+  --sx-color-outline-variant: #e5e2db;
 }
 
 .legacy-command-schedule .sx__time-grid-day {
-  border-color: #2a2d34;
+  border-color: #e5e2db;
 }
 
 .legacy-command-schedule .sx__week-header {
-  border-color: #2a2d34;
+  border-color: #e5e2db;
 }
 
 .legacy-command-schedule .sx__current-time-indicator {
@@ -493,21 +493,21 @@ html.legacy-cursor * {
   background-color: #ef4444 !important;
 }
 
-/* Streamdown — Command OS AI markdown */
+/* Streamdown — Command OS AI markdown (light) */
 .legacy-ai-markdown {
-  --foreground: #f5f6f7;
-  --muted-foreground: #9da3ae;
-  --border: #2a2d34;
-  --muted: #1a1d24;
-  --primary: #3b82f6;
+  --foreground: #111111;
+  --muted-foreground: #8c8880;
+  --border: #e5e2db;
+  --muted: #f0eee9;
+  --primary: #ff5a1f;
 }
 
 .legacy-ai-markdown a {
-  color: #3b82f6;
+  color: #ff5a1f;
 }
 
 .legacy-ai-markdown strong {
-  color: #f5f6f7;
+  color: #111111;
 }
 
 @keyframes legacy-heartbeat {

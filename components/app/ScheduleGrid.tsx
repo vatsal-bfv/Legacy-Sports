@@ -29,7 +29,7 @@ import {
 } from "@/lib/schedule/map-sessions";
 
 const COMMAND_SHEET_CLASS =
-  "w-full border-[#2A2D34] bg-[#15171B] text-[#F5F6F7] sm:max-w-md [&_[data-slot=sheet-title]]:text-[#F5F6F7] [&_[data-slot=sheet-close]]:text-[#9DA3AE] [&_[data-slot=sheet-close]]:hover:bg-[#1A1D24] [&_[data-slot=sheet-close]]:hover:text-[#F5F6F7]";
+  "w-full border-bone bg-chalk text-pitch sm:max-w-md [&_[data-slot=sheet-title]]:text-pitch [&_[data-slot=sheet-close]]:text-slate [&_[data-slot=sheet-close]]:hover:bg-bone [&_[data-slot=sheet-close]]:hover:text-pitch";
 
 function formatHour(h: number) {
   const period = h >= 12 ? "PM" : "AM";
@@ -220,21 +220,21 @@ export function ScheduleGrid() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Schedule</h1>
-          <p className="mt-1 text-sm text-[#9DA3AE]">
+          <p className="mt-1 text-sm text-slate">
             {locations.length === 1
               ? `${locations[0].name} · today`
               : "All locations · today"}
           </p>
         </div>
         <div className="text-right text-sm">
-          <p className="text-[#9DA3AE]">{formatToday(now)}</p>
-          <p className="text-lg font-semibold tabular-nums text-[#F5F6F7]">
+          <p className="text-slate">{formatToday(now)}</p>
+          <p className="text-lg font-semibold tabular-nums text-pitch">
             {formatNowTime(now)}
           </p>
         </div>
       </div>
 
-      <div className="legacy-command-schedule overflow-hidden rounded-lg border border-[#2A2D34] bg-[#15171B]">
+      <div className="legacy-command-schedule overflow-hidden rounded-lg border border-bone bg-chalk">
         <MemoScheduleXBlock
           key={scopeKey}
           locations={locations}
@@ -250,19 +250,19 @@ export function ScheduleGrid() {
           side="right"
           className={`${COMMAND_SHEET_CLASS} z-[60]`}
         >
-          <SheetHeader className="border-b border-[#2A2D34] pb-4">
+          <SheetHeader className="border-b border-bone pb-4">
             <SheetTitle>Session roster</SheetTitle>
           </SheetHeader>
           {rosterSession && (
             <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 pb-4">
-              <div className="rounded-lg border border-[#2A2D34] bg-[#12141A] p-4 text-sm">
-                <p className="font-medium text-[#F5F6F7]">
+              <div className="rounded-lg border border-bone bg-field p-4 text-sm">
+                <p className="font-medium text-pitch">
                   {rosterProgram?.name}
                 </p>
-                <p className="mt-1 text-[#9DA3AE]">
+                <p className="mt-1 text-slate">
                   {rosterLocation?.name} · {rosterSession.room}
                 </p>
-                <p className="mt-1 text-xs text-[#9DA3AE]">
+                <p className="mt-1 text-xs text-slate">
                   {formatHour(new Date(rosterSession.starts_at).getHours())} ·
                   Coach {rosterCoach?.first_name} {rosterCoach?.last_name} ·{" "}
                   {rosterAthletes.length}/{rosterSession.capacity} enrolled
@@ -274,20 +274,20 @@ export function ScheduleGrid() {
                     <Link
                       href={`/command-os/athletes/${a.id}`}
                       onClick={() => setRosterSession(null)}
-                      className="flex items-center gap-3 rounded-md border border-transparent px-2 py-2 transition-colors hover:border-[#2A2D34] hover:bg-[#12141A]"
+                      className="flex items-center gap-3 rounded-md border border-transparent px-2 py-2 transition-colors hover:border-bone hover:bg-field"
                     >
                       <Image
                         src={a.photo_url}
                         alt=""
                         width={36}
                         height={36}
-                        className="rounded-full ring-1 ring-[#2A2D34]"
+                        className="rounded-full ring-1 ring-bone"
                       />
                       <div>
-                        <p className="font-medium text-[#F5F6F7]">
+                        <p className="font-medium text-pitch">
                           {a.first_name} {a.last_name}
                         </p>
-                        <p className="text-xs capitalize text-[#9DA3AE]">
+                        <p className="text-xs capitalize text-slate">
                           {a.sport}
                           {a.position ? ` · ${a.position}` : ""}
                         </p>

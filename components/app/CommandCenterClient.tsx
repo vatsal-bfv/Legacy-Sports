@@ -34,8 +34,13 @@ export function CommandCenterClient() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#F5F6F7]">Good morning, Amber</h1>
-        <p className="text-[#9DA3AE]">
+        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange">
+          [ Command Center ]
+        </p>
+        <h1 className="mt-3 text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-pitch">
+          Good morning, Amber
+        </h1>
+        <p className="mt-2 text-slate">
           Here&apos;s what needs your attention today
           {locationId
             ? ` · ${demoStore.locations.find((l) => l.id === locationId)?.name}`
@@ -45,7 +50,7 @@ export function CommandCenterClient() {
         {newLeadIds.size > 0 && (
           <Link
             href="/command-os/leads"
-            className="mt-2 inline-flex items-center gap-2 rounded-md bg-[#3B82F6]/20 px-3 py-1.5 text-sm text-[#3B82F6] hover:bg-[#3B82F6]/30"
+            className="mt-3 inline-flex items-center gap-2 rounded-[8px] bg-orange/10 px-3 py-1.5 text-sm font-medium text-orange hover:bg-orange/15"
           >
             {newLeadIds.size} new lead{newLeadIds.size > 1 ? "s" : ""} — view
             kanban →
@@ -99,36 +104,40 @@ export function CommandCenterClient() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-lg border border-[#2A2D34] bg-[#15171B] p-6">
-          <h2 className="mb-4 font-semibold">Recent activity</h2>
-          <ul className="space-y-3">
+        <div className="rounded-[14px] border border-bone bg-chalk p-6 lg:col-span-2">
+          <h2 className="font-extrabold tracking-[-0.02em] text-pitch">
+            Recent activity
+          </h2>
+          <ul className="mt-4 space-y-3">
             {recentLeads.map((lead) => (
               <li
                 key={lead.id}
-                className="flex items-center justify-between border-b border-[#2A2D34]/50 pb-3 text-sm"
+                className="flex items-center justify-between border-b border-bone/50 pb-3 text-sm"
               >
-                <span className={newLeadIds.has(lead.id) ? "text-[#3B82F6]" : ""}>
+                <span className={newLeadIds.has(lead.id) ? "font-medium text-orange" : "text-pitch"}>
                   New lead: {lead.first_name} {lead.last_name}
                   {newLeadIds.has(lead.id) && " · just now"}
                 </span>
-                <span className="text-[#9DA3AE]">{formatDate(lead.created_at)}</span>
+                <span className="text-slate">{formatDate(lead.created_at)}</span>
               </li>
             ))}
-            <li className="text-sm text-[#9DA3AE]">
+            <li className="text-sm text-slate">
               Session completed — Phoenix Combine Prep
             </li>
-            <li className="text-sm text-[#9DA3AE]">
+            <li className="text-sm text-slate">
               Payment received — Marcus Johnson
             </li>
           </ul>
         </div>
-        <div className="rounded-lg border border-[#2A2D34] bg-[#15171B] p-6">
-          <h2 className="mb-4 font-semibold">Today&apos;s schedule</h2>
-          <ul className="space-y-2 text-sm">
+        <div className="rounded-[14px] border border-bone bg-chalk p-6">
+          <h2 className="font-extrabold tracking-[-0.02em] text-pitch">
+            Today&apos;s schedule
+          </h2>
+          <ul className="mt-4 space-y-2 text-sm">
             {sessions.slice(0, 6).map((s) => {
               const loc = demoStore.locations.find((l) => l.id === s.location_id);
               return (
-                <li key={s.id} className="text-[#9DA3AE]">
+                <li key={s.id} className="text-slate">
                   {new Date(s.starts_at).toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "2-digit",
