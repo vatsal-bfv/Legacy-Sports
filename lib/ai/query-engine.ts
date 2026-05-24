@@ -1,4 +1,4 @@
-import { tool, stepCountIs, generateText, streamText } from "ai";
+import { tool, stepCountIs, streamText, generateText } from "ai";
 import { z } from "zod";
 import { getModel, isAiConfigured } from "./model";
 import {
@@ -202,78 +202,41 @@ export async function runQuery(
   query: string,
   scope: QueryScope = {},
   options: QueryOptions = {}
-): Promise<{ response: QueryResponse; cached: boolean; stream?: boolean }> {
-  if (options.use_demo_cache) {
-    const cached = lookupCachedQuery(query);
-    if (cached) {
-      console.log("[api] ai/query demo cache hit", {
-        query: query.slice(0, 120),
-        responseType: cached.type,
-      });
-      return { response: cached, cached: true };
-    }
-    console.warn("[api] ai/query demo cache miss on suggestion click", {
+): Promise<{ response: QueryResponse; cached: boolean } | null> {
+  void scope;
+  if (!options.use_demo_cache) return null;
+
+  const cached = lookupCachedQuery(query);
+  if (cached) {
+    console.log("[api] ai/query demo cache hit", {
       query: query.slice(0, 120),
+      responseType: cached.type,
     });
+    return { response: cached, cached: true };
   }
 
-  if (isAiConfigured()) {
-    try {
-      const result = await generateText({
-        model: getModel(),
-        system: buildSystemPrompt(scope),
-        tools: createLegacyTools(scope),
-        stopWhen: stepCountIs(8),
-        prompt: query,
-        onStepFinish: logGeminiStep,
-      });
-
-      if (result.text?.trim()) {
-        return {
-          response: { type: "narrative", markdown: result.text },
-          cached: false,
-        };
-      }
-
-      console.warn("[ai/gemini] empty text response", {
-        query: query.slice(0, 120),
-        toolSteps: result.steps?.length ?? 0,
-      });
-    } catch (error) {
-      console.error("[ai/gemini] query failed", {
-        query: query.slice(0, 120),
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  } else {
-    console.warn("[ai/gemini] not configured — set GEMINI_API_KEY", {
-      query: query.slice(0, 120),
-    });
-  }
-
-  return {
-    response: {
-      type: "narrative",
-      markdown: isAiConfigured()
-        ? "I couldn't complete that query. Try rephrasing, or pick one of the suggested queries for a demo-ready answer."
-        : "AI is not configured. Set GEMINI_API_KEY in .env.local, or use a suggested query for a demo response.",
-    },
-    cached: false,
-    stream: isAiConfigured(),
-  };
+  console.warn("[api] ai/query demo cache miss on suggestion click", {
+    query: query.slice(0, 120),
+  });
+  return null;
 }
 
-export function streamNarrativeQuery(query: string, scope: QueryScope = {}) {
+export function streamLegacyQuery(query: string, scope: QueryScope = {}) {
   return streamText({
     model: getModel(),
     system:
       buildSystemPrompt(scope) +
       "\n\nRespond in markdown, 2-4 paragraphs max.",
     tools: createLegacyTools(scope),
-    stopWhen: stepCountIs(5),
+    stopWhen: stepCountIs(8),
     prompt: query,
     onStepFinish: logGeminiStep,
   });
+}
+
+/** @deprecated use streamLegacyQuery */
+export function streamNarrativeQuery(query: string, scope: QueryScope = {}) {
+  return streamLegacyQuery(query, scope);
 }
 
 export async function generateDraftMessage(prompt: string): Promise<string> {
