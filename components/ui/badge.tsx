@@ -15,7 +15,7 @@ export function Badge({
         variant === "success" && "bg-emerald-500/20 text-emerald-400",
         variant === "warning" && "bg-amber-500/20 text-amber-400",
         variant === "danger" && "bg-red-500/20 text-red-400",
-        variant === "scout" && "bg-[#1A2332]/20 text-[#1A2332]",
+        variant === "scout" && "bg-orange/10 text-orange",
         className
       )}
       {...props}

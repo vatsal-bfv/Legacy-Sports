@@ -5,13 +5,37 @@ import Link from "next/link";
 import Image from "next/image";
 import { demoStore } from "@/lib/demo/store";
 import { Button } from "@/components/ui/button";
+import {
+  ScoutCard,
+  ScoutPageHeading,
+  ScoutSectionLabel,
+} from "@/components/scout/ScoutCard";
+import { SectionTexture } from "@/components/marketing/landing/SectionTexture";
 
 const DEFAULT_SAVED = [
-  { id: "1", name: "2027 QBs under 4.7", position: "quarterback", fortyMax: "4.7", gpaMin: "" },
-  { id: "2", name: "High GPA WRs", position: "wide receiver", fortyMax: "", gpaMin: "3.5" },
+  {
+    id: "1",
+    name: "2027 QBs under 4.7",
+    position: "quarterback",
+    fortyMax: "4.7",
+    gpaMin: "",
+  },
+  {
+    id: "2",
+    name: "High GPA WRs",
+    position: "wide receiver",
+    fortyMax: "",
+    gpaMin: "3.5",
+  },
 ];
 
 type SavedSearch = (typeof DEFAULT_SAVED)[0];
+
+const labelClassName =
+  "text-[11px] font-bold uppercase tracking-[0.1em] text-slate";
+
+const fieldClassName =
+  "mt-1.5 w-full rounded-[8px] border-[1.5px] border-bone bg-field px-3 py-2.5 text-sm text-pitch focus:border-orange focus:outline-none focus:ring-4 focus:ring-orange/10";
 
 export default function ScoutSearchPage() {
   const [position, setPosition] = useState("");
@@ -79,131 +103,154 @@ export default function ScoutSearchPage() {
   }, [position, fortyMax, gpaMin, gradYear, sport]);
 
   return (
-    <div className="mx-auto flex max-w-7xl gap-8 px-6 py-12">
-      <aside className="w-64 shrink-0 space-y-4">
-        <h1 className="text-xl font-bold">Search athletes</h1>
-        <div>
-          <label className="text-sm font-medium">Sport</label>
-          <select
-            value={sport}
-            onChange={(e) => setSport(e.target.value)}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-          >
-            <option value="">All</option>
-            <option value="football">Football</option>
-            <option value="basketball">Basketball</option>
-            <option value="baseball">Baseball</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-sm font-medium">Position</label>
-          <select
-            value={position}
-            onChange={(e) => setPosition(e.target.value)}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-          >
-            <option value="">All</option>
-            <option value="quarterback">QB</option>
-            <option value="wide receiver">WR</option>
-            <option value="point guard">PG</option>
-            <option value="running back">RB</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-sm font-medium">Class year</label>
-          <select
-            value={gradYear}
-            onChange={(e) => setGradYear(e.target.value)}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-          >
-            <option value="">All</option>
-            {[2025, 2026, 2027, 2028, 2029].map((y) => (
-              <option key={y} value={String(y)}>
-                {y}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="text-sm font-medium">40-yard ≤ (sec)</label>
-          <input
-            type="number"
-            step="0.01"
-            value={fortyMax}
-            onChange={(e) => setFortyMax(e.target.value)}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium">GPA min</label>
-          <input
-            type="number"
-            step="0.1"
-            value={gpaMin}
-            onChange={(e) => setGpaMin(e.target.value)}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
-        <Button size="sm" variant="outline" onClick={saveCurrentSearch}>
-          Save search
-        </Button>
-        <div>
-          <p className="text-sm font-medium">Saved searches</p>
-          <ul className="mt-2 space-y-1">
-            {saved.map((s) => (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => applySaved(s)}
-                  className="text-sm text-blue-600 hover:underline"
+    <div className="relative px-[var(--legacy-gutter)] py-[clamp(48px,8vw,80px)]">
+      <SectionTexture pattern="dots" tone="light" />
+
+      <div className="relative mx-auto flex max-w-7xl flex-col gap-10 lg:flex-row lg:gap-12">
+        <aside className="w-full shrink-0 lg:w-72">
+          <ScoutCard className="p-6">
+            <ScoutSectionLabel>Filters</ScoutSectionLabel>
+            <div className="mt-4">
+              <ScoutPageHeading title="Search athletes" />
+            </div>
+
+            <div className="mt-8 space-y-5">
+              <div>
+                <label className={labelClassName}>Sport</label>
+                <select
+                  value={sport}
+                  onChange={(e) => setSport(e.target.value)}
+                  className={fieldClassName}
                 >
-                  {s.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </aside>
-      <div className="flex-1">
-        <p className="mb-4 text-sm text-gray-500">{results.length} athletes</p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {results.slice(0, 20).map((a) => {
-            const forty = demoStore.measurables.find(
-              (m) => m.athlete_id === a.id && m.metric === "forty_yard" && m.is_pr
-            );
-            const vert = demoStore.measurables.find(
-              (m) => m.athlete_id === a.id && m.metric === "vertical" && m.is_pr
-            );
-            return (
-              <Link
-                key={a.id}
-                href={`/scout/athletes/${a.id}`}
-                className="flex gap-4 rounded-lg border border-gray-200 bg-white p-4 hover:shadow-md"
-              >
-                <Image
-                  src={a.photo_url}
-                  alt=""
-                  width={64}
-                  height={64}
-                  className="rounded-lg object-cover"
+                  <option value="">All</option>
+                  <option value="football">Football</option>
+                  <option value="basketball">Basketball</option>
+                  <option value="baseball">Baseball</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelClassName}>Position</label>
+                <select
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value)}
+                  className={fieldClassName}
+                >
+                  <option value="">All</option>
+                  <option value="quarterback">QB</option>
+                  <option value="wide receiver">WR</option>
+                  <option value="point guard">PG</option>
+                  <option value="running back">RB</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelClassName}>Class year</label>
+                <select
+                  value={gradYear}
+                  onChange={(e) => setGradYear(e.target.value)}
+                  className={fieldClassName}
+                >
+                  <option value="">All</option>
+                  {[2025, 2026, 2027, 2028, 2029].map((y) => (
+                    <option key={y} value={String(y)}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className={labelClassName}>40-yard ≤ (sec)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={fortyMax}
+                  onChange={(e) => setFortyMax(e.target.value)}
+                  className={fieldClassName}
                 />
-                <div>
-                  <p className="font-semibold">
-                    {a.first_name} {a.last_name}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {a.school} · Class of {a.graduation_year}
-                  </p>
-                  {forty && (
-                    <p className="mt-1 text-xs text-gray-600">
-                      40: {forty.value}s
-                      {vert ? ` · Vert: ${vert.value}"` : ""}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+              </div>
+              <div>
+                <label className={labelClassName}>GPA min</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={gpaMin}
+                  onChange={(e) => setGpaMin(e.target.value)}
+                  className={fieldClassName}
+                />
+              </div>
+            </div>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={saveCurrentSearch}
+              className="mt-6 w-full border-bone bg-field text-pitch hover:border-orange hover:bg-chalk hover:text-pitch"
+            >
+              Save search
+            </Button>
+
+            {saved.length > 0 && (
+              <div className="mt-8 border-t border-bone pt-6">
+                <p className={labelClassName}>Saved searches</p>
+                <ul className="mt-3 space-y-2">
+                  {saved.map((s) => (
+                    <li key={s.id}>
+                      <button
+                        type="button"
+                        onClick={() => applySaved(s)}
+                        className="text-left text-sm text-slate transition-colors hover:text-orange"
+                      >
+                        {s.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </ScoutCard>
+        </aside>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate">
+            {results.length} athletes found
+          </p>
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            {results.slice(0, 20).map((a) => {
+              const forty = demoStore.measurables.find(
+                (m) =>
+                  m.athlete_id === a.id && m.metric === "forty_yard" && m.is_pr
+              );
+              const vert = demoStore.measurables.find(
+                (m) => m.athlete_id === a.id && m.metric === "vertical" && m.is_pr
+              );
+              return (
+                <Link key={a.id} href={`/scout/athletes/${a.id}`}>
+                  <ScoutCard className="flex gap-4 p-4" hover>
+                    <Image
+                      src={a.photo_url}
+                      alt=""
+                      width={72}
+                      height={72}
+                      className="h-[72px] w-[72px] shrink-0 rounded-[8px] object-cover"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-pitch">
+                        {a.first_name} {a.last_name}
+                      </p>
+                      <p className="mt-0.5 text-sm text-slate">
+                        {a.school} · Class of {a.graduation_year}
+                      </p>
+                      {forty && (
+                        <p className="mt-2 text-xs text-smoke">
+                          40: {forty.value}s
+                          {vert ? ` · Vert: ${vert.value}"` : ""}
+                        </p>
+                      )}
+                    </div>
+                  </ScoutCard>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

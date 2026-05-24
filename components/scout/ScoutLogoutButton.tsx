@@ -19,10 +19,10 @@ export function ScoutLogoutButton() {
       variant="ghost"
       size="sm"
       onClick={logout}
-      className="gap-2 text-gray-600 hover:text-[#1A2332]"
+      className="gap-2 text-coal hover:bg-steel/50 hover:text-ghost"
     >
       <LogOut className="h-4 w-4" />
-      Log out
+      <span className="hidden sm:inline">Log out</span>
     </Button>
   );
 }

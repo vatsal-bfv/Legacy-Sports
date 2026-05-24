@@ -14,8 +14,9 @@ const buttonVariants = cva(
           "border border-[#2A2D34] bg-transparent hover:bg-[#1E2127] text-[#F5F6F7]",
         secondary: "bg-[#1E2127] text-[#F5F6F7] hover:bg-[#2A2D34]",
         ghost: "hover:bg-[#1E2127] text-[#F5F6F7]",
-        marketing: "bg-[#FF5A1F] text-white hover:bg-[#E04E15]",
-        scout: "bg-[#1A2332] text-white hover:bg-[#2A3A4F]",
+        marketing: "bg-orange text-field hover:bg-ember",
+        scout:
+          "bg-pitch text-field text-[11px] font-bold uppercase tracking-[0.1em] hover:bg-orange",
       },
       size: {
         default: "h-10 px-4 py-2",
