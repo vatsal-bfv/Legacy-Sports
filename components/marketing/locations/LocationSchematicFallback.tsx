@@ -18,11 +18,17 @@ function toSvgRect(zone: LocationSchematic["zones"][number], schematic: Location
 
 export function LocationSchematicFallback({
   schematic,
+  selectedZoneId = null,
+  onZoneSelect,
+  onZoneHover,
 }: {
   schematic: LocationSchematic;
+  selectedZoneId?: string | null;
+  onZoneSelect?: (zoneId: string) => void;
+  onZoneHover?: (zoneId: string | null) => void;
 }) {
   return (
-    <div className="flex h-full min-h-[320px] flex-col items-center justify-center bg-field p-6">
+    <div className="flex h-full min-h-[320px] flex-col items-center justify-center bg-field/40 p-6">
       <svg
         viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
         className="h-full w-full max-h-[420px] max-w-[640px]"
@@ -41,6 +47,8 @@ export function LocationSchematicFallback({
         />
         {schematic.zones.map((zone) => {
           const { x, y, w, h } = toSvgRect(zone, schematic);
+          const isSelected = selectedZoneId === zone.id;
+
           return (
             <g key={zone.id}>
               <rect
@@ -49,11 +57,15 @@ export function LocationSchematicFallback({
                 width={w}
                 height={h}
                 fill={zone.color}
-                fillOpacity={0.85}
-                stroke="#111111"
-                strokeOpacity={0.25}
-                strokeWidth="0.4"
+                fillOpacity={isSelected ? 1 : 0.85}
+                stroke={isSelected ? "#ff5a1f" : "#111111"}
+                strokeOpacity={isSelected ? 1 : 0.25}
+                strokeWidth={isSelected ? "0.8" : "0.4"}
                 rx="0.8"
+                className={onZoneSelect ? "cursor-pointer" : undefined}
+                onClick={() => onZoneSelect?.(zone.id)}
+                onMouseEnter={() => onZoneHover?.(zone.id)}
+                onMouseLeave={() => onZoneHover?.(null)}
               />
               <text
                 x={x + w / 2}
@@ -63,7 +75,7 @@ export function LocationSchematicFallback({
                 fill="#f8f7f4"
                 fontSize="3.2"
                 fontWeight="700"
-                style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}
+                style={{ pointerEvents: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}
               >
                 {zone.label}
               </text>
@@ -71,7 +83,9 @@ export function LocationSchematicFallback({
           );
         })}
       </svg>
-      <p className="mt-4 text-center text-xs text-smoke">2D schematic preview — drag to explore in 3D when available</p>
+      <p className="mt-4 text-center text-xs text-smoke">
+        2D schematic preview — tap a room to explore
+      </p>
     </div>
   );
 }

@@ -8,7 +8,6 @@ import {
   useRef,
   useState,
   type RefObject,
-  type SVGProps,
 } from "react";
 import Lenis from "lenis";
 import {
@@ -25,16 +24,14 @@ import {
 } from "lucide-react";
 import type { Location, Program } from "@/lib/demo/types";
 import { LeadCaptureForm } from "@/components/shared/LeadCaptureForm";
+import { CoachPhoto } from "@/components/marketing/coaches/CoachPhoto";
+import { coachCards } from "@/lib/marketing/coaches";
 import {
   athleteCards,
   commandFeatures,
   credentialCards,
   familyTestimonials,
   heroMarqueeItems,
-  originsHero,
-  originsMilestones,
-  originsOwners,
-  originsStory,
   programCards,
   statItems,
   testimonialMarqueeItems,
@@ -83,33 +80,6 @@ function getWeekdayHours(location: Location) {
 
 function scrollToSection(target: string) {
   scrollToTarget(target, { offset: -80 });
-}
-
-function InstagramIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" {...props}>
-      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function XIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" {...props}>
-      <path d="M5 4.5L19 19.5" strokeLinecap="round" />
-      <path d="M19 4.5L5 19.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function FacebookIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M13.35 20.5v-7.08h2.38l.36-2.76h-2.74V8.9c0-.8.22-1.35 1.37-1.35h1.46V5.08c-.25-.03-1.12-.08-2.13-.08-2.11 0-3.56 1.29-3.56 3.66v2h-2.4v2.76h2.4v7.08h2.86Z" />
-    </svg>
-  );
 }
 
 function useRail(
@@ -642,10 +612,10 @@ function BrandStatement({ reducedMotion }: { reducedMotion: boolean }) {
           <button
             type="button"
             data-cursor="link"
-            onClick={() => scrollToSection("#origins")}
+            onClick={() => scrollToSection("#coaches")}
             className="group relative mt-10 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.1em] text-orange"
           >
-            Read Our Story
+            Meet Our Coaches
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
             <span className="absolute inset-x-0 bottom-[-3px] h-px origin-left scale-x-0 bg-orange transition-transform duration-300 group-hover:scale-x-100" />
           </button>
@@ -694,34 +664,25 @@ function ProgramsSection({ reducedMotion }: { reducedMotion: boolean }) {
     <section
       id="programs"
       ref={sectionRef}
-      className="relative overflow-hidden bg-field py-[clamp(80px,10vw,140px)] scroll-mt-24"
+      className="relative overflow-hidden bg-ink px-[var(--legacy-gutter)] py-[clamp(80px,10vw,140px)] text-ghost scroll-mt-24"
     >
-      <SectionTexture pattern="grid" tone="light" />
+      <SectionTexture pattern="grid" tone="dark" />
       <div className="relative z-10">
-      <div className="mb-14 flex flex-col gap-8 px-[var(--legacy-gutter)] lg:flex-row lg:items-end lg:justify-between">
+      <div className="mb-14">
         <div>
           <p className="legacy-section-label mb-4">[ PROGRAMS ]</p>
-          <h2 className="text-[clamp(28px,4vw,48px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-pitch">
+          <h2 className="text-[clamp(28px,4vw,48px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-ghost">
             <span className="block">Every level.</span>
             <span className="block">Every sport.</span>
             <span className="block text-orange">One system.</span>
           </h2>
         </div>
-        <Link
-          href="/programs"
-          data-cursor="link"
-          className="group relative inline-flex items-center gap-1 self-start text-[11px] font-bold uppercase tracking-[0.1em] text-slate hover:text-pitch"
-        >
-          View All Programs
-          <ArrowRight className="h-3.5 w-3.5" />
-          <span className="absolute inset-x-0 bottom-[-3px] h-px origin-left scale-x-0 bg-orange transition-transform duration-300 group-hover:scale-x-100" />
-        </Link>
       </div>
 
       <div
         ref={railRef}
         data-cursor="drag"
-        className="overflow-x-auto px-[var(--legacy-gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div className="flex w-max flex-nowrap snap-x snap-mandatory gap-5">
         {programCards.map((program) => {
@@ -737,44 +698,40 @@ function ProgramsSection({ reducedMotion }: { reducedMotion: boolean }) {
                     : UsersRound;
 
           return (
-            <article
+            <Link
               key={program.number}
-              className="program-rail-card group relative flex min-h-[380px] w-[clamp(260px,28vw,360px)] shrink-0 snap-start flex-col rounded-[14px] border border-bone bg-chalk p-7 pb-6 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1.5 hover:border-orange hover:shadow-[0_16px_48px_rgba(0,0,0,0.09),0_0_0_1.5px_var(--legacy-orange)]"
+              href={`/programs/${program.slug}`}
+              data-cursor="link"
+              className="program-rail-card group relative flex min-h-[380px] w-[clamp(260px,28vw,360px)] shrink-0 snap-start flex-col rounded-[14px] border border-steel bg-charcoal p-7 pb-6 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1.5 hover:border-orange hover:shadow-[0_16px_48px_rgba(0,0,0,0.25),0_0_0_1.5px_var(--legacy-orange)]"
             >
-              <span className="pointer-events-none absolute right-6 top-4 legacy-display text-[64px] leading-none tracking-[0.02em] text-bone/50 transition-opacity duration-300 group-hover:opacity-10">
+              <span className="pointer-events-none absolute right-6 top-4 legacy-display text-[64px] leading-none tracking-[0.02em] text-steel/40 transition-opacity duration-300 group-hover:opacity-20">
                 {program.number}
               </span>
               <div className="mb-6 flex h-9 w-9 items-center justify-center rounded-[10px] bg-orange/10">
                 <Icon className="h-5 w-5 text-orange" />
               </div>
-              <h3 className="text-lg font-bold tracking-[-0.01em] text-pitch">
+              <h3 className="text-lg font-bold tracking-[-0.01em] text-ghost">
                 {program.name}
               </h3>
-              <p className="mt-1 text-xs text-smoke">{program.meta}</p>
-              <div className="my-6 h-px bg-bone" />
-              <p className="line-clamp-2 max-w-[32ch] text-sm leading-[1.7] text-slate">
+              <p className="mt-1 text-xs text-ash">{program.meta}</p>
+              <div className="my-6 h-px bg-steel" />
+              <p className="line-clamp-2 max-w-[32ch] text-sm leading-[1.7] text-coal">
                 {program.description}
               </p>
-              <div className="mt-auto flex items-center justify-between pt-8">
-                <span className="text-lg font-extrabold text-pitch">{program.price} / Month</span>
-                <button
-                  type="button"
-                  data-cursor="link"
-                  onClick={() => scrollToSection("#intake")}
-                  className="group inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.1em] text-orange"
-                >
-                  Enquire
+              <div className="mt-auto flex justify-end pt-8">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.1em] text-orange">
+                  Learn More
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                </button>
+                </span>
               </div>
-            </article>
+            </Link>
           );
         })}
         </div>
       </div>
 
-      <div className="mt-7 px-[var(--legacy-gutter)]">
-        <div className="relative h-0.5 rounded-full bg-bone">
+      <div className="mt-7">
+        <div className="relative h-0.5 rounded-full bg-steel">
           <div
             ref={thumbRef}
             className="absolute left-0 top-0 h-full rounded-full bg-orange transition-[width,left] duration-100"
@@ -786,229 +743,96 @@ function ProgramsSection({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
-function OriginsSection({ reducedMotion }: { reducedMotion: boolean }) {
+function CoachesSection({ reducedMotion }: { reducedMotion: boolean }) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const heroRevealRef = useRef<HTMLDivElement | null>(null);
-  const ownerRefs = useRef<HTMLLIElement[]>([]);
-  const paragraphRefs = useRef<HTMLParagraphElement[]>([]);
-  const milestoneRefs = useRef<HTMLDivElement[]>([]);
-  const leadRef = useRef<HTMLParagraphElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const thumbRef = useRef<HTMLDivElement | null>(null);
 
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      const heroImage =
-        heroRevealRef.current?.querySelector<HTMLImageElement>("img") ?? null;
-
-      if (!section) {
-        return;
-      }
-
-      if (reducedMotion) {
-        gsap.set(heroRevealRef.current, { clipPath: "inset(0 0 0 0)" });
-        if (heroImage) gsap.set(heroImage, { scale: 1 });
-        gsap.set(ownerRefs.current, { opacity: 1, x: 0 });
-        gsap.set(
-          [leadRef.current, ...paragraphRefs.current, ...milestoneRefs.current],
-          { opacity: 1, x: 0 }
-        );
-        return;
-      }
-
-      gsap.set(heroRevealRef.current, { clipPath: "inset(100% 0 0 0)" });
-      if (heroImage) gsap.set(heroImage, { scale: 1.06 });
-      gsap.set(ownerRefs.current, { opacity: 0, x: 20 });
-      gsap.set(
-        [leadRef.current, ...paragraphRefs.current, ...milestoneRefs.current],
-        { opacity: 0 }
-      );
-
-      gsap.fromTo(
-        [leadRef.current, ...paragraphRefs.current],
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "legacyEase",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 78%",
-            once: true,
-          },
-        }
-      );
-
-      const proofTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section.querySelector(".origins-proof"),
-          start: "top 82%",
-          once: true,
-        },
-      });
-
-      proofTl
-        .to(ownerRefs.current, {
-          opacity: 1,
-          x: 0,
-          duration: 0.7,
-          stagger: 0.08,
-          ease: "legacyEase",
-        })
-        .to(
-          heroRevealRef.current,
-          {
-            clipPath: "inset(0% 0 0 0)",
-            duration: 1.1,
-            ease: "legacyEase",
-          },
-          0.1
-        );
-
-      if (heroImage) {
-        proofTl.to(
-          heroImage,
-          {
-            scale: 1,
-            duration: 1.1,
-            ease: "legacyEase",
-          },
-          0.1
-        );
-      }
-
-      proofTl.to(
-          milestoneRefs.current,
-          {
-            opacity: 1,
-            duration: 0.7,
-            stagger: 0.08,
-            ease: "legacyEase",
-          },
-          0.35
-        );
-    },
-    { scope: sectionRef, dependencies: [reducedMotion] }
-  );
+  useRail(sectionRef, railRef, thumbRef, ".coach-rail-card", reducedMotion);
 
   return (
     <section
-      id="origins"
+      id="coaches"
       ref={sectionRef}
-      className="relative overflow-hidden bg-ink px-[var(--legacy-gutter)] py-[clamp(100px,13vw,160px)] text-ghost scroll-mt-24"
+      className="relative overflow-hidden bg-field px-[var(--legacy-gutter)] py-[clamp(100px,13vw,160px)] scroll-mt-24"
     >
-      <SectionTexture pattern="radial" tone="dark" />
-      <div className="relative z-10">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.44fr)_minmax(0,0.56fr)] lg:gap-x-16 lg:gap-y-12">
-          <div className="order-1 lg:col-start-1 lg:row-start-1">
-            <p className="legacy-section-label mb-6">[ ORIGINS ]</p>
-            <h2 className="legacy-display text-[clamp(56px,7.5vw,108px)] uppercase leading-[0.9] tracking-[0.02em]">
-              <span className="block text-ghost">Built By</span>
-              <span className="block text-orange">The Pros.</span>
-            </h2>
-          </div>
+      <SectionTexture pattern="dots" tone="light" />
+      <div className="relative z-10 mb-14">
+        <div>
+          <p className="legacy-section-label mb-4">[ THE TEAM ]</p>
+          <h2 className="legacy-display text-[clamp(56px,7.5vw,108px)] uppercase leading-[0.9] tracking-[0.02em]">
+            <span className="block text-pitch">Built By</span>
+            <span className="block text-orange">The Pros.</span>
+          </h2>
+          <p className="mt-6 max-w-[540px] text-[15px] font-light leading-[1.85] text-slate">
+            NFL and MLB veterans, a CEO forged in professional MMA, and trainers
+            who live the work every day — guiding your athlete&apos;s journey with
+            expertise, motivation, and personalized coaching.
+          </p>
+        </div>
+      </div>
 
-          <div className="order-2 lg:col-start-2 lg:row-start-1">
-            <p
-              ref={leadRef}
-              className="text-[clamp(20px,2.4vw,30px)] font-extrabold leading-[1.35] tracking-[-0.02em] text-ghost"
+      <div
+        ref={railRef}
+        data-cursor="drag"
+        className="relative z-10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <div className="flex w-max flex-nowrap snap-x snap-mandatory gap-5">
+          {coachCards.map((coach) => (
+            <Link
+              key={coach.slug}
+              href={`/coaches/${coach.slug}`}
+              data-cursor="link"
+              className="coach-rail-card group w-[clamp(240px,26vw,320px)] shrink-0 snap-start overflow-hidden rounded-[14px] border border-bone bg-chalk transition-all duration-300 hover:-translate-y-1 hover:border-orange hover:shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
             >
-              {originsStory.lead}
-            </p>
-            <div className="mt-6 space-y-5">
-              {originsStory.paragraphs.map((paragraph, index) => (
-                <p
-                  key={paragraph}
-                  ref={(element) => {
-                    if (element) {
-                      paragraphRefs.current[index] = element;
-                    }
-                  }}
-                  className="text-[15px] font-light leading-[1.9] text-coal"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          <div className="origins-proof order-3 border-t border-steel pt-10 lg:col-start-1 lg:row-start-2 lg:pt-0 lg:mt-0">
-            <p className="legacy-section-label">[ Ownership ]</p>
-            <p className="mt-4 text-[15px] font-light leading-[1.85] text-coal">
-              {originsStory.ownershipIntro}
-            </p>
-            <ul className="mt-6 flex flex-col gap-3">
-              {originsOwners.map((owner, index) => (
-                <li
-                  key={owner.name}
-                  ref={(element) => {
-                    if (element) {
-                      ownerRefs.current[index] = element;
-                    }
-                  }}
-                  className="flex items-center justify-between gap-4 rounded-[12px] border border-steel bg-charcoal px-5 py-4"
-                >
-                  <div>
-                    <p className="text-[15px] font-semibold tracking-[-0.01em] text-ghost">
-                      {owner.name}
-                    </p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.1em] text-ash">
-                      {owner.role}
-                    </p>
-                  </div>
-                  <span className="legacy-display text-lg leading-none tracking-[0.02em] text-orange/40">
-                    {String(index + 1).padStart(2, "0")}
+              <div className="relative h-[320px] overflow-hidden">
+                <CoachPhoto
+                  slug={coach.slug}
+                  name={coach.name}
+                  sizes="(min-width: 1024px) 25vw, 70vw"
+                  imageClassName="transition-transform duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,11,13,0.92)_0%,rgba(10,11,13,0)_55%)]" />
+                {coach.isOwner ? (
+                  <span className="absolute left-3.5 top-3.5 rounded-[4px] border border-orange/40 bg-ink/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-orange backdrop-blur-md">
+                    Owner
                   </span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-8 grid grid-cols-3 gap-3 border-t border-steel pt-8">
-              {originsMilestones.map((milestone, index) => (
-                <div
-                  key={milestone.label}
-                  ref={(element) => {
-                    if (element) {
-                      milestoneRefs.current[index] = element;
-                    }
-                  }}
-                >
-                  <span className="legacy-display block text-[clamp(24px,3vw,36px)] leading-none tracking-[0.02em] text-orange">
-                    {milestone.value}
-                  </span>
-                  <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.12em] text-ash">
-                    {milestone.label}
-                  </span>
+                ) : null}
+                <div className="absolute inset-x-0 bottom-0 px-4 pb-4">
+                  <h3 className="text-xl font-extrabold tracking-[-0.01em] text-ghost">
+                    {coach.name}
+                  </h3>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.1em] text-coal">
+                    {coach.title}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="order-4 border-t border-steel pt-10 lg:col-start-2 lg:row-start-2 lg:flex lg:flex-col lg:border-t-0 lg:pt-0">
-            <p className="legacy-section-label">[ The Network ]</p>
-            <p className="mt-4 text-[15px] font-light leading-[1.85] text-coal">
-              {originsStory.facilityIntro}
-            </p>
-            <div
-              ref={heroRevealRef}
-              className="relative mt-6 min-h-[240px] overflow-hidden sm:min-h-[280px] lg:mt-6 lg:min-h-[420px] lg:flex-1"
-            >
-              <Image
-                src={originsHero.src}
-                alt={originsHero.alt}
-                fill
-                sizes="(min-width: 1024px) 56vw, 100vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,11,13,0.78)_0%,rgba(10,11,13,0.08)_45%,rgba(10,11,13,0)_100%)]" />
-              <div className="absolute inset-x-0 bottom-0 px-5 py-4">
-                <p className="text-sm font-semibold tracking-[-0.01em] text-ghost">
-                  {originsHero.location}
-                </p>
-                <p className="mt-1 text-xs text-coal">{originsHero.detail}</p>
               </div>
-            </div>
-          </div>
+              <div className="px-4 py-4">
+                <p className="line-clamp-2 text-sm italic leading-relaxed text-slate">
+                  &ldquo;{coach.quote}&rdquo;
+                </p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {coach.specialties.map((specialty) => (
+                    <span
+                      key={specialty}
+                      className="rounded-[4px] border border-bone bg-field px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-slate"
+                    >
+                      {specialty}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-7">
+        <div className="relative h-0.5 rounded-full bg-bone">
+          <div
+            ref={thumbRef}
+            className="absolute left-0 top-0 h-full rounded-full bg-orange transition-[width,left] duration-100"
+          />
         </div>
       </div>
     </section>
@@ -1062,7 +886,7 @@ function LocationsSection({
     >
       <SectionTexture pattern="cross" tone="light" />
       <div className="relative z-10">
-      <div className="mb-14 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mb-14">
         <div>
           <p className="legacy-section-label mb-4">[ 5 GEORGIA LOCATIONS ]</p>
           <h2 className="text-[clamp(28px,4vw,48px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-pitch">
@@ -1070,15 +894,6 @@ function LocationsSection({
             <span className="block text-orange">Compete everywhere.</span>
           </h2>
         </div>
-        <Link
-          href="/locations"
-          data-cursor="link"
-          className="group relative inline-flex items-center gap-1 self-start text-[11px] font-bold uppercase tracking-[0.1em] text-slate hover:text-pitch"
-        >
-          View All Locations
-          <ArrowRight className="h-3.5 w-3.5" />
-          <span className="absolute inset-x-0 bottom-[-3px] h-px origin-left scale-x-0 bg-orange transition-transform duration-300 group-hover:scale-x-100" />
-        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -1207,16 +1022,6 @@ function AthleteResultsSection({ reducedMotion }: { reducedMotion: boolean }) {
               </div>
             ))}
           </div>
-
-          <Link
-            href="/athletes"
-            data-cursor="link"
-            className="group relative mt-12 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.1em] text-orange"
-          >
-            See All Success Stories
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-            <span className="absolute inset-x-0 bottom-[-3px] h-px origin-left scale-x-0 bg-orange transition-transform duration-300 group-hover:scale-x-100" />
-          </Link>
         </div>
 
         <div>
@@ -1342,7 +1147,7 @@ function TestimonialsSection({ reducedMotion }: { reducedMotion: boolean }) {
     <section
       id="testimonials"
       ref={sectionRef}
-      className="relative overflow-hidden bg-field px-[var(--legacy-gutter)] py-[clamp(80px,10vw,140px)]"
+      className="relative overflow-hidden bg-field px-[var(--legacy-gutter)] py-[clamp(80px,10vw,140px)] scroll-mt-24"
     >
       <SectionTexture pattern="radial" tone="light" />
       <div className="relative z-10">
@@ -1459,7 +1264,7 @@ function CommandSection({ reducedMotion }: { reducedMotion: boolean }) {
     <section
       id="command"
       ref={sectionRef}
-      className="relative overflow-hidden bg-ink px-[var(--legacy-gutter)] py-[clamp(100px,13vw,160px)] text-ghost"
+      className="relative overflow-hidden bg-ink px-[var(--legacy-gutter)] py-[clamp(100px,13vw,160px)] text-ghost scroll-mt-24"
     >
       <SectionTexture pattern="cross" tone="dark" />
       <div className="relative z-10 grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-20">
@@ -1659,175 +1464,6 @@ function LeadCaptureSection({
   );
 }
 
-function SiteFooter({ locations }: { locations: Location[] }) {
-  return (
-    <footer className="relative overflow-hidden bg-ink px-[var(--legacy-gutter)] pb-[clamp(28px,4vw,48px)] pt-[clamp(64px,8vw,96px)] text-ghost">
-      <SectionTexture pattern="noise" tone="dark" />
-      <div className="relative z-10">
-      <div className="flex flex-col gap-12 border-b border-ghost/8 pb-14 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-[320px]">
-          <span className="legacy-display text-4xl uppercase tracking-[0.1em] text-ghost">
-            LEGACY
-          </span>
-          <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.16em] text-ash">
-            Sports Complex
-          </span>
-          <p className="mt-7 text-sm italic text-coal">Where athletes become recruits.</p>
-          <div className="mt-7 flex gap-3">
-            {[
-              { label: "Instagram", href: "https://instagram.com", icon: InstagramIcon },
-              { label: "X", href: "https://x.com", icon: XIcon },
-              { label: "Facebook", href: "https://facebook.com", icon: FacebookIcon },
-            ].map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={item.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-ghost/10 bg-ghost/6 text-coal transition-colors duration-200 hover:border-orange/30 hover:bg-orange/10 hover:text-orange"
-              >
-                <item.icon className="h-[18px] w-[18px]" />
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-12 lg:gap-20">
-          <div>
-            <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.12em] text-orange">
-              Train
-            </p>
-            <div className="flex flex-col gap-3 text-sm text-coal">
-              <Link href="/programs" data-cursor="link" className="hover:text-ghost">
-                Programs
-              </Link>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#programs")}
-                className="text-left hover:text-ghost"
-              >
-                HS Combine Prep
-              </button>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#programs")}
-                className="text-left hover:text-ghost"
-              >
-                College Recruit
-              </button>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#programs")}
-                className="text-left hover:text-ghost"
-              >
-                Team Training
-              </button>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#intake")}
-                className="text-left hover:text-ghost"
-              >
-                Book a Session
-              </button>
-            </div>
-          </div>
-          <div>
-            <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.12em] text-orange">
-              Explore
-            </p>
-            <div className="flex flex-col gap-3 text-sm text-coal">
-              <Link href="/locations" data-cursor="link" className="hover:text-ghost">
-                Locations
-              </Link>
-              {locations.slice(0, 4).map((location) => (
-                <Link
-                  key={location.id}
-                  href={`/locations/${location.slug}`}
-                  data-cursor="link"
-                  className="hover:text-ghost"
-                >
-                  {location.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.12em] text-orange">
-              Company
-            </p>
-            <div className="flex flex-col gap-3 text-sm text-coal">
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#about")}
-                className="text-left hover:text-ghost"
-              >
-                About Us
-              </button>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#origins")}
-                className="text-left hover:text-ghost"
-              >
-                Ownership
-              </button>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#testimonials")}
-                className="text-left hover:text-ghost"
-              >
-                Journal
-              </button>
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => scrollToSection("#intake")}
-                className="text-left hover:text-ghost"
-              >
-                Contact
-              </button>
-              <Link href="/about" data-cursor="link" className="hover:text-ghost">
-                Press
-              </Link>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="flex flex-col gap-3 pt-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
-        <p className="text-[11px] font-light text-ash">
-          Copyright 2026 Legacy Sports Complex. All rights reserved.
-        </p>
-        <p className="text-sm italic text-coal">
-          Owned by champions. Operated for champions.
-        </p>
-        <div className="flex justify-center gap-3 text-[11px] font-light text-ash lg:justify-end">
-          <Link href="/" data-cursor="link" className="hover:text-ghost">
-            Privacy
-          </Link>
-          <span>-</span>
-          <Link href="/" data-cursor="link" className="hover:text-ghost">
-            Terms
-          </Link>
-          <span>-</span>
-          <Link href="/" data-cursor="link" className="hover:text-ghost">
-            Cookies
-          </Link>
-        </div>
-      </div>
-      </div>
-    </footer>
-  );
-}
-
 export function LandingPage({
   locations,
   programs,
@@ -1880,6 +1516,23 @@ export function LandingPage({
     return () => window.clearTimeout(id);
   }, [introReady]);
 
+  useEffect(() => {
+    if (!introReady) {
+      return;
+    }
+
+    const hash = window.location.hash;
+    if (!hash) {
+      return;
+    }
+
+    const id = window.setTimeout(() => {
+      scrollToTarget(hash, { offset: -80 });
+    }, 160);
+
+    return () => window.clearTimeout(id);
+  }, [introReady]);
+
   return (
     <div className="bg-field text-pitch">
       <CustomCursor />
@@ -1887,9 +1540,9 @@ export function LandingPage({
       <HeroSection introReady={introReady} reducedMotion={reducedMotion} />
       <StatStrip reducedMotion={reducedMotion} />
       <BrandStatement reducedMotion={reducedMotion} />
-      <ProgramsSection reducedMotion={reducedMotion} />
-      <OriginsSection reducedMotion={reducedMotion} />
       <LocationsSection locations={locationsMemo} reducedMotion={reducedMotion} />
+      <ProgramsSection reducedMotion={reducedMotion} />
+      <CoachesSection reducedMotion={reducedMotion} />
       <AthleteResultsSection reducedMotion={reducedMotion} />
       <TestimonialsSection reducedMotion={reducedMotion} />
       <CommandSection reducedMotion={reducedMotion} />
@@ -1898,7 +1551,6 @@ export function LandingPage({
         programs={programs}
         reducedMotion={reducedMotion}
       />
-      <SiteFooter locations={locationsMemo} />
     </div>
   );
 }

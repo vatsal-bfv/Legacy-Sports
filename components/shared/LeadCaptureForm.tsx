@@ -13,11 +13,13 @@ export function LeadCaptureForm({
   locations,
   programs,
   defaultLocationId,
+  defaultProgramId,
   variant = "default",
 }: {
   locations: Location[];
   programs: Program[];
   defaultLocationId?: string;
+  defaultProgramId?: string;
   variant?: "default" | "landing";
 }) {
   const [submitted, setSubmitted] = useState(false);
@@ -299,7 +301,7 @@ export function LeadCaptureForm({
             <select
               id="interested_program_id"
               name="interested_program_id"
-              defaultValue={programs[0]?.id}
+              defaultValue={defaultProgramId ?? programs[0]?.id}
               required
               className={landingSelectClass}
             >
@@ -394,6 +396,7 @@ export function LeadCaptureForm({
           <select
             id="interested_program_id"
             name="interested_program_id"
+            defaultValue={defaultProgramId}
             className="flex h-10 w-full rounded-md border border-[#2A2D34] bg-[#15171B] px-3 text-sm text-[#F5F6F7]"
             required
           >

@@ -4,14 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { gsap } from "@/lib/gsap";
-import { scrollToTarget } from "@/lib/lenis";
+import { scrollToTarget, getLenis } from "@/lib/lenis";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { id: "programs", label: "Programs", href: "/#programs" },
-  { id: "locations", label: "Locations", href: "/#locations" },
-  { id: "athletes", label: "Athletes", href: "/#athletes" },
   { id: "about", label: "About", href: "/#about" },
+  { id: "locations", label: "Locations", href: "/#locations" },
+  { id: "programs", label: "Programs", href: "/#programs" },
+  { id: "coaches", label: "Coaches", href: "/#coaches" },
+  { id: "athletes", label: "Athletes", href: "/#athletes" },
+  { id: "testimonials", label: "Testimonials", href: "/#testimonials" },
+  { id: "command", label: "Command OS", href: "/#command" },
+  { id: "intake", label: "Contact", href: "/#intake" },
 ];
 
 const MENU_LOCATIONS = [
@@ -22,13 +26,32 @@ const MENU_LOCATIONS = [
   "Alpharetta",
 ];
 
+const NAV_OFFSET = 120;
+
+function resolveActiveSection() {
+  let current = "";
+
+  for (const link of NAV_LINKS) {
+    const section = document.getElementById(link.id);
+    if (!section) {
+      continue;
+    }
+
+    if (section.getBoundingClientRect().top <= NAV_OFFSET) {
+      current = link.id;
+    }
+  }
+
+  return current;
+}
+
 export function MarketingNav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [scrolled, setScrolled] = useState(!isHome);
+  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("");
   const visibleActiveSection = isHome ? activeSection : "";
 
@@ -47,32 +70,47 @@ export function MarketingNav() {
       return;
     }
 
-    const sections = NAV_LINKS.map((item) => document.getElementById(item.id)).filter(
-      (section): section is HTMLElement => Boolean(section)
-    );
+    const updateActiveSection = () => {
+      setActiveSection(resolveActiveSection());
+    };
 
-    if (!sections.length) {
-      return;
+    updateActiveSection();
+
+    let lenisAttached = false;
+    let lenisPollId = 0;
+
+    const attachLenis = () => {
+      const lenis = getLenis();
+      if (!lenis || lenisAttached) {
+        return lenisAttached;
+      }
+
+      lenis.on("scroll", updateActiveSection);
+      lenisAttached = true;
+      return true;
+    };
+
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    if (!attachLenis()) {
+      lenisPollId = window.setInterval(() => {
+        if (attachLenis()) {
+          window.clearInterval(lenisPollId);
+        }
+      }, 100);
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+      window.clearInterval(lenisPollId);
 
-        if (visible?.target?.id) {
-          setActiveSection(visible.target.id);
-        }
-      },
-      {
-        rootMargin: "-30% 0px -45% 0px",
-        threshold: [0.2, 0.4, 0.6],
+      const lenis = getLenis();
+      if (lenisAttached && lenis) {
+        lenis.off("scroll", updateActiveSection);
       }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+    };
   }, [isHome, pathname]);
 
   useEffect(() => {

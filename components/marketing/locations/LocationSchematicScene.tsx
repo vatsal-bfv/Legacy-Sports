@@ -1,18 +1,46 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Edges, Html, OrbitControls } from "@react-three/drei";
 import type { Group } from "three";
 import type { LocationSchematic, SchematicZone } from "@/lib/marketing/location-schematics";
 
-function ZoneBlock({ zone }: { zone: SchematicZone }) {
-  const emissive = zone.accent ?? "#000000";
-  const emissiveIntensity = zone.accent ? 0.18 : 0;
+function ZoneBlock({
+  zone,
+  isSelected,
+  isHovered,
+  onSelect,
+  onHover,
+}: {
+  zone: SchematicZone;
+  isSelected: boolean;
+  isHovered: boolean;
+  onSelect: (zoneId: string) => void;
+  onHover: (zoneId: string | null) => void;
+}) {
+  const emissive = zone.accent ?? (isSelected || isHovered ? "#ff5a1f" : "#000000");
+  const emissiveIntensity =
+    isSelected ? 0.42 : isHovered ? 0.28 : zone.accent ? 0.18 : 0;
 
   return (
     <group position={[zone.x, zone.height / 2, zone.z]}>
-      <mesh>
+      <mesh
+        onClick={(event: ThreeEvent<MouseEvent>) => {
+          event.stopPropagation();
+          onSelect(zone.id);
+        }}
+        onPointerOver={(event: ThreeEvent<PointerEvent>) => {
+          event.stopPropagation();
+          onHover(zone.id);
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={(event: ThreeEvent<PointerEvent>) => {
+          event.stopPropagation();
+          onHover(null);
+          document.body.style.cursor = "auto";
+        }}
+      >
         <boxGeometry args={[zone.width, zone.height, zone.depth]} />
         <meshStandardMaterial
           color={zone.color}
@@ -23,7 +51,12 @@ function ZoneBlock({ zone }: { zone: SchematicZone }) {
           transparent={zone.id === "lobby"}
           opacity={zone.id === "lobby" ? 0.92 : 1}
         />
-        <Edges color="#111111" threshold={15} opacity={0.35} transparent />
+        <Edges
+          color={isSelected || isHovered ? "#ff5a1f" : "#111111"}
+          threshold={15}
+          opacity={isSelected || isHovered ? 0.85 : 0.35}
+          transparent
+        />
       </mesh>
       <Html
         center
@@ -31,7 +64,13 @@ function ZoneBlock({ zone }: { zone: SchematicZone }) {
         distanceFactor={28}
         style={{ pointerEvents: "none" }}
       >
-        <span className="whitespace-nowrap rounded bg-pitch/85 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-field">
+        <span
+          className={`whitespace-nowrap rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] ${
+            isSelected || isHovered
+              ? "bg-orange text-field"
+              : "bg-pitch/85 text-field"
+          }`}
+        >
           {zone.label}
         </span>
       </Html>
@@ -42,14 +81,22 @@ function ZoneBlock({ zone }: { zone: SchematicZone }) {
 function FacilityModel({
   schematic,
   autoRotate,
+  selectedZoneId,
+  hoveredZoneId,
+  onZoneSelect,
+  onZoneHover,
 }: {
   schematic: LocationSchematic;
   autoRotate: boolean;
+  selectedZoneId: string | null;
+  hoveredZoneId: string | null;
+  onZoneSelect: (zoneId: string) => void;
+  onZoneHover: (zoneId: string | null) => void;
 }) {
   const rootRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
-    if (!autoRotate || !rootRef.current) {
+    if (!autoRotate || !rootRef.current || selectedZoneId) {
       return;
     }
     rootRef.current.rotation.y += delta * 0.08;
@@ -62,7 +109,14 @@ function FacilityModel({
         <meshStandardMaterial color="#f8f7f4" roughness={0.95} metalness={0} />
       </mesh>
       {schematic.zones.map((zone) => (
-        <ZoneBlock key={zone.id} zone={zone} />
+        <ZoneBlock
+          key={zone.id}
+          zone={zone}
+          isSelected={selectedZoneId === zone.id}
+          isHovered={hoveredZoneId === zone.id}
+          onSelect={onZoneSelect}
+          onHover={onZoneHover}
+        />
       ))}
     </group>
   );
@@ -71,9 +125,19 @@ function FacilityModel({
 export function LocationSchematicScene({
   schematic,
   autoRotate = true,
+  immersive = false,
+  selectedZoneId = null,
+  hoveredZoneId = null,
+  onZoneSelect,
+  onZoneHover,
 }: {
   schematic: LocationSchematic;
   autoRotate?: boolean;
+  immersive?: boolean;
+  selectedZoneId?: string | null;
+  hoveredZoneId?: string | null;
+  onZoneSelect?: (zoneId: string) => void;
+  onZoneHover?: (zoneId: string | null) => void;
 }) {
   const cameraPosition = useMemo<[number, number, number]>(() => [42, 34, 42], []);
 
@@ -81,14 +145,21 @@ export function LocationSchematicScene({
     <Canvas
       dpr={[1, 1.75]}
       camera={{ fov: 42, position: cameraPosition, near: 0.1, far: 200 }}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: true, alpha: immersive }}
       className="h-full w-full touch-none"
     >
-      <color attach="background" args={["#f8f7f4"]} />
+      {!immersive ? <color attach="background" args={["#f8f7f4"]} /> : null}
       <ambientLight intensity={0.55} />
       <directionalLight intensity={1.05} position={[20, 30, 10]} />
       <directionalLight intensity={0.35} position={[-15, 12, -8]} />
-      <FacilityModel schematic={schematic} autoRotate={autoRotate} />
+      <FacilityModel
+        schematic={schematic}
+        autoRotate={autoRotate}
+        selectedZoneId={selectedZoneId}
+        hoveredZoneId={hoveredZoneId}
+        onZoneSelect={onZoneSelect ?? (() => undefined)}
+        onZoneHover={onZoneHover ?? (() => undefined)}
+      />
       <OrbitControls
         enablePan={false}
         minDistance={32}

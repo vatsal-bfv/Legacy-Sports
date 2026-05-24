@@ -13,7 +13,7 @@ const LocationSchematicScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full min-h-[420px] items-center justify-center bg-field text-sm text-smoke">
+      <div className="flex h-full min-h-[420px] items-center justify-center bg-field/40 text-sm text-smoke">
         Loading 3D schematic…
       </div>
     ),
@@ -22,8 +22,18 @@ const LocationSchematicScene = dynamic(
 
 export function LocationSchematic({
   schematic,
+  variant = "card",
+  selectedZoneId = null,
+  hoveredZoneId = null,
+  onZoneSelect,
+  onZoneHover,
 }: {
   schematic: LocationSchematic;
+  variant?: "card" | "immersive";
+  selectedZoneId?: string | null;
+  hoveredZoneId?: string | null;
+  onZoneSelect?: (zoneId: string) => void;
+  onZoneHover?: (zoneId: string | null) => void;
 }) {
   const [preferStatic, setPreferStatic] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
@@ -54,6 +64,30 @@ export function LocationSchematic({
   }, []);
 
   const showFallback = preferStatic || webglFailed;
+  const isImmersive = variant === "immersive";
+
+  const scene = showFallback ? (
+    <LocationSchematicFallback
+      schematic={schematic}
+      selectedZoneId={selectedZoneId}
+      onZoneSelect={onZoneSelect}
+      onZoneHover={onZoneHover}
+    />
+  ) : (
+    <LocationSchematicScene
+      schematic={schematic}
+      autoRotate={!preferStatic && !selectedZoneId}
+      immersive={isImmersive}
+      selectedZoneId={selectedZoneId}
+      hoveredZoneId={hoveredZoneId}
+      onZoneSelect={onZoneSelect}
+      onZoneHover={onZoneHover}
+    />
+  );
+
+  if (isImmersive) {
+    return <div className="absolute inset-0">{scene}</div>;
+  }
 
   return (
     <div className="overflow-hidden rounded-[16px] border border-bone bg-field shadow-[0_24px_64px_rgba(17,17,17,0.06)]">
@@ -65,25 +99,27 @@ export function LocationSchematic({
           <p className="mt-0.5 text-sm font-semibold text-pitch">{schematic.name}</p>
         </div>
         <p className="hidden text-[10px] font-bold uppercase tracking-[0.1em] text-smoke sm:block">
-          Drag to orbit
+          Drag to orbit · Click rooms
         </p>
       </div>
 
       <div className="relative aspect-[4/3] min-h-[320px] w-full sm:min-h-[420px] lg:min-h-[480px]">
-        {showFallback ? (
-          <LocationSchematicFallback schematic={schematic} />
-        ) : (
-          <LocationSchematicScene schematic={schematic} autoRotate={!preferStatic} />
-        )}
+        {scene}
       </div>
 
       <div className="border-t border-bone bg-chalk px-4 py-3 sm:px-5">
         <p className="text-sm leading-relaxed text-slate">{schematic.caption}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {schematic.zones.map((zone) => (
-            <span
+            <button
               key={zone.id}
-              className="inline-flex items-center gap-1.5 rounded-full border border-bone bg-field px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-slate"
+              type="button"
+              onClick={() => onZoneSelect?.(zone.id)}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition-colors ${
+                selectedZoneId === zone.id
+                  ? "border-orange bg-orange/10 text-orange"
+                  : "border-bone bg-field text-slate hover:border-orange/40"
+              }`}
             >
               <span
                 className="h-2 w-2 rounded-full"
@@ -91,7 +127,7 @@ export function LocationSchematic({
                 aria-hidden
               />
               {zone.label}
-            </span>
+            </button>
           ))}
         </div>
       </div>

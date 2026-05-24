@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import type { AthleteGender } from "@/lib/marketing/featured-athletes";
 import { AthleteHologramFallback } from "@/components/marketing/athletes/AthleteHologramFallback";
 
 const AthleteHologramScene = dynamic(
@@ -19,7 +20,13 @@ const AthleteHologramScene = dynamic(
   }
 );
 
-export function AthleteHologram() {
+export function AthleteHologram({
+  gender = "male",
+  variant = "card",
+}: {
+  gender?: AthleteGender;
+  variant?: "card" | "immersive";
+}) {
   const [preferStatic, setPreferStatic] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
 
@@ -49,14 +56,25 @@ export function AthleteHologram() {
   }, []);
 
   const showFallback = preferStatic || webglFailed;
+  const isImmersive = variant === "immersive";
+
+  const scene = showFallback ? (
+    <AthleteHologramFallback />
+  ) : (
+    <AthleteHologramScene
+      autoRotate={!preferStatic}
+      gender={gender}
+      immersive={isImmersive}
+    />
+  );
+
+  if (isImmersive) {
+    return <div className="absolute inset-0 z-[1]">{scene}</div>;
+  }
 
   return (
     <div className="relative h-full min-h-[320px] w-full">
-      {showFallback ? (
-        <AthleteHologramFallback />
-      ) : (
-        <AthleteHologramScene autoRotate={!preferStatic} />
-      )}
+      {scene}
     </div>
   );
 }

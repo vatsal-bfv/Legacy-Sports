@@ -14,6 +14,7 @@ export type Location = {
 
 export type Program = {
   id: string;
+  slug: string;
   name: string;
   description: string;
   monthly_price: number;

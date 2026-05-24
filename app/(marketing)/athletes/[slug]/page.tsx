@@ -18,5 +18,5 @@ export default async function PublicAthletePage({
     notFound();
   }
 
-  return <AthleteProfileExperience athlete={athlete} />;
+  return <AthleteProfileExperience key={athlete.slug} athlete={athlete} />;
 }

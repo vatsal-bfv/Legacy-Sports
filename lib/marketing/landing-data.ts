@@ -48,47 +48,47 @@ export const credentialCards = [
 export const programCards = [
   {
     number: "01",
+    slug: "youth-performance",
     icon: "rocket",
     name: "Youth Performance",
     meta: "Ages 6-13 - Foundational Track",
     description:
       "Building the movement foundation. Speed, agility, coordination.",
-    price: "$199",
   },
   {
     number: "02",
+    slug: "hs-combine-prep",
     icon: "gauge",
     name: "HS Combine Prep",
     meta: "Ages 14-18 - 90-Min Sessions",
     description:
       "40-yard, vertical, bench - measured monthly. Your numbers, on record.",
-    price: "$349",
   },
   {
     number: "03",
+    slug: "college-recruit-track",
     icon: "radar",
     name: "College Recruit Track",
     meta: "Ages 15-18 - Exposure Track",
     description:
       "Your measurables in front of 40+ scouts. The path from local to national.",
-    price: "$449",
   },
   {
     number: "04",
+    slug: "adult-performance",
     icon: "shield",
     name: "Adult Performance",
     meta: "18+ - Elite Conditioning",
     description: "Pro-level programming without the pro roster.",
-    price: "$149",
   },
   {
     number: "05",
+    slug: "team-training",
     icon: "users",
     name: "Team Training",
     meta: "All Ages - Seasonal Blocks",
     description:
       "Off-season conditioning. Pre-season dominance.",
-    price: "$299",
   },
 ];
 

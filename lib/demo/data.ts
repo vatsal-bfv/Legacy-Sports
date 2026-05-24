@@ -144,6 +144,7 @@ export const locations: Location[] = [
 export const programs: Program[] = [
   {
     id: "p0000001-0001-4000-8000-000000000001",
+    slug: "youth-performance",
     name: "Youth Performance",
     description:
       "Foundational athletic development for ages 10–14. Speed, agility, and sport-specific fundamentals.",
@@ -153,6 +154,7 @@ export const programs: Program[] = [
   },
   {
     id: "p0000001-0001-4000-8000-000000000002",
+    slug: "hs-combine-prep",
     name: "HS Combine Prep",
     description:
       "Elite combine training for high school athletes targeting college recruitment.",
@@ -162,6 +164,7 @@ export const programs: Program[] = [
   },
   {
     id: "p0000001-0001-4000-8000-000000000003",
+    slug: "college-recruit-track",
     name: "College Recruit Track",
     description:
       "Advanced measurables tracking, film study, and recruiter-facing profiles.",
@@ -171,6 +174,7 @@ export const programs: Program[] = [
   },
   {
     id: "p0000001-0001-4000-8000-000000000004",
+    slug: "adult-performance",
     name: "Adult Performance",
     description: "Strength and conditioning for adult athletes and weekend warriors.",
     monthly_price: 149,
@@ -179,6 +183,7 @@ export const programs: Program[] = [
   },
   {
     id: "p0000001-0001-4000-8000-000000000005",
+    slug: "team-training",
     name: "Team Training",
     description: "Custom team packages for clubs and high school programs.",
     monthly_price: 299,

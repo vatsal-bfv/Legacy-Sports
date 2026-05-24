@@ -25,10 +25,13 @@ export type AthleteWearableVital = {
   animation?: "heart" | "pulse" | "wave" | "step";
 };
 
+export type AthleteGender = "male" | "female";
+
 export type FeaturedAthlete = {
   id: string;
   first_name: string;
   last_name: string;
+  gender: AthleteGender;
   sport: string;
   school: string;
   photo_url: string;
@@ -44,6 +47,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     id: "a0000001-0001-4000-8000-000000000001",
     first_name: "Marcus",
     last_name: "Johnson",
+    gender: "male",
     sport: "football",
     school: "North Gwinnett High School",
     photo_url: HERO_ATHLETE_PHOTOS.marcus,
@@ -101,6 +105,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     id: "a0000001-0001-4000-8000-000000000002",
     first_name: "Ariana",
     last_name: "Brooks",
+    gender: "female",
     sport: "track",
     school: "Mill Creek High School",
     photo_url: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -158,6 +163,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     id: "a0000001-0001-4000-8000-000000000004",
     first_name: "DeShawn",
     last_name: "Carter",
+    gender: "male",
     sport: "football",
     school: "Roswell High School",
     photo_url: HERO_ATHLETE_PHOTOS.deshawn,
@@ -215,6 +221,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     id: "a0000001-0001-4000-8000-000000000005",
     first_name: "Emma",
     last_name: "Patel",
+    gender: "female",
     sport: "volleyball",
     school: "Johns Creek High School",
     photo_url: HERO_ATHLETE_PHOTOS.emma,

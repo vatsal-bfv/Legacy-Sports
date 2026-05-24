@@ -8,6 +8,8 @@ export type SchematicZone = {
   height: number;
   color: string;
   accent?: string;
+  imageUrl: string;
+  description: string;
 };
 
 export type LocationSchematic = {
@@ -33,6 +35,56 @@ const ZONE_COLORS = {
   science: "#6b4c3b",
 } as const;
 
+const ZONE_MEDIA: Record<
+  string,
+  Pick<SchematicZone, "imageUrl" | "description">
+> = {
+  lobby: {
+    imageUrl:
+      "https://images.pexels.com/photos/4672184/pexels-photo-4672184.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Check-in, parent lounge, and athlete welcome area.",
+  },
+  turf: {
+    imageUrl:
+      "https://images.pexels.com/photos/399187/pexels-photo-399187.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Full-speed turf runway for sprint work, agility, and position drills.",
+  },
+  weight: {
+    imageUrl:
+      "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Racks, platforms, and sport-specific strength stations.",
+  },
+  recovery: {
+    imageUrl:
+      "https://images.pexels.com/photos/6636339/pexels-photo-6636339.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Normatec, mobility tools, and active recovery protocols.",
+  },
+  combine: {
+    imageUrl:
+      "https://images.pexels.com/photos/416778/pexels-photo-416778.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Laser timing, vertical testing, and combine-style measurables.",
+  },
+  film: {
+    imageUrl:
+      "https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Breakdown sessions, playbook installs, and recruiting review.",
+  },
+  science: {
+    imageUrl:
+      "https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "Force plates, biomechanics capture, and performance diagnostics.",
+  },
+};
+
+function zone(
+  id: string,
+  label: string,
+  layout: Omit<SchematicZone, "id" | "label" | "imageUrl" | "description">
+): SchematicZone {
+  const media = ZONE_MEDIA[id] ?? ZONE_MEDIA.turf;
+  return { id, label, ...layout, ...media };
+}
+
 export const locationSchematics: LocationSchematic[] = [
   {
     slug: "suwanee",
@@ -44,11 +96,11 @@ export const locationSchematics: LocationSchematic[] = [
     promptSeed:
       "Suwanee flagship: 15,000 sq ft rectangular industrial shell, central 70-yard turf spine, flanking weight + recovery pods, front lobby and check-in.",
     zones: [
-      { id: "lobby", label: "Lobby", x: 0, z: 15, width: 14, depth: 6, height: 12, color: ZONE_COLORS.lobby },
-      { id: "turf", label: "Turf Field", x: 0, z: -2, width: 28, depth: 18, height: 10, color: ZONE_COLORS.turf, accent: "#ff5a1f" },
-      { id: "weight", label: "Weight Room", x: -14, z: 4, width: 12, depth: 14, height: 11, color: ZONE_COLORS.weight },
-      { id: "recovery", label: "Recovery", x: 14, z: 4, width: 10, depth: 12, height: 9, color: ZONE_COLORS.recovery },
-      { id: "combine", label: "Combine Lab", x: 14, z: -12, width: 10, depth: 10, height: 9, color: ZONE_COLORS.lab },
+      zone("lobby", "Lobby", { x: 0, z: 15, width: 14, depth: 6, height: 12, color: ZONE_COLORS.lobby }),
+      zone("turf", "Turf Field", { x: 0, z: -2, width: 28, depth: 18, height: 10, color: ZONE_COLORS.turf, accent: "#ff5a1f" }),
+      zone("weight", "Weight Room", { x: -14, z: 4, width: 12, depth: 14, height: 11, color: ZONE_COLORS.weight }),
+      zone("recovery", "Recovery", { x: 14, z: 4, width: 10, depth: 12, height: 9, color: ZONE_COLORS.recovery }),
+      zone("combine", "Combine Lab", { x: 14, z: -12, width: 10, depth: 10, height: 9, color: ZONE_COLORS.lab }),
     ],
   },
   {
@@ -61,10 +113,10 @@ export const locationSchematics: LocationSchematic[] = [
     promptSeed:
       "Lawrenceville: 12,000 sq ft L-shaped floor plan, turf center, film room rear corner, open rack weight area front-left.",
     zones: [
-      { id: "lobby", label: "Lobby", x: -12, z: 13, width: 10, depth: 5, height: 11, color: ZONE_COLORS.lobby },
-      { id: "turf", label: "Turf Field", x: 2, z: -1, width: 24, depth: 16, height: 10, color: ZONE_COLORS.turf },
-      { id: "weight", label: "Weight Room", x: -13, z: 2, width: 11, depth: 13, height: 11, color: ZONE_COLORS.weight },
-      { id: "film", label: "Film Room", x: 13, z: -10, width: 9, depth: 8, height: 8, color: ZONE_COLORS.film },
+      zone("lobby", "Lobby", { x: -12, z: 13, width: 10, depth: 5, height: 11, color: ZONE_COLORS.lobby }),
+      zone("turf", "Turf Field", { x: 2, z: -1, width: 24, depth: 16, height: 10, color: ZONE_COLORS.turf }),
+      zone("weight", "Weight Room", { x: -13, z: 2, width: 11, depth: 13, height: 11, color: ZONE_COLORS.weight }),
+      zone("film", "Film Room", { x: 13, z: -10, width: 9, depth: 8, height: 8, color: ZONE_COLORS.film }),
     ],
   },
   {
@@ -77,10 +129,10 @@ export const locationSchematics: LocationSchematic[] = [
     promptSeed:
       "Hoschton: 11,000 sq ft narrow bay, linear turf runway, weight racks along west wall, recovery nook east side.",
     zones: [
-      { id: "lobby", label: "Lobby", x: 0, z: 12, width: 12, depth: 5, height: 10, color: ZONE_COLORS.lobby },
-      { id: "turf", label: "Turf Field", x: 0, z: -2, width: 22, depth: 14, height: 9, color: ZONE_COLORS.turf },
-      { id: "weight", label: "Weight Room", x: -11, z: 0, width: 9, depth: 12, height: 10, color: ZONE_COLORS.weight },
-      { id: "recovery", label: "Recovery", x: 11, z: 2, width: 8, depth: 10, height: 8, color: ZONE_COLORS.recovery },
+      zone("lobby", "Lobby", { x: 0, z: 12, width: 12, depth: 5, height: 10, color: ZONE_COLORS.lobby }),
+      zone("turf", "Turf Field", { x: 0, z: -2, width: 22, depth: 14, height: 9, color: ZONE_COLORS.turf }),
+      zone("weight", "Weight Room", { x: -11, z: 0, width: 9, depth: 12, height: 10, color: ZONE_COLORS.weight }),
+      zone("recovery", "Recovery", { x: 11, z: 2, width: 8, depth: 10, height: 8, color: ZONE_COLORS.recovery }),
     ],
   },
   {
@@ -93,10 +145,10 @@ export const locationSchematics: LocationSchematic[] = [
     promptSeed:
       "Canton: 13,000 sq ft wide bay, turf center-left, sports science + testing lab rear-right, weight floor front.",
     zones: [
-      { id: "lobby", label: "Lobby", x: -10, z: 14, width: 12, depth: 5, height: 11, color: ZONE_COLORS.lobby },
-      { id: "turf", label: "Turf Field", x: -2, z: -2, width: 26, depth: 16, height: 10, color: ZONE_COLORS.turf },
-      { id: "weight", label: "Weight Room", x: -14, z: 4, width: 11, depth: 13, height: 11, color: ZONE_COLORS.weight },
-      { id: "science", label: "Sports Science", x: 14, z: -8, width: 10, depth: 10, height: 9, color: ZONE_COLORS.science, accent: "#ff5a1f" },
+      zone("lobby", "Lobby", { x: -10, z: 14, width: 12, depth: 5, height: 11, color: ZONE_COLORS.lobby }),
+      zone("turf", "Turf Field", { x: -2, z: -2, width: 26, depth: 16, height: 10, color: ZONE_COLORS.turf }),
+      zone("weight", "Weight Room", { x: -14, z: 4, width: 11, depth: 13, height: 11, color: ZONE_COLORS.weight }),
+      zone("science", "Sports Science", { x: 14, z: -8, width: 10, depth: 10, height: 9, color: ZONE_COLORS.science, accent: "#ff5a1f" }),
     ],
   },
   {
@@ -109,10 +161,10 @@ export const locationSchematics: LocationSchematic[] = [
     promptSeed:
       "Alpharetta: 12,500 sq ft premium suburban shell, turf spine, recovery suite, pro weight floor, minimal lobby.",
     zones: [
-      { id: "lobby", label: "Lobby", x: 0, z: 13, width: 11, depth: 5, height: 11, color: ZONE_COLORS.lobby },
-      { id: "turf", label: "Turf Field", x: 0, z: -1, width: 24, depth: 15, height: 10, color: ZONE_COLORS.turf },
-      { id: "weight", label: "Weight Room", x: -13, z: 3, width: 11, depth: 12, height: 11, color: ZONE_COLORS.weight },
-      { id: "recovery", label: "Recovery", x: 13, z: -6, width: 9, depth: 10, height: 8, color: ZONE_COLORS.recovery },
+      zone("lobby", "Lobby", { x: 0, z: 13, width: 11, depth: 5, height: 11, color: ZONE_COLORS.lobby }),
+      zone("turf", "Turf Field", { x: 0, z: -1, width: 24, depth: 15, height: 10, color: ZONE_COLORS.turf }),
+      zone("weight", "Weight Room", { x: -13, z: 3, width: 11, depth: 12, height: 11, color: ZONE_COLORS.weight }),
+      zone("recovery", "Recovery", { x: 13, z: -6, width: 9, depth: 10, height: 8, color: ZONE_COLORS.recovery }),
     ],
   },
 ];
