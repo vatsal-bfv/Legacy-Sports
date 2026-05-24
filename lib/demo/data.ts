@@ -645,8 +645,8 @@ function generateBackgroundLeads(): Lead[] {
   const locIds = Object.values(LOCATION_IDS);
   const leads: Lead[] = [];
 
-  for (let i = 0; i < 198; i++) {
-    const daysAgo = Math.floor((i * 90) / 198);
+  for (let i = 0; i < 13; i++) {
+    const daysAgo = Math.floor((i * 30) / 13);
     const created = new Date(Date.now() - daysAgo * 86400000);
     created.setHours(8 + (i % 10), (i * 7) % 60, 0, 0);
     leads.push({

@@ -94,7 +94,7 @@ function StatusColumn({
     <KanbanColumn
       value={status}
       className={cn(
-        "min-h-[280px] rounded-lg border border-bone bg-field p-4",
+        "min-h-[200px] min-w-0 rounded-lg border border-bone bg-field p-3",
         styles.column,
         className
       )}
@@ -199,7 +199,7 @@ export function LeadsKanbanBoard() {
         onValueChange={handleValueChange}
         getItemValue={(item) => item.id}
       >
-        <KanbanBoard className="grid grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KanbanBoard className="grid gap-3 pb-4 [grid-template-columns:repeat(5,minmax(0,1fr))] max-xl:overflow-x-auto max-xl:[grid-template-columns:repeat(5,minmax(11rem,1fr))]">
           {LEAD_STATUSES.map((status) => (
             <StatusColumn
               key={status}
