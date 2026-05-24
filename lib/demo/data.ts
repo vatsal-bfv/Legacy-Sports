@@ -4,6 +4,7 @@ import {
   LOCATION_IDS,
 } from "@/lib/constants";
 import { featuredAthletes } from "@/lib/marketing/featured-athletes";
+import { HERO_ATHLETE_PHOTOS } from "./athlete-photos";
 import { heroMeasurables } from "./hero-measurables";
 import { VIDEO_ASSETS } from "./video-sources";
 import type {
@@ -302,7 +303,7 @@ export const heroAthletes: Athlete[] = [
     school: "Desert Vista High School",
     gpa: 3.6,
     home_location_id: LOCATION_IDS.phoenix,
-    photo_url: "https://randomuser.me/api/portraits/men/75.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.marcus,
     parent_name: "Robert Johnson",
     parent_email: "r.johnson@email.demo",
     parent_phone: "(602) 555-1001",
@@ -327,7 +328,7 @@ export const heroAthletes: Athlete[] = [
     school: "Mesa High School",
     gpa: 3.4,
     home_location_id: LOCATION_IDS.mesa,
-    photo_url: "https://randomuser.me/api/portraits/men/18.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.tyler,
     parent_name: "Jennifer Chen",
     parent_email: "j.chen@email.demo",
     parent_phone: "(480) 555-1002",
@@ -353,7 +354,7 @@ export const heroAthletes: Athlete[] = [
     school: "Gilbert High School",
     gpa: 4.0,
     home_location_id: LOCATION_IDS.gilbert,
-    photo_url: "https://randomuser.me/api/portraits/women/65.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.sofia,
     parent_name: "Maria Martinez",
     parent_email: "m.martinez@email.demo",
     parent_phone: "(480) 555-1003",
@@ -379,7 +380,7 @@ export const heroAthletes: Athlete[] = [
     school: "Chaparral High School",
     gpa: 3.2,
     home_location_id: LOCATION_IDS.scottsdale,
-    photo_url: "https://randomuser.me/api/portraits/men/52.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.deshawn,
     parent_name: "Darnell Williams",
     parent_email: "d.williams@email.demo",
     parent_phone: "(480) 555-1004",
@@ -405,7 +406,7 @@ export const heroAthletes: Athlete[] = [
     school: "Hamilton High School",
     gpa: 3.8,
     home_location_id: LOCATION_IDS.chandler,
-    photo_url: "https://randomuser.me/api/portraits/women/32.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.emma,
     parent_name: "Priya Patel",
     parent_email: "p.patel@email.demo",
     parent_phone: "(480) 555-1005",

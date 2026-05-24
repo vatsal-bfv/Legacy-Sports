@@ -1,3 +1,5 @@
+import { HERO_ATHLETE_PHOTOS } from "@/lib/demo/athlete-photos";
+
 export type FeaturedAthleteStat = {
   value: string;
   label: string;
@@ -44,7 +46,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     last_name: "Johnson",
     sport: "football",
     school: "North Gwinnett High School",
-    photo_url: "https://randomuser.me/api/portraits/men/75.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.marcus,
     story:
       "Marcus arrived at Legacy as a sophomore quarterback running a 4.9 forty. Six months of combine prep dropped him to 4.58 with a 36-inch vertical. He now has active D1 conversations and a recruiting profile scouts review through Legacy Command.",
     slug: "marcus-johnson",
@@ -158,7 +160,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     last_name: "Carter",
     sport: "football",
     school: "Roswell High School",
-    photo_url: "https://randomuser.me/api/portraits/men/52.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.deshawn,
     story:
       "DeShawn entered as an overlooked wide receiver with limited recruiting exposure. Twelve months of measurable-focused training produced two D1 offers, a 38-inch vertical, and a scout portal profile viewed by 40+ college programs.",
     slug: "deshawn-carter",
@@ -215,7 +217,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     last_name: "Patel",
     sport: "volleyball",
     school: "Johns Creek High School",
-    photo_url: "https://randomuser.me/api/portraits/women/32.jpg",
+    photo_url: HERO_ATHLETE_PHOTOS.emma,
     story:
       "Emma trains for approach vertical and explosive first-step power at Legacy's Suwanee location. She gained 18 inches on her approach jump in eight months while maintaining 91% session attendance across school and club seasons.",
     slug: "emma-patel",
