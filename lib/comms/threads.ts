@@ -1,5 +1,7 @@
 import type { Athlete, Lead, Message } from "@/lib/demo/types";
 
+export type RetentionStatus = Athlete["status"];
+
 export type CommsThread = {
   id: string;
   type: "athlete" | "lead";
@@ -12,6 +14,9 @@ export type CommsThread = {
   lastMessageAt: string;
   unreadCount: number;
   channels: string[];
+  /** Member retention status — athlete threads only. */
+  retentionStatus: RetentionStatus | null;
+  riskScore: number | null;
 };
 
 export type CommsFilters = {
@@ -19,6 +24,7 @@ export type CommsFilters = {
   unreadOnly: boolean;
   partyType: "all" | "athlete" | "lead";
   locationId: string;
+  retentionStatus: "all" | RetentionStatus;
 };
 
 export const DEFAULT_COMMS_FILTERS: CommsFilters = {
@@ -26,7 +32,28 @@ export const DEFAULT_COMMS_FILTERS: CommsFilters = {
   unreadOnly: false,
   partyType: "all",
   locationId: "all",
+  retentionStatus: "all",
 };
+
+export function retentionStatusLabel(status: RetentionStatus | null): string | null {
+  if (!status) return null;
+  const labels: Record<RetentionStatus, string> = {
+    active: "Active",
+    at_risk: "At risk",
+    paused: "Paused",
+    churned: "Churned",
+  };
+  return labels[status];
+}
+
+export function retentionBadgeVariant(
+  status: RetentionStatus
+): "success" | "warning" | "danger" | "default" {
+  if (status === "at_risk") return "danger";
+  if (status === "churned") return "default";
+  if (status === "paused") return "warning";
+  return "success";
+}
 
 function threadKey(message: Message): string | null {
   if (message.athlete_id) return `athlete:${message.athlete_id}`;
@@ -78,6 +105,8 @@ export function buildThreads(
         lastMessageAt: last.created_at,
         unreadCount,
         channels,
+        retentionStatus: athlete.status,
+        riskScore: athlete.risk_score ?? null,
       });
     } else {
       const leadId = key.replace("lead:", "");
@@ -97,6 +126,8 @@ export function buildThreads(
         lastMessageAt: last.created_at,
         unreadCount,
         channels,
+        retentionStatus: null,
+        riskScore: null,
       });
     }
   }
@@ -132,6 +163,11 @@ export function filterThreads(
       !thread.channels.includes(filters.channel)
     ) {
       return false;
+    }
+    if (filters.retentionStatus !== "all") {
+      if (thread.retentionStatus !== filters.retentionStatus) {
+        return false;
+      }
     }
     return true;
   });

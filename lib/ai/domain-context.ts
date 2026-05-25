@@ -20,6 +20,15 @@ export function buildDomainContext(scopeLocationId?: string): string {
     })
     .join("\n");
 
+  const coaches = demoStore.coaches
+    .map((c) => {
+      const loc = demoStore.locations.find(
+        (l) => l.id === c.primary_location_id
+      )?.name;
+      return `- ${c.first_name} ${c.last_name} (${loc ?? "Legacy"}, id: ${c.id})`;
+    })
+    .join("\n");
+
   const scopeLine = scopeLocationId
     ? `The user has scoped the UI to location id ${scopeLocationId} (${demoStore.locations.find((l) => l.id === scopeLocationId)?.name ?? "unknown"}). Prefer this location when they say "here" or "this location" unless they ask about all locations.`
     : "No location filter is active — queries may span all facilities.";
@@ -33,6 +42,9 @@ ${locations}
 
 ### Programs
 ${programs}
+
+### Owner coaches (Command OS roster)
+${coaches}
 
 ### Key athletes (five-star / demo heroes)
 ${heroes}

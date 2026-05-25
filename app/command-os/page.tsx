@@ -1,5 +1,5 @@
-import { CommandCenterClient } from "@/components/app/CommandCenterClient";
+import { CommandCenterChat } from "@/components/app/CommandCenterChat";
 
 export default function CommandCenterPage() {
-  return <CommandCenterClient />;
+  return <CommandCenterChat />;
 }

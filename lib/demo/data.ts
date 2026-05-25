@@ -4,6 +4,7 @@ import {
   LOCATION_IDS,
 } from "@/lib/constants";
 import { featuredAthletes } from "@/lib/marketing/featured-athletes";
+import { buildDemoCoaches } from "@/lib/demo/coaches-seed";
 import { HERO_ATHLETE_PHOTOS } from "./athlete-photos";
 import { heroMeasurables } from "./hero-measurables";
 import { VIDEO_ASSETS } from "./video-sources";
@@ -192,108 +193,11 @@ export const programs: Program[] = [
   },
 ];
 
-export const coaches: Coach[] = [
-  {
-    id: "c0000001-0001-4000-8000-000000000001",
-    first_name: "James",
-    last_name: "Mitchell",
-    email: "james@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/men/32.jpg",
-    bio: "Former D1 QB coach specializing in combine prep and quarterback development.",
-    specialties: ["football", "quarterback", "combine"],
-    primary_location_id: LOCATION_IDS.phoenix,
-    voice_sample:
-      "Hey there — I wanted to reach out because we've been tracking your athlete's progress closely. The work they've put in is showing up in the numbers, and I think a quick check-in would help us keep that momentum going. Let me know when works for a call.",
-  },
-  {
-    id: COACH_RODRIGUEZ_ID,
-    first_name: "Mike",
-    last_name: "Rodriguez",
-    email: "mike.r@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/men/45.jpg",
-    bio: "Basketball performance coach with 12 years of youth development experience.",
-    specialties: ["basketball", "strength"],
-    primary_location_id: LOCATION_IDS.mesa,
-    voice_sample:
-      "Hi — it's Coach Mike. I noticed we haven't seen your athlete in a few days and wanted to check in. They hit a big squat PR recently and I'd hate for that momentum to slip. Can we get them back on the schedule this week?",
-  },
-  {
-    id: "c0000001-0001-4000-8000-000000000003",
-    first_name: "Sarah",
-    last_name: "Kim",
-    email: "sarah@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/women/44.jpg",
-    bio: "Multi-sport speed and agility specialist.",
-    specialties: ["soccer", "track", "speed"],
-    primary_location_id: LOCATION_IDS.gilbert,
-    voice_sample:
-      "Quick note from Coach Sarah — your athlete has been crushing it in speed work. Let's keep building on that progress.",
-  },
-  {
-    id: "c0000001-0001-4000-8000-000000000004",
-    first_name: "David",
-    last_name: "Thompson",
-    email: "david@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/men/22.jpg",
-    bio: "Wide receiver and route-running specialist.",
-    specialties: ["football", "wide receiver"],
-    primary_location_id: LOCATION_IDS.scottsdale,
-    voice_sample:
-      "Hey — Coach David here. Wanted to celebrate the progress we've seen and talk about next steps for recruitment.",
-  },
-  {
-    id: "c0000001-0001-4000-8000-000000000005",
-    first_name: "Lisa",
-    last_name: "Nguyen",
-    email: "lisa@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/women/68.jpg",
-    bio: "Volleyball and vertical jump development coach.",
-    specialties: ["volleyball", "vertical"],
-    primary_location_id: LOCATION_IDS.chandler,
-    voice_sample:
-      "Hi! Coach Lisa checking in — your athlete's vertical numbers have been trending up and I want to make sure we keep that going.",
-  },
-  {
-    id: "c0000001-0001-4000-8000-000000000006",
-    first_name: "Carlos",
-    last_name: "Rivera",
-    email: "carlos@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/men/55.jpg",
-    bio: "Strength and power development across all sports.",
-    specialties: ["strength", "power"],
-    primary_location_id: LOCATION_IDS.phoenix,
-    voice_sample:
-      "Coach Carlos here — great session last week. Let's lock in the next one.",
-  },
-  {
-    id: "c0000001-0001-4000-8000-000000000007",
-    first_name: "Amy",
-    last_name: "Foster",
-    email: "amy@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/women/26.jpg",
-    bio: "Recovery and sports science integration.",
-    specialties: ["recovery", "wearables"],
-    primary_location_id: LOCATION_IDS.mesa,
-    voice_sample:
-      "Hi — Coach Amy. Your recovery metrics looked solid this week. Keep it up!",
-  },
-  {
-    id: "c0000001-0001-4000-8000-000000000008",
-    first_name: "Ryan",
-    last_name: "O'Brien",
-    email: "ryan@legacy.demo",
-    photo_url: "https://randomuser.me/api/portraits/men/36.jpg",
-    bio: "Baseball performance and arm care.",
-    specialties: ["baseball", "throwing"],
-    primary_location_id: LOCATION_IDS.gilbert,
-    voice_sample:
-      "Coach Ryan — wanted to follow up on your athlete's throwing program progress.",
-  },
-];
+export const coaches: Coach[] = buildDemoCoaches();
 
-const marcusSummary = `Marcus Johnson is one of Legacy's standout quarterback prospects — a 6'2", 195 lb junior at Desert Vista with a 3.6 GPA. Over the past nine months, his 40-yard dash has dropped from 4.78 to 4.62 seconds, and his vertical has climbed from 31" to 36", placing him in the top tier of 2027 recruits in the Southwest. Coaches consistently note his improved hip mobility and faster release. With three D1 programs expressing interest, Marcus profiles as a high-likelihood Power Five commit if his trajectory continues through summer camp season.`;
+const marcusSummary = `Marcus Johnson is one of Legacy's standout quarterback prospects — a 6'2", 195 lb junior at Lambert High School with a 3.6 GPA. Over the past nine months, his 40-yard dash has dropped from 4.78 to 4.62 seconds, and his vertical has climbed from 31" to 36", placing him in the top tier of 2027 recruits in Georgia. Coaches consistently note his improved hip mobility and faster release. With three D1 programs expressing interest, Marcus profiles as a high-likelihood Power Five commit if his trajectory continues through summer camp season.`;
 
-const tylerSummary = `Tyler Chen is a 15-year-old point guard in our Youth Performance program at Mesa. After eight months of consistent 3x/week attendance, he's shown strong lower-body development — a recent squat PR of 245 lbs (up from 225). However, Tyler has missed his last two scheduled sessions this week, representing a 6-day gap that triggers our at-risk protocol. His coach Mike Rodriguez recommends immediate parent outreach referencing his recent strength gains to re-engage before habit decay sets in.`;
+const tylerSummary = `Tyler Chen is a 15-year-old point guard in our Youth Performance program at Lawrenceville. After eight months of consistent 3x/week attendance, he's shown strong lower-body development — a recent squat PR of 245 lbs (up from 225). However, Tyler has missed his last two scheduled sessions this week, representing a 6-day gap that triggers our at-risk protocol. Coach Mohamed Sanu recommends immediate parent outreach referencing his recent strength gains to re-engage before habit decay sets in.`;
 
 export const heroAthletes: Athlete[] = [
   {
@@ -305,13 +209,13 @@ export const heroAthletes: Athlete[] = [
     position: "quarterback",
     gender: "male",
     graduation_year: 2027,
-    school: "Desert Vista High School",
+    school: "Lambert High School",
     gpa: 3.6,
     home_location_id: LOCATION_IDS.phoenix,
     photo_url: HERO_ATHLETE_PHOTOS.marcus,
     parent_name: "Robert Johnson",
     parent_email: "r.johnson@email.demo",
-    parent_phone: "(602) 555-1001",
+    parent_phone: "(470) 555-1001",
     program_id: programs[1].id,
     enrollment_date: "2024-06-01",
     status: "active",
@@ -331,13 +235,13 @@ export const heroAthletes: Athlete[] = [
     position: "point guard",
     gender: "male",
     graduation_year: 2028,
-    school: "Mesa High School",
+    school: "Collins Hill High School",
     gpa: 3.4,
     home_location_id: LOCATION_IDS.mesa,
     photo_url: HERO_ATHLETE_PHOTOS.tyler,
     parent_name: "Jennifer Chen",
     parent_email: "j.chen@email.demo",
-    parent_phone: "(480) 555-1002",
+    parent_phone: "(678) 555-1002",
     program_id: programs[0].id,
     enrollment_date: "2024-04-15",
     status: "at_risk",
@@ -358,13 +262,13 @@ export const heroAthletes: Athlete[] = [
     position: null,
     gender: "female",
     graduation_year: 2029,
-    school: "Gilbert High School",
+    school: "North Oconee High School",
     gpa: 4.0,
     home_location_id: LOCATION_IDS.gilbert,
     photo_url: HERO_ATHLETE_PHOTOS.sofia,
     parent_name: "Maria Martinez",
     parent_email: "m.martinez@email.demo",
-    parent_phone: "(480) 555-1003",
+    parent_phone: "(706) 555-1003",
     program_id: programs[0].id,
     enrollment_date: "2024-05-01",
     status: "active",
@@ -385,13 +289,13 @@ export const heroAthletes: Athlete[] = [
     position: "wide receiver",
     gender: "male",
     graduation_year: 2026,
-    school: "Chaparral High School",
+    school: "Cherokee High School",
     gpa: 3.2,
     home_location_id: LOCATION_IDS.scottsdale,
     photo_url: HERO_ATHLETE_PHOTOS.deshawn,
     parent_name: "Darnell Williams",
     parent_email: "d.williams@email.demo",
-    parent_phone: "(480) 555-1004",
+    parent_phone: "(770) 555-1004",
     program_id: programs[2].id,
     enrollment_date: "2023-09-01",
     status: "active",
@@ -412,13 +316,13 @@ export const heroAthletes: Athlete[] = [
     position: "outside hitter",
     gender: "female",
     graduation_year: 2030,
-    school: "Hamilton High School",
+    school: "Alpharetta High School",
     gpa: 3.8,
     home_location_id: LOCATION_IDS.chandler,
     photo_url: HERO_ATHLETE_PHOTOS.emma,
     parent_name: "Priya Patel",
     parent_email: "p.patel@email.demo",
-    parent_phone: "(480) 555-1005",
+    parent_phone: "(678) 555-1005",
     program_id: programs[0].id,
     enrollment_date: "2024-08-01",
     status: "active",
@@ -1032,16 +936,16 @@ function generateSessions(): Session[] {
     // Lawrenceville
     { locationIndex: 1, coachId: COACH_RODRIGUEZ_ID, programIndex: 0, room: "Court 1", capacity: 22, day_of_week: 1, hour: 8 },
     { locationIndex: 1, coachId: COACH_RODRIGUEZ_ID, programIndex: 0, room: "Turf A", capacity: 20, day_of_week: 2, hour: 10 },
-    { locationIndex: 1, coachId: coaches[6].id, programIndex: 1, room: "Turf B", capacity: 16, day_of_week: 3, hour: 14 },
+    { locationIndex: 1, coachId: coaches[1].id, programIndex: 1, room: "Turf B", capacity: 16, day_of_week: 3, hour: 14 },
     { locationIndex: 1, coachId: COACH_RODRIGUEZ_ID, programIndex: 2, room: "Film Room", capacity: 12, day_of_week: 4, hour: 17 },
-    { locationIndex: 1, coachId: coaches[6].id, programIndex: 4, room: "Court 1", capacity: 20, day_of_week: 5, hour: 8 },
+    { locationIndex: 1, coachId: coaches[1].id, programIndex: 4, room: "Court 1", capacity: 20, day_of_week: 5, hour: 8 },
     { locationIndex: 1, coachId: COACH_RODRIGUEZ_ID, programIndex: 0, room: "Turf A", capacity: 22, day_of_week: 6, hour: 10 },
     // Hoschton
     { locationIndex: 2, coachId: coaches[2].id, programIndex: 0, room: "Field 1", capacity: 20, day_of_week: 1, hour: 9 },
     { locationIndex: 2, coachId: coaches[2].id, programIndex: 1, room: "Turf A", capacity: 18, day_of_week: 2, hour: 15 },
-    { locationIndex: 2, coachId: coaches[7].id, programIndex: 3, room: "Weight", capacity: 15, day_of_week: 3, hour: 18 },
+    { locationIndex: 2, coachId: coaches[2].id, programIndex: 3, room: "Weight", capacity: 15, day_of_week: 3, hour: 18 },
     { locationIndex: 2, coachId: coaches[2].id, programIndex: 0, room: "Field 1", capacity: 20, day_of_week: 4, hour: 9 },
-    { locationIndex: 2, coachId: coaches[7].id, programIndex: 1, room: "Turf A", capacity: 18, day_of_week: 5, hour: 15 },
+    { locationIndex: 2, coachId: coaches[2].id, programIndex: 1, room: "Turf A", capacity: 18, day_of_week: 5, hour: 15 },
     // Canton
     { locationIndex: 3, coachId: coaches[3].id, programIndex: 3, room: "Recovery", capacity: 10, day_of_week: 1, hour: 7 },
     { locationIndex: 3, coachId: coaches[3].id, programIndex: 2, room: "Turf A", capacity: 14, day_of_week: 2, hour: 11 },
@@ -1101,9 +1005,6 @@ export const attendance: Attendance[] = heroAthletes.flatMap((a) =>
     status: i < 2 && a.id === HERO_IDS.tyler ? "no_show" : "attended",
   }))
 );
-
-export const TYLER_REENGAGEMENT_MESSAGE =
-  "Hi Jennifer — Coach Mike here. Tyler crushed a 245 squat PR 3 weeks ago & we've missed him this week. Let's get him back on the schedule — that momentum is worth protecting!";
 
 export const publicAthletes = featuredAthletes.map(
   ({ id, first_name, last_name, sport, school, photo_url, story, slug, stats }) => ({

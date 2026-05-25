@@ -277,7 +277,7 @@ export const messages: Message[] = [
     athlete_id: null,
     lead_id: "lead-001",
     subject: null,
-    body: "Hi — I'm interested in combine prep for my son Lucas (15). We visited the Phoenix location page.",
+    body: "Hi — I'm interested in combine prep for my son Lucas (15). We visited the Suwanee location page.",
     read_at: d(0.03),
     ai_generated: false,
   },

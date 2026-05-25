@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireStaff } from "@/lib/auth/guards";
 import { HERO_IDS, COACH_RODRIGUEZ_ID } from "@/lib/constants";
-import { TYLER_REENGAGEMENT_MESSAGE } from "@/lib/demo/data";
+import { TYLER_REENGAGEMENT_MESSAGE } from "@/lib/demo/hero-messages";
 import { demoStore } from "@/lib/demo/store";
 import { generateDraftMessage } from "@/lib/ai/query-engine";
 import { apiLog } from "@/lib/server/api-logger";

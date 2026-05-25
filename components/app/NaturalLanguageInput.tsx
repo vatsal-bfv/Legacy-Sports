@@ -6,41 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, X } from "lucide-react";
 import { QueryResultRenderer } from "@/components/app/QueryResultRenderer";
 import { AiQueryToolTrace } from "@/components/app/AiQueryToolTrace";
-import { useLocationScope } from "@/components/app/LocationProvider";
-import { buildLiveStreamingResponse } from "@/lib/ai/chart-spec";
-import {
-  consumeQueryStream,
-  type QueryStreamSnapshot,
-  type QueryToolTraceItem,
-} from "@/lib/ai/consume-query-stream";
-import {
-  getCachedQuerySuggestions,
-  type QueryResponse,
-} from "@/lib/ai/query-cache";
+import { getCachedQuerySuggestions } from "@/lib/ai/query-cache";
+import { useLegacyAiQuery } from "@/lib/ai/use-legacy-ai-query";
 import { cn } from "@/lib/utils";
 
 const CACHED_SUGGESTIONS = getCachedQuerySuggestions();
 
-const EMPTY_SNAPSHOT: QueryStreamSnapshot = { text: "", tools: [] };
-
-function isUiMessageStream(response: Response) {
-  return (
-    response.headers.get("x-vercel-ai-ui-message-stream") === "v1" ||
-    response.headers.get("content-type")?.includes("text/event-stream")
-  );
-}
-
 export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
-  const { locationId } = useLocationScope();
   const containerRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<QueryResponse | null>(null);
-  const [streamSnapshot, setStreamSnapshot] =
-    useState<QueryStreamSnapshot>(EMPTY_SNAPSHOT);
-  const [toolTrace, setToolTrace] = useState<QueryToolTraceItem[]>([]);
   const [panelOpen, setPanelOpen] = useState(false);
   const [focused, setFocused] = useState(false);
+
+  const {
+    loading,
+    runQuery,
+    reset,
+    displayResponse,
+    showToolTrace,
+    toolTrace,
+    streamSnapshot,
+    toolsExpanded,
+    streamingMarkdown,
+  } = useLegacyAiQuery();
 
   const filteredSuggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -48,68 +36,20 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     return CACHED_SUGGESTIONS.filter((s) => s.toLowerCase().includes(q));
   }, [query]);
 
-  function selectSuggestion(suggestion: string) {
+  async function selectSuggestion(suggestion: string) {
     setQuery(suggestion);
     setFocused(false);
-    runQuery(suggestion);
+    await executeQuery(suggestion);
   }
 
-  async function runQuery(q: string) {
-    setLoading(true);
-    setResponse(null);
-    setStreamSnapshot(EMPTY_SNAPSHOT);
-    setToolTrace([]);
+  async function executeQuery(q: string) {
     if (compact) setPanelOpen(true);
-
-    try {
-      const res = await fetch("/api/ai/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: q,
-          scope: { location_id: locationId ?? undefined },
-        }),
-      });
-
-      if (!res.ok) {
-        setResponse({
-          type: "narrative",
-          markdown: "Something went wrong. Please try again.",
-        });
-        return;
-      }
-
-      if (isUiMessageStream(res)) {
-        const { response: streamResponse } = await consumeQueryStream(
-          res,
-          (snapshot) => {
-            setStreamSnapshot(snapshot);
-            setToolTrace(snapshot.tools);
-          }
-        );
-        setResponse(streamResponse);
-        setStreamSnapshot(EMPTY_SNAPSHOT);
-        return;
-      }
-
-      const data = await res.json();
-      setResponse(data.response);
-    } catch {
-      setResponse({
-        type: "narrative",
-        markdown: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
+    await runQuery(q);
   }
 
   function closePanel() {
     setPanelOpen(false);
-    setResponse(null);
-    setStreamSnapshot(EMPTY_SNAPSHOT);
-    setToolTrace([]);
-    setLoading(false);
+    reset();
     setFocused(false);
   }
 
@@ -142,13 +82,6 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     };
   }, [overlayActive]);
 
-  const streamingMarkdown = streamSnapshot.text;
-  const liveResponse = buildLiveStreamingResponse(streamSnapshot.text);
-  const hasStreamedContent = liveResponse != null;
-  const toolsExpanded = loading && !hasStreamedContent;
-  const displayResponse: QueryResponse | null =
-    loading && !response ? liveResponse : response;
-
   const showCompactPanel =
     compact && panelOpen && (loading || displayResponse);
 
@@ -158,9 +91,6 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
     !showCompactPanel &&
     !loading;
 
-  const showToolTrace =
-    loading || (toolTrace.length > 0 && displayResponse != null);
-
   return (
     <div
       ref={containerRef}
@@ -169,7 +99,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (query.trim()) runQuery(query);
+          if (query.trim()) void executeQuery(query);
         }}
         className="flex gap-2"
       >
@@ -213,7 +143,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
                   role="option"
                   aria-selected={false}
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => selectSuggestion(s)}
+                  onClick={() => void selectSuggestion(s)}
                   className="w-full rounded-md px-2 py-2 text-left text-sm text-pitch hover:bg-bone"
                 >
                   {s}
@@ -230,7 +160,7 @@ export function NaturalLanguageInput({ compact }: { compact?: boolean }) {
             <button
               key={s}
               type="button"
-              onClick={() => selectSuggestion(s)}
+              onClick={() => void selectSuggestion(s)}
               className="text-xs text-slate underline-offset-2 hover:text-orange hover:underline"
             >
               {s}

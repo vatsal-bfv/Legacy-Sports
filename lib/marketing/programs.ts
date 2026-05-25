@@ -8,7 +8,7 @@ import type { Coach, Location, Program, Session } from "@/lib/demo/types";
 import {
   getMarketingCoachesForProgramAtLocation,
   type MarketingCoach,
-} from "@/lib/marketing/coaches";
+} from "@/lib/marketing/coaches-data";
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 

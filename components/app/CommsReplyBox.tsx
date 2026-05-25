@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,11 +11,13 @@ export function CommsReplyBox({
   athleteId,
   leadId,
   threadMessages = [],
+  prefillBody,
   onSent,
 }: {
   athleteId?: string | null;
   leadId?: string | null;
   threadMessages?: Message[];
+  prefillBody?: string | null;
   onSent?: (message?: Message) => void;
 }) {
   const [body, setBody] = useState("");
@@ -24,6 +26,13 @@ export function CommsReplyBox({
   const [suggesting, setSuggesting] = useState(false);
   const [sent, setSent] = useState(false);
   const [aiDrafted, setAiDrafted] = useState(false);
+
+  useEffect(() => {
+    if (prefillBody) {
+      setBody(prefillBody);
+      setAiDrafted(true);
+    }
+  }, [prefillBody]);
 
   async function handleSuggest() {
     setSuggesting(true);
