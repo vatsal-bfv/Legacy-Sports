@@ -165,7 +165,7 @@ export function CommandShell({
   return (
     <LocationProvider>
       <MobileNavContext.Provider value={openMobileNav}>
-        <div className="flex min-h-screen bg-field text-pitch">
+        <div className="flex h-dvh overflow-hidden bg-field text-pitch">
           <aside className="hidden w-60 shrink-0 flex-col border-r border-bone bg-chalk lg:flex">
             <div className="flex h-[68px] items-center border-b border-bone px-5">
               <Link href="/command-os" className="flex items-center no-underline">
@@ -214,7 +214,9 @@ export function CommandShell({
             <main
               className={cn(
                 "flex min-h-0 flex-1 flex-col",
-                isCommandCenter ? "p-0" : "p-4 lg:p-6"
+                isCommandCenter
+                  ? "overflow-hidden p-0"
+                  : "overflow-y-auto p-4 lg:p-6"
               )}
             >
               {children}

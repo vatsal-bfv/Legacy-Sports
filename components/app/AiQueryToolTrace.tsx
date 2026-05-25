@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertCircle,
   Check,
@@ -107,6 +107,12 @@ export function AiQueryToolTrace({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isActive || !contentRef.current) return;
+    contentRef.current.scrollTop = contentRef.current.scrollHeight;
+  }, [tools, isActive]);
 
   if (tools.length === 0 && !isActive) return null;
 
@@ -143,7 +149,10 @@ export function AiQueryToolTrace({
           <ChevronDown className="size-3.5 shrink-0 text-slate transition-transform duration-200" />
         ) : null}
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-3 pb-3 data-[closed]:hidden">
+      <CollapsibleContent
+        ref={contentRef}
+        className="max-h-[min(40vh,14rem)] overflow-y-auto px-3 pb-3 data-[closed]:hidden"
+      >
         <ToolTraceList tools={tools} isActive={isActive} />
       </CollapsibleContent>
     </Collapsible>

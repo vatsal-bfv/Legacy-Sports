@@ -91,7 +91,7 @@ export function CommandCenterChat() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-start justify-between gap-4 border-b border-bone px-4 py-5 lg:px-6">
+      <div className="flex shrink-0 items-start justify-between gap-4 border-b border-bone px-4 py-5 lg:px-6">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange">
             [ Command Center ]
@@ -205,7 +205,7 @@ export function CommandCenterChat() {
         )}
       </div>
 
-      <div className="border-t border-bone bg-field/95 px-4 py-4 backdrop-blur-xl lg:px-6">
+      <div className="shrink-0 border-t border-bone bg-field/95 px-4 py-4 backdrop-blur-xl lg:px-6">
         <div className="relative mx-auto max-w-3xl">
           <form
             onSubmit={(event) => {
