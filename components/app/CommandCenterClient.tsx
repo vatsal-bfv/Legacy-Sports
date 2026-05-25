@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { InsightCard } from "@/components/app/InsightCard";
-import { NaturalLanguageInput } from "@/components/app/NaturalLanguageInput";
 import { useLocationScope } from "@/components/app/LocationProvider";
 import { useLeads } from "@/components/app/LeadsRealtimeProvider";
 import { demoStore } from "@/lib/demo/store";
@@ -48,7 +47,7 @@ export function CommandCenterClient() {
     <div className="space-y-8">
       <div>
         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange">
-          [ Command Center ]
+          [ Dashboard ]
         </p>
         <h1 className="mt-3 text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-pitch">
           Good morning, Amber
@@ -69,10 +68,6 @@ export function CommandCenterClient() {
             kanban →
           </Link>
         )}
-      </div>
-
-      <div className="md:hidden">
-        <NaturalLanguageInput />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

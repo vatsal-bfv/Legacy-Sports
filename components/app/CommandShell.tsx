@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
+  Sparkles,
   Users,
   Kanban,
   Calendar,
@@ -28,7 +29,8 @@ import {
 } from "lucide-react";
 
 const nav = [
-  { href: "/command-os", label: "Command Center", icon: LayoutDashboard },
+  { href: "/command-os", label: "Command Center", icon: Sparkles },
+  { href: "/command-os/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/command-os/athletes", label: "Athletes", icon: Users },
   { href: "/command-os/leads", label: "Leads", icon: Kanban },
   { href: "/command-os/schedule", label: "Schedule", icon: Calendar },
