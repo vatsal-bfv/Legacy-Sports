@@ -13,7 +13,7 @@ export const heroMarqueeItems = [
   "Legacy Command AI",
   "Sean Weatherspoon",
   "Johnny Venters",
-  "Mohamed Sanu",
+  "Elijah Wilkinson",
   "Georgia's Best",
 ];
 
@@ -29,7 +29,7 @@ export const credentialCards = [
     icon: "bolt",
     title: "Owned By The Pros",
     description:
-      "Sean Weatherspoon - Mohamed Sanu - Johnny Venters - Christian Blake - bringing pro-level standards to every session.",
+      "Sean Weatherspoon - Elijah Wilkinson - Johnny Venters - Christian Blake - bringing pro-level standards to every session.",
   },
   {
     icon: "target",
@@ -118,8 +118,8 @@ export const originsOwners = [
     role: "Former Atlanta Falcon",
   },
   {
-    name: "Mohamed Sanu",
-    role: "NFL Veteran",
+    name: "Elijah Wilkinson",
+    role: "NFL Offensive Lineman",
   },
   {
     name: "Johnny Venters",

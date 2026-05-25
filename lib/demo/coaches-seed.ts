@@ -4,7 +4,6 @@ import type { Coach } from "@/lib/demo/types";
 /** Stable demo ids — keep in sync with hero measurables and session seeds. */
 export const DEMO_COACH_IDS = {
   sean: "c0000001-0001-4000-8000-000000000001",
-  sanu: "c0000001-0001-4000-8000-000000000002",
   venters: "c0000001-0001-4000-8000-000000000003",
   wilkinson: "c0000001-0001-4000-8000-000000000004",
   blake: "c0000001-0001-4000-8000-000000000005",
@@ -43,18 +42,6 @@ const COMMAND_OS_COACHES: SeedCoach[] = [
     specialties: ["linebacker development", "combine prep", "leadership"],
     voiceSample:
       "Hey — Coach Spoon here. We built Legacy to give Georgia athletes the pro standard from day one. Let's get your athlete back on the turf this week.",
-  },
-  {
-    id: DEMO_COACH_IDS.sanu,
-    slug: "mohamed-sanu",
-    firstName: "Mohamed",
-    lastName: "Sanu",
-    primarySlug: "lawrenceville",
-    shortBio:
-      "Super Bowl veteran and Rutgers star who mentors the next generation of Georgia's most driven skill-position athletes.",
-    specialties: ["wide receiver", "mental performance", "recruiting"],
-    voiceSample:
-      "Hey! Coach Mo checking in. I'm ready to challenge you mentally and sharpen your skillsets — let's lock in the next session.",
   },
   {
     id: DEMO_COACH_IDS.venters,
@@ -119,6 +106,3 @@ export function buildDemoCoaches(): Coach[] {
     voice_sample: coach.voiceSample,
   }));
 }
-
-/** Primary coach at Lawrenceville — Tyler Chen re-engagement flows. */
-export const COACH_LAWRENCEVILLE_ID = DEMO_COACH_IDS.sanu;

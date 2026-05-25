@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireStaff } from "@/lib/auth/guards";
-import { HERO_IDS, COACH_RODRIGUEZ_ID } from "@/lib/constants";
+import { HERO_IDS, COACH_LAWRENCEVILLE_ID } from "@/lib/constants";
 import { TYLER_REENGAGEMENT_MESSAGE } from "@/lib/demo/hero-messages";
 import { demoStore } from "@/lib/demo/store";
 import { generateDraftMessage } from "@/lib/ai/query-engine";
@@ -94,7 +94,7 @@ export async function PUT(request: Request) {
       ai_generated: true,
     });
 
-    void COACH_RODRIGUEZ_ID;
+    void COACH_LAWRENCEVILLE_ID;
     void athlete;
 
     log.response(200, { messageId: msg.id });

@@ -132,8 +132,8 @@ export const marketingCoaches: MarketingCoach[] = [
       { value: "WR", label: "Position specialist" },
       { value: "40+", label: "Scout network access" },
     ],
-    programSlugs: ["college-recruit-track", "hs-combine-prep", "team-training"],
-    locationSlugs: ["suwanee", "alpharetta"],
+    programSlugs: ["college-recruit-track", "hs-combine-prep", "team-training", "youth-performance"],
+    locationSlugs: ["suwanee", "alpharetta", "lawrenceville"],
     specialties: ["Wide receiver", "Route running", "Recruiting"],
   },
   {
@@ -157,41 +157,14 @@ export const marketingCoaches: MarketingCoach[] = [
       { value: "7+", label: "Pro seasons" },
       { value: "OL", label: "Position specialist" },
     ],
-    programSlugs: ["adult-performance", "hs-combine-prep", "team-training"],
-    locationSlugs: ["lawrenceville", "canton"],
-    specialties: ["Offensive line", "Strength", "Power development"],
-  },
-  {
-    slug: "mohamed-sanu",
-    firstName: "Mohamed",
-    lastName: "Sanu",
-    nickname: "Coach Mo",
-    title: "Trainer | Former NFL Pro | Owner",
-    roles: ["Owner", "Wide Receiver Development", "Mentorship"],
-    isOwner: true,
-    quote:
-      "Hey! I'm Mohamed. I'm ready to challenge you mentally and sharpen your skillsets.",
-    shortBio:
-      "Super Bowl veteran and Rutgers star who mentors the next generation of Georgia's most driven skill-position athletes.",
-    history: [
-      "Drafted by the Cincinnati Bengals and later starred for the Atlanta Falcons, reaching Super Bowl LI with the franchise.",
-      "One of the most productive receivers in Rutgers history, setting the foundation for a decade-long NFL career.",
-      "Known for mental toughness coaching — pushing athletes to perform when fatigued, pressured, and scout-evaluated.",
-      "Mentors College Recruit Track and combine athletes on pro-day preparation, interview readiness, and recruiter communication.",
-    ],
-    highlights: [
-      { value: "SB LI", label: "Super Bowl appearance" },
-      { value: "10", label: "NFL seasons" },
-      { value: "Rutgers", label: "All-time great" },
-    ],
     programSlugs: [
-      "college-recruit-track",
+      "adult-performance",
       "hs-combine-prep",
       "team-training",
       "youth-performance",
     ],
-    locationSlugs: ["lawrenceville", "alpharetta", "suwanee"],
-    specialties: ["Wide receiver", "Mental performance", "Recruiting"],
+    locationSlugs: ["lawrenceville", "canton"],
+    specialties: ["Offensive line", "Strength", "Power development"],
   },
 ];
 

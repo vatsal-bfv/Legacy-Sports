@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { demoStore } from "@/lib/demo/store";
-import { COACH_RODRIGUEZ_ID } from "@/lib/constants";
+import { COACH_LAWRENCEVILLE_ID } from "@/lib/constants";
 import { useComms } from "@/components/app/MessagesRealtimeProvider";
 import { MessageThread } from "@/components/app/MessageThread";
 import { CommsReplyBox } from "@/components/app/CommsReplyBox";
@@ -163,7 +163,7 @@ export function CommsHub() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           athlete_id: athleteId,
-          coach_id: COACH_RODRIGUEZ_ID,
+          coach_id: COACH_LAWRENCEVILLE_ID,
           context: "reengagement",
         }),
       });

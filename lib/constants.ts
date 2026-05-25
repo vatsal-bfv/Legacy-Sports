@@ -10,7 +10,9 @@ export const HERO_IDS = {
   emma: "a0000001-0001-4000-8000-000000000005",
 } as const;
 
-export const COACH_RODRIGUEZ_ID = "c0000001-0001-4000-8000-000000000002";
+/** Primary coach at Lawrenceville — Tyler Chen re-engagement flows. */
+export const COACH_LAWRENCEVILLE_ID =
+  "c0000001-0001-4000-8000-000000000004";
 
 /** Georgia facility ids (legacy constant keys retained for stable references). */
 export const LOCATION_IDS = {
