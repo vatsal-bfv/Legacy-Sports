@@ -24,7 +24,6 @@ import {
   Eye,
   Settings,
   LogOut,
-  Heart,
   Menu,
 } from "lucide-react";
 
@@ -36,7 +35,6 @@ const nav = [
   { href: "/command-os/communications", label: "Communications", icon: MessageSquare },
   { href: "/command-os/operations", label: "Operations", icon: Building2 },
   { href: "/command-os/scouts", label: "Scouts", icon: Eye },
-  { href: "/command-os/retention", label: "Retention", icon: Heart },
   { href: "/command-os/settings", label: "Settings", icon: Settings },
 ];
 

@@ -1,26 +1,79 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { demoStore } from "@/lib/demo/store";
+import { COACH_RODRIGUEZ_ID } from "@/lib/constants";
 import { useComms } from "@/components/app/MessagesRealtimeProvider";
 import { MessageThread } from "@/components/app/MessageThread";
 import { CommsReplyBox } from "@/components/app/CommsReplyBox";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   buildThreads,
   DEFAULT_COMMS_FILTERS,
   filterThreads,
+  retentionBadgeVariant,
+  retentionStatusLabel,
   type CommsFilters,
   type CommsThread,
+  type RetentionStatus,
 } from "@/lib/comms/threads";
 import { cn } from "@/lib/utils";
 
+const RETENTION_FILTER_OPTIONS: { value: CommsFilters["retentionStatus"]; label: string }[] =
+  [
+    { value: "all", label: "All statuses" },
+    { value: "at_risk", label: "At risk" },
+    { value: "active", label: "Active" },
+    { value: "paused", label: "Paused" },
+    { value: "churned", label: "Churned" },
+  ];
+
+function RetentionStatusBadge({
+  status,
+  riskScore,
+}: {
+  status: RetentionStatus;
+  riskScore?: number | null;
+}) {
+  const label = retentionStatusLabel(status);
+  if (!label) return null;
+
+  return (
+    <Badge variant={retentionBadgeVariant(status)}>
+      {status === "at_risk" && riskScore != null
+        ? `${label} · ${riskScore}%`
+        : label}
+    </Badge>
+  );
+}
+
 export function CommsHub() {
+  const searchParams = useSearchParams();
   const { messages, leads, refresh, markThreadRead, appendMessage, newThreadKeys } =
     useComms();
   const [filters, setFilters] = useState<CommsFilters>(DEFAULT_COMMS_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [replyPrefill, setReplyPrefill] = useState<string | null>(null);
+  const [draftingReengage, setDraftingReengage] = useState(false);
   const lastMarkedUnreadKeyRef = useRef("");
+
+  useEffect(() => {
+    const retention = searchParams.get("retention");
+    if (
+      retention === "at_risk" ||
+      retention === "active" ||
+      retention === "paused" ||
+      retention === "churned"
+    ) {
+      setFilters((f) => ({ ...f, retentionStatus: retention }));
+    }
+    const athlete = searchParams.get("athlete");
+    const lead = searchParams.get("lead");
+    if (athlete) setSelectedId(`athlete:${athlete}`);
+    if (lead) setSelectedId(`lead:${lead}`);
+  }, [searchParams]);
 
   const allLeads = useMemo(() => {
     const byId = new Map<string, (typeof leads)[0]>();
@@ -30,18 +83,18 @@ export function CommsHub() {
   }, [leads]);
 
   const threads = useMemo(
-    () =>
-      buildThreads(
-        messages,
-        demoStore.athletes,
-        allLeads
-      ),
+    () => buildThreads(messages, demoStore.athletes, allLeads),
     [messages, allLeads]
   );
 
   const filtered = useMemo(
     () => filterThreads(threads, filters),
     [threads, filters]
+  );
+
+  const atRiskCount = useMemo(
+    () => threads.filter((t) => t.retentionStatus === "at_risk").length,
+    [threads]
   );
 
   const resolvedSelectedId =
@@ -52,6 +105,10 @@ export function CommsHub() {
   const selected: CommsThread | undefined = filtered.find(
     (t) => t.id === resolvedSelectedId
   );
+
+  useEffect(() => {
+    setReplyPrefill(null);
+  }, [resolvedSelectedId]);
 
   const selectedUnreadKey = selected
     ? selected.messages
@@ -98,6 +155,25 @@ export function CommsHub() {
     markSelectedThreadRead(resolvedSelectedId);
   }, [resolvedSelectedId, selectedUnreadKey, markSelectedThreadRead]);
 
+  async function draftReengagement(athleteId: string) {
+    setDraftingReengage(true);
+    try {
+      const res = await fetch("/api/ai/draft-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          athlete_id: athleteId,
+          coach_id: COACH_RODRIGUEZ_ID,
+          context: "reengagement",
+        }),
+      });
+      const data = await res.json();
+      if (data.message) setReplyPrefill(data.message);
+    } finally {
+      setDraftingReengage(false);
+    }
+  }
+
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -105,9 +181,29 @@ export function CommsHub() {
           <h1 className="text-2xl font-bold text-pitch">Communications</h1>
           <p className="text-sm text-slate">
             Unified inbox — athletes, parents, and leads
+            {atRiskCount > 0 ? (
+              <>
+                {" "}
+                ·{" "}
+                <span className="text-red-700">
+                  {atRiskCount} at-risk member{atRiskCount === 1 ? "" : "s"}
+                </span>
+              </>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <FilterSelect
+            label="Retention"
+            value={filters.retentionStatus}
+            onChange={(v) =>
+              setFilters((f) => ({
+                ...f,
+                retentionStatus: v as CommsFilters["retentionStatus"],
+              }))
+            }
+            options={RETENTION_FILTER_OPTIONS}
+          />
           <FilterSelect
             label="Channel"
             value={filters.channel}
@@ -203,6 +299,12 @@ export function CommsHub() {
                     <Badge variant={thread.type === "lead" ? "scout" : "default"}>
                       {thread.type === "lead" ? "Lead" : "Athlete"}
                     </Badge>
+                    {thread.retentionStatus ? (
+                      <RetentionStatusBadge
+                        status={thread.retentionStatus}
+                        riskScore={thread.riskScore}
+                      />
+                    ) : null}
                     {loc && (
                       <Badge variant="default">{loc.name}</Badge>
                     )}
@@ -222,19 +324,46 @@ export function CommsHub() {
           {selected ? (
             <>
               <div className="border-b border-bone p-4">
-                <h2 className="text-lg font-semibold text-pitch">
-                  {selected.title}
-                </h2>
-                <p className="text-sm text-slate">{selected.subtitle}</p>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-pitch">
+                      {selected.title}
+                    </h2>
+                    <p className="text-sm text-slate">{selected.subtitle}</p>
+                    {selected.retentionStatus ? (
+                      <div className="mt-2">
+                        <RetentionStatusBadge
+                          status={selected.retentionStatus}
+                          riskScore={selected.riskScore}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                  {selected.retentionStatus === "at_risk" &&
+                  selected.athleteId ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={draftingReengage}
+                      onClick={() => draftReengagement(selected.athleteId!)}
+                    >
+                      {draftingReengage
+                        ? "Drafting…"
+                        : "Draft re-engagement message"}
+                    </Button>
+                  ) : null}
+                </div>
               </div>
               <div className="flex-1 overflow-y-auto p-6">
                 <MessageThread messages={selected.messages} />
               </div>
               <div className="p-4">
                 <CommsReplyBox
+                  key={selected.id}
                   athleteId={selected.athleteId}
                   leadId={selected.leadId}
                   threadMessages={selected.messages}
+                  prefillBody={replyPrefill}
                   onSent={(msg) => {
                     if (msg) appendMessage(msg);
                     void refresh();

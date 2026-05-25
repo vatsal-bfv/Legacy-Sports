@@ -80,7 +80,7 @@ export function CommandCenterClient() {
           title="At-risk members"
           value={String(atRisk.length)}
           subtitle="↑ 2 from last week"
-          href="/command-os/retention"
+          href="/command-os/communications?retention=at_risk"
           accent="red"
         />
         <InsightCard
