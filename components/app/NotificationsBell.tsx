@@ -6,8 +6,15 @@ import { Bell } from "lucide-react";
 import { useComms } from "@/components/app/MessagesRealtimeProvider";
 import { useLeads } from "@/components/app/LeadsRealtimeProvider";
 import { demoStore } from "@/lib/demo/store";
+import { cn } from "@/lib/utils";
 
-export function NotificationsBell() {
+export function NotificationsBell({
+  menuClassName,
+  buttonClassName,
+}: {
+  menuClassName?: string;
+  buttonClassName?: string;
+} = {}) {
   const { messages, newThreadKeys } = useComms();
   const { newLeadIds, leads } = useLeads();
   const [open, setOpen] = useState(false);
@@ -42,7 +49,10 @@ export function NotificationsBell() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative rounded-md p-2 text-slate hover:bg-chalk hover:text-pitch"
+        className={cn(
+          "relative rounded-md p-2 text-slate hover:bg-chalk hover:text-pitch",
+          buttonClassName
+        )}
         aria-label="Notifications"
       >
         <Bell className="h-4 w-4" />
@@ -53,7 +63,12 @@ export function NotificationsBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-bone bg-chalk shadow-xl">
+        <div
+          className={cn(
+            "absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-bone bg-chalk shadow-xl",
+            menuClassName
+          )}
+        >
           <div className="border-b border-bone px-4 py-3 text-sm font-semibold">
             Notifications
           </div>

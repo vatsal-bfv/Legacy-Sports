@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUp, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowUp, Menu, Sparkles } from "lucide-react";
 import { AiQueryToolTrace } from "@/components/app/AiQueryToolTrace";
 import { QueryResultRenderer } from "@/components/app/QueryResultRenderer";
+import { NotificationsBell } from "@/components/app/NotificationsBell";
+import { useOpenMobileNav } from "@/components/app/CommandShell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useLocationScope } from "@/components/app/LocationProvider";
 import { getCachedQuerySuggestions } from "@/lib/ai/query-cache";
 import type { QueryToolTraceItem } from "@/lib/ai/consume-query-stream";
 import type { QueryResponse } from "@/lib/ai/query-cache";
 import { useLegacyAiQuery } from "@/lib/ai/use-legacy-ai-query";
-import { demoStore } from "@/lib/demo/store";
 
 const SUGGESTIONS = getCachedQuerySuggestions();
 
@@ -30,11 +30,10 @@ function messageId() {
 }
 
 export function CommandCenterChat() {
-  const { locationId } = useLocationScope();
+  const openMobileNav = useOpenMobileNav();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [query, setQuery] = useState("");
-  const [focused, setFocused] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const {
@@ -48,19 +47,6 @@ export function CommandCenterChat() {
     toolsExpanded,
     streamingMarkdown,
   } = useLegacyAiQuery();
-
-  const locationName = locationId
-    ? demoStore.locations.find((l) => l.id === locationId)?.name
-    : null;
-
-  const filteredSuggestions = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return SUGGESTIONS;
-    return SUGGESTIONS.filter((s) => s.toLowerCase().includes(q));
-  }, [query]);
-
-  const showSuggestions =
-    focused && filteredSuggestions.length > 0 && !loading;
 
   const isEmpty = messages.length === 0 && !loading;
 
@@ -76,7 +62,6 @@ export function CommandCenterChat() {
     if (!trimmed || loading) return;
 
     setQuery("");
-    setFocused(false);
     setMessages((prev) => [
       ...prev,
       { id: messageId(), role: "user", text: trimmed },
@@ -105,22 +90,36 @@ export function CommandCenterChat() {
   }
 
   return (
-    <div className="-m-4 flex h-[calc(100dvh-68px)] flex-col lg:-m-6">
-      <div className="border-b border-bone px-4 py-5 lg:px-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange">
-          [ Command Center ]
-        </p>
-        <h1 className="mt-2 text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-pitch">
-          Ask Legacy Command
-        </h1>
-        <p className="mt-1.5 max-w-2xl text-sm text-slate">
-          Your AI co-pilot across athletes, locations, revenue, schedules, and
-          communications
-          {locationName ? ` · scoped to ${locationName}` : " · all locations"}.
-        </p>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex items-start justify-between gap-4 border-b border-bone px-4 py-5 lg:px-6">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange">
+            [ Command Center ]
+          </p>
+          <h1 className="mt-2 text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.1] tracking-[-0.03em] text-pitch">
+            Ask Legacy Command
+          </h1>
+          <p className="mt-1.5 max-w-2xl text-sm text-slate">
+            Your AI co-pilot across athletes, locations, revenue, schedules, and
+            communications.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-1 pt-1">
+          <NotificationsBell
+            menuClassName="absolute right-0 top-full z-50 mt-2 w-80"
+          />
+          <button
+            type="button"
+            onClick={openMobileNav}
+            className="rounded-[8px] p-2 text-slate hover:bg-bone hover:text-pitch lg:hidden"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 lg:px-6">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 lg:px-6">
         {isEmpty ? (
           <div className="mx-auto flex max-w-3xl flex-col items-center pt-8 text-center md:pt-16">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange/10">
@@ -182,7 +181,11 @@ export function CommandCenterChat() {
                 </div>
                 {showToolTrace ? (
                   <AiQueryToolTrace
-                    tools={streamSnapshot.tools.length ? streamSnapshot.tools : toolTrace}
+                    tools={
+                      streamSnapshot.tools.length
+                        ? streamSnapshot.tools
+                        : toolTrace
+                    }
                     isActive={toolsExpanded}
                   />
                 ) : null}
@@ -204,33 +207,6 @@ export function CommandCenterChat() {
 
       <div className="border-t border-bone bg-field/95 px-4 py-4 backdrop-blur-xl lg:px-6">
         <div className="relative mx-auto max-w-3xl">
-          {showSuggestions ? (
-            <div
-              id="command-chat-suggestions"
-              role="listbox"
-              className="absolute bottom-[calc(100%+0.5rem)] left-0 right-0 z-50 max-h-[min(40vh,16rem)] overflow-y-auto rounded-lg border border-bone bg-field p-2 shadow-2xl"
-            >
-              <p className="px-2 py-1 text-xs font-medium text-slate">
-                Suggested queries
-              </p>
-              <ul className="space-y-0.5">
-                {filteredSuggestions.map((suggestion) => (
-                  <li key={suggestion}>
-                    <button
-                      type="button"
-                      role="option"
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => void sendMessage(suggestion)}
-                      className="w-full rounded-md px-2 py-2 text-left text-sm text-pitch hover:bg-bone"
-                    >
-                      {suggestion}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -242,14 +218,10 @@ export function CommandCenterChat() {
               ref={inputRef}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => window.setTimeout(() => setFocused(false), 150)}
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about your athletes, locations, revenue…"
               rows={1}
               className="max-h-40 min-h-[44px] resize-none border-0 bg-transparent px-2 py-2.5 text-sm shadow-none focus-visible:ring-0"
-              aria-expanded={showSuggestions}
-              aria-controls={showSuggestions ? "command-chat-suggestions" : undefined}
             />
             <Button
               type="submit"
