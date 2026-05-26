@@ -189,7 +189,7 @@ export function CommandShell({
             />
           </aside>
 
-          <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {!isCommandCenter ? (
               <header className="sticky top-0 z-40 overflow-visible border-b border-bone bg-field/95 backdrop-blur-xl">
                 <div className="flex min-h-[68px] items-center gap-3 px-4 py-2 lg:gap-4 lg:px-6">
@@ -213,10 +213,10 @@ export function CommandShell({
             ) : null}
             <main
               className={cn(
-                "flex min-h-0 flex-1 flex-col",
+                "flex min-h-0 min-w-0 flex-1 flex-col",
                 isCommandCenter
                   ? "overflow-hidden p-0"
-                  : "overflow-y-auto p-4 lg:p-6"
+                  : "overflow-x-hidden overflow-y-auto p-4 lg:p-6"
               )}
             >
               {children}

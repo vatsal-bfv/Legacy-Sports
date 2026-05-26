@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GripVertical } from "lucide-react";
+import { GripVertical, Plus } from "lucide-react";
 import {
   Kanban,
   KanbanBoard,
@@ -94,7 +94,7 @@ function StatusColumn({
     <KanbanColumn
       value={status}
       className={cn(
-        "min-h-[200px] min-w-0 rounded-lg border border-bone bg-field p-3",
+        "flex min-h-[200px] w-72 shrink-0 flex-col rounded-lg border border-bone bg-field p-3",
         styles.column,
         className
       )}
@@ -120,6 +120,22 @@ function StatusColumn({
         ))}
       </KanbanColumnContent>
     </KanbanColumn>
+  );
+}
+
+function AddCategoryColumn() {
+  return (
+    <button
+      type="button"
+      className="flex min-h-[200px] w-72 shrink-0 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-bone bg-field/40 p-6 text-center transition-colors hover:border-slate hover:bg-bone/20"
+    >
+      <span className="flex size-10 items-center justify-center rounded-full border border-dashed border-bone bg-chalk text-slate">
+        <Plus className="size-5" />
+      </span>
+      <p className="max-w-[180px] text-sm font-medium text-slate">
+        Click here to add a new category
+      </p>
+    </button>
   );
 }
 
@@ -196,62 +212,66 @@ export function LeadsKanbanBoard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-6">
+      <div className="flex shrink-0 items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-pitch">Leads</h1>
         <p className="text-sm text-slate">
           Drag cards to update status
         </p>
       </div>
 
-      <Kanban
-        value={columns}
-        onValueChange={handleValueChange}
-        getItemValue={(item) => item.id}
-      >
-        <KanbanBoard className="grid gap-3 pb-4 [grid-template-columns:repeat(5,minmax(0,1fr))] max-xl:overflow-x-auto max-xl:[grid-template-columns:repeat(5,minmax(11rem,1fr))]">
-          {LEAD_STATUSES.map((status) => (
-            <StatusColumn
-              key={status}
-              status={status}
-              columns={columns}
-              newLeadIds={newLeadIds}
-              onSelect={setSelected}
-            />
-          ))}
-        </KanbanBoard>
+      <div className="-mx-4 min-h-0 min-w-0 flex-1 overflow-x-auto overscroll-x-contain px-4 lg:-mx-6 lg:px-6">
+        <Kanban
+          value={columns}
+          onValueChange={handleValueChange}
+          getItemValue={(item) => item.id}
+          className="w-max"
+        >
+          <KanbanBoard className="inline-flex w-max gap-3 pb-4">
+            {LEAD_STATUSES.map((status) => (
+              <StatusColumn
+                key={status}
+                status={status}
+                columns={columns}
+                newLeadIds={newLeadIds}
+                onSelect={setSelected}
+              />
+            ))}
+            <AddCategoryColumn />
+          </KanbanBoard>
 
-        <KanbanOverlay>
-          {({ value }) => {
-            const lead = mergedLeads.find((l) => l.id === value);
-            const dragStatus = LEAD_STATUSES.find((s) =>
-              columns[s].some((l) => l.id === value)
-            );
-            const styles = dragStatus ? STATUS_STYLES[dragStatus] : null;
-
-            if (!lead) {
-              return (
-                <div className="size-full rounded-lg border border-orange bg-chalk opacity-90" />
+          <KanbanOverlay>
+            {({ value }) => {
+              const lead = mergedLeads.find((l) => l.id === value);
+              const dragStatus = LEAD_STATUSES.find((s) =>
+                columns[s].some((l) => l.id === value)
               );
-            }
-            return (
-              <div
-                className={cn(
-                  "w-[220px] rounded-lg border border-bone bg-chalk p-4 shadow-xl",
-                  styles?.card
-                )}
-              >
-                <p className="font-medium text-pitch">
-                  {lead.first_name} {lead.last_name}
-                </p>
-                <p className="mt-1 text-xs text-slate">
-                  {lead.athlete_name || "No athlete"}
-                </p>
-              </div>
-            );
-          }}
-        </KanbanOverlay>
-      </Kanban>
+              const styles = dragStatus ? STATUS_STYLES[dragStatus] : null;
+
+              if (!lead) {
+                return (
+                  <div className="size-full rounded-lg border border-orange bg-chalk opacity-90" />
+                );
+              }
+              return (
+                <div
+                  className={cn(
+                    "w-[220px] rounded-lg border border-bone bg-chalk p-4 shadow-xl",
+                    styles?.card
+                  )}
+                >
+                  <p className="font-medium text-pitch">
+                    {lead.first_name} {lead.last_name}
+                  </p>
+                  <p className="mt-1 text-xs text-slate">
+                    {lead.athlete_name || "No athlete"}
+                  </p>
+                </div>
+              );
+            }}
+          </KanbanOverlay>
+        </Kanban>
+      </div>
 
       <LeadDetailDialog
         lead={selected}

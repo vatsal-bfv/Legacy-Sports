@@ -322,7 +322,7 @@ function HeroSection({
           ref={preLabelRef}
           className="absolute left-[var(--legacy-gutter)] top-[clamp(80px,11%,110px)] text-[11px] font-bold uppercase tracking-[0.16em] text-orange"
         >
-          [ ATLANTA&apos;S PREMIER ATHLETE DEVELOPMENT SYSTEM ]
+          [ THE NATION&apos;S PREMIER ATHLETE DEVELOPMENT SYSTEM ]
         </p>
 
         <div className="max-w-[760px]">
@@ -474,7 +474,7 @@ function StatStrip({ reducedMotion }: { reducedMotion: boolean }) {
       <SectionTexture pattern="dots" tone="light" />
       <div className="relative z-10">
       <p className="text-center text-[11px] font-bold uppercase tracking-[0.16em] text-orange">
-        [ TRUSTED BY GEORGIA&apos;S MOST COMMITTED ATHLETES ]
+        [ TRUSTED BY THE NATION&apos;S MOST COMMITTED ATHLETES ]
       </p>
       <div className="mt-16 grid grid-cols-2 gap-y-12 lg:grid-cols-4 lg:gap-y-0">
         {statItems.map((item, index) => (
