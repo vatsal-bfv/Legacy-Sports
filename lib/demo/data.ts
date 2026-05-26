@@ -197,7 +197,7 @@ export const coaches: Coach[] = buildDemoCoaches();
 
 const marcusSummary = `Marcus Johnson is one of Legacy's standout quarterback prospects — a 6'2", 195 lb junior at Lambert High School with a 3.6 GPA. Over the past nine months, his 40-yard dash has dropped from 4.78 to 4.62 seconds, and his vertical has climbed from 31" to 36", placing him in the top tier of 2027 recruits in Georgia. Coaches consistently note his improved hip mobility and faster release. With three D1 programs expressing interest, Marcus profiles as a high-likelihood Power Five commit if his trajectory continues through summer camp season.`;
 
-const tylerSummary = `Tyler Chen is a 15-year-old point guard in our Youth Performance program at Lawrenceville. After eight months of consistent 3x/week attendance, he's shown strong lower-body development — a recent squat PR of 245 lbs (up from 225). However, Tyler has missed his last two scheduled sessions this week, representing a 6-day gap that triggers our at-risk protocol. Coach Elijah Wilkinson recommends immediate parent outreach referencing his recent strength gains to re-engage before habit decay sets in.`;
+const tylerSummary = `Tyler Chen is a 15-year-old point guard in our Youth Performance program at Lawrenceville. After eight months of consistent 3x/week attendance, he's shown strong lower-body development — a recent squat PR of 245 lbs (up from 225). However, Tyler has missed his last two scheduled sessions this week, representing a 6-day gap that triggers our at-risk protocol. Coach Christian Blake recommends immediate parent outreach referencing his recent strength gains to re-engage before habit decay sets in.`;
 
 export const heroAthletes: Athlete[] = [
   {
@@ -795,7 +795,7 @@ export const coachNotes: CoachNote[] = [
   {
     id: "n-011",
     athlete_id: HERO_IDS.deshawn,
-    coach_id: coaches[2].id,
+    coach_id: coaches[3].id,
     created_at: new Date(Date.now() - 12 * 86400000).toISOString(),
     content:
       "40-yard at 4.52 — down 0.40s from baseline 12 months ago. Two D1 offers confirmed.",
@@ -804,7 +804,7 @@ export const coachNotes: CoachNote[] = [
   {
     id: "n-012",
     athlete_id: HERO_IDS.deshawn,
-    coach_id: coaches[2].id,
+    coach_id: coaches[3].id,
     created_at: new Date(Date.now() - 26 * 86400000).toISOString(),
     content:
       "Vertical now 39 inches. Bench 295 — one of the steepest WR progression curves we track.",
@@ -813,7 +813,7 @@ export const coachNotes: CoachNote[] = [
   {
     id: "n-013",
     athlete_id: HERO_IDS.deshawn,
-    coach_id: coaches[2].id,
+    coach_id: coaches[3].id,
     created_at: new Date(Date.now() - 40 * 86400000).toISOString(),
     content:
       "Route running video tagged for scout portal. Separation improving every session.",
@@ -822,7 +822,7 @@ export const coachNotes: CoachNote[] = [
   {
     id: "n-014",
     athlete_id: HERO_IDS.emma,
-    coach_id: coaches[3].id,
+    coach_id: coaches[2].id,
     created_at: new Date(Date.now() - 8 * 86400000).toISOString(),
     content:
       "Vertical hit 30 inches — 8 inch gain since enrollment. Approach jump mechanics cleaned up.",
@@ -831,7 +831,7 @@ export const coachNotes: CoachNote[] = [
   {
     id: "n-015",
     athlete_id: HERO_IDS.emma,
-    coach_id: coaches[3].id,
+    coach_id: coaches[2].id,
     created_at: new Date(Date.now() - 22 * 86400000).toISOString(),
     content:
       "Squat at 215 lbs for a 13-year-old — excellent power base. Parent very engaged in comms.",
@@ -928,11 +928,11 @@ function generateSessions(): Session[] {
     // Suwanee — Mon–Sat
     { locationIndex: 0, coachId: coaches[0].id, programIndex: 0, room: "Turf A", capacity: 24, day_of_week: 1, hour: 7 },
     { locationIndex: 0, coachId: coaches[0].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 1, hour: 11 },
-    { locationIndex: 0, coachId: coaches[4].id, programIndex: 3, room: "Weight Room", capacity: 18, day_of_week: 2, hour: 16 },
+    { locationIndex: 0, coachId: coaches[3].id, programIndex: 3, room: "Weight Room", capacity: 18, day_of_week: 2, hour: 16 },
     { locationIndex: 0, coachId: coaches[0].id, programIndex: 0, room: "Turf B", capacity: 20, day_of_week: 3, hour: 9 },
-    { locationIndex: 0, coachId: coaches[4].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 4, hour: 11 },
+    { locationIndex: 0, coachId: coaches[3].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 4, hour: 11 },
     { locationIndex: 0, coachId: coaches[0].id, programIndex: 4, room: "Turf A", capacity: 22, day_of_week: 5, hour: 15 },
-    { locationIndex: 0, coachId: coaches[4].id, programIndex: 0, room: "Turf B", capacity: 20, day_of_week: 6, hour: 9 },
+    { locationIndex: 0, coachId: coaches[3].id, programIndex: 0, room: "Turf B", capacity: 20, day_of_week: 6, hour: 9 },
     // Lawrenceville
     { locationIndex: 1, coachId: COACH_LAWRENCEVILLE_ID, programIndex: 0, room: "Court 1", capacity: 22, day_of_week: 1, hour: 8 },
     { locationIndex: 1, coachId: COACH_LAWRENCEVILLE_ID, programIndex: 0, room: "Turf A", capacity: 20, day_of_week: 2, hour: 10 },
@@ -947,19 +947,19 @@ function generateSessions(): Session[] {
     { locationIndex: 2, coachId: coaches[1].id, programIndex: 0, room: "Field 1", capacity: 20, day_of_week: 4, hour: 9 },
     { locationIndex: 2, coachId: coaches[1].id, programIndex: 1, room: "Turf A", capacity: 18, day_of_week: 5, hour: 15 },
     // Canton
-    { locationIndex: 3, coachId: coaches[2].id, programIndex: 3, room: "Recovery", capacity: 10, day_of_week: 1, hour: 7 },
-    { locationIndex: 3, coachId: coaches[2].id, programIndex: 2, room: "Turf A", capacity: 14, day_of_week: 2, hour: 11 },
-    { locationIndex: 3, coachId: coaches[2].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 3, hour: 13 },
-    { locationIndex: 3, coachId: coaches[2].id, programIndex: 4, room: "Court 1", capacity: 20, day_of_week: 4, hour: 16 },
-    { locationIndex: 3, coachId: coaches[2].id, programIndex: 2, room: "Turf A", capacity: 14, day_of_week: 5, hour: 11 },
-    { locationIndex: 3, coachId: coaches[2].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 6, hour: 10 },
+    { locationIndex: 3, coachId: coaches[3].id, programIndex: 3, room: "Recovery", capacity: 10, day_of_week: 1, hour: 7 },
+    { locationIndex: 3, coachId: coaches[3].id, programIndex: 2, room: "Turf A", capacity: 14, day_of_week: 2, hour: 11 },
+    { locationIndex: 3, coachId: coaches[3].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 3, hour: 13 },
+    { locationIndex: 3, coachId: coaches[3].id, programIndex: 4, room: "Court 1", capacity: 20, day_of_week: 4, hour: 16 },
+    { locationIndex: 3, coachId: coaches[3].id, programIndex: 2, room: "Turf A", capacity: 14, day_of_week: 5, hour: 11 },
+    { locationIndex: 3, coachId: coaches[3].id, programIndex: 1, room: "Combine Lab", capacity: 16, day_of_week: 6, hour: 10 },
     // Alpharetta
-    { locationIndex: 4, coachId: coaches[3].id, programIndex: 0, room: "Court 2", capacity: 22, day_of_week: 1, hour: 10 },
-    { locationIndex: 4, coachId: coaches[3].id, programIndex: 4, room: "Turf A", capacity: 24, day_of_week: 2, hour: 12 },
-    { locationIndex: 4, coachId: coaches[3].id, programIndex: 1, room: "Turf B", capacity: 16, day_of_week: 3, hour: 15 },
-    { locationIndex: 4, coachId: coaches[3].id, programIndex: 0, room: "Court 2", capacity: 22, day_of_week: 4, hour: 10 },
-    { locationIndex: 4, coachId: coaches[3].id, programIndex: 0, room: "Turf A", capacity: 20, day_of_week: 5, hour: 14 },
-    { locationIndex: 4, coachId: coaches[3].id, programIndex: 4, room: "Court 2", capacity: 22, day_of_week: 6, hour: 11 },
+    { locationIndex: 4, coachId: coaches[2].id, programIndex: 0, room: "Court 2", capacity: 22, day_of_week: 1, hour: 10 },
+    { locationIndex: 4, coachId: coaches[2].id, programIndex: 4, room: "Turf A", capacity: 24, day_of_week: 2, hour: 12 },
+    { locationIndex: 4, coachId: coaches[2].id, programIndex: 1, room: "Turf B", capacity: 16, day_of_week: 3, hour: 15 },
+    { locationIndex: 4, coachId: coaches[2].id, programIndex: 0, room: "Court 2", capacity: 22, day_of_week: 4, hour: 10 },
+    { locationIndex: 4, coachId: coaches[2].id, programIndex: 0, room: "Turf A", capacity: 20, day_of_week: 5, hour: 14 },
+    { locationIndex: 4, coachId: coaches[2].id, programIndex: 4, room: "Court 2", capacity: 22, day_of_week: 6, hour: 11 },
   ];
 
   const anchor = new Date();

@@ -5,7 +5,6 @@ import type { Coach } from "@/lib/demo/types";
 export const DEMO_COACH_IDS = {
   sean: "c0000001-0001-4000-8000-000000000001",
   venters: "c0000001-0001-4000-8000-000000000003",
-  wilkinson: "c0000001-0001-4000-8000-000000000004",
   blake: "c0000001-0001-4000-8000-000000000005",
   chovanic: "c0000001-0001-4000-8000-000000000006",
 } as const;
@@ -56,23 +55,11 @@ const COMMAND_OS_COACHES: SeedCoach[] = [
       "Hey, I'm Jonny. Legacy is where you make your mark — wanted to follow up on your athlete's progress and get the next session booked.",
   },
   {
-    id: DEMO_COACH_IDS.wilkinson,
-    slug: "elijah-wilkinson",
-    firstName: "Elijah",
-    lastName: "Wilkinson",
-    primarySlug: "lawrenceville",
-    shortBio:
-      "NFL offensive lineman and Legacy owner who builds trench warriors — power, mobility, and relentless effort.",
-    specialties: ["offensive line", "strength", "power development"],
-    voiceSample:
-      "I'm Elijah. We're all about the work — no excuses. Your numbers are trending the right way; let's keep that momentum going.",
-  },
-  {
     id: DEMO_COACH_IDS.blake,
     slug: "christian-blake",
     firstName: "Christian",
     lastName: "Blake",
-    primarySlug: "suwanee",
+    primarySlug: "lawrenceville",
     shortBio:
       "Former NFL wide receiver and Legacy owner specializing in route running, speed development, and recruiting exposure.",
     specialties: ["wide receiver", "route running", "recruiting"],

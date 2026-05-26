@@ -106,7 +106,7 @@ export const marketingCoaches: MarketingCoach[] = [
       "team-training",
       "hs-combine-prep",
     ],
-    locationSlugs: ["suwanee", "alpharetta", "canton"],
+    locationSlugs: ["suwanee", "alpharetta", "canton", "lawrenceville"],
     specialties: ["Operations", "Adult performance", "Culture"],
   },
   {
@@ -135,36 +135,6 @@ export const marketingCoaches: MarketingCoach[] = [
     programSlugs: ["college-recruit-track", "hs-combine-prep", "team-training", "youth-performance"],
     locationSlugs: ["suwanee", "alpharetta", "lawrenceville"],
     specialties: ["Wide receiver", "Route running", "Recruiting"],
-  },
-  {
-    slug: "elijah-wilkinson",
-    firstName: "Elijah",
-    lastName: "Wilkinson",
-    title: "NFL Pro and Owner",
-    roles: ["Owner", "Offensive Line", "Strength Development"],
-    isOwner: true,
-    quote: "I'm Elijah. We're all about the work! No excuses.",
-    shortBio:
-      "NFL offensive lineman and Legacy owner who builds trench warriors — power, mobility, and relentless effort.",
-    history: [
-      "Played offensive line in the NFL for multiple franchises including the Denver Broncos, Arizona Cardinals, and Atlanta Falcons.",
-      "Brings offensive-line-specific strength progressions, pass-pro footwork, and run-game leverage coaching to Legacy athletes.",
-      "Emphasizes no-excuses accountability — the same standard that kept him on NFL rosters as an undrafted free agent.",
-      "Leads adult and high school strength blocks focused on building durable, powerful athletes.",
-    ],
-    highlights: [
-      { value: "NFL", label: "OL career" },
-      { value: "7+", label: "Pro seasons" },
-      { value: "OL", label: "Position specialist" },
-    ],
-    programSlugs: [
-      "adult-performance",
-      "hs-combine-prep",
-      "team-training",
-      "youth-performance",
-    ],
-    locationSlugs: ["lawrenceville", "canton"],
-    specialties: ["Offensive line", "Strength", "Power development"],
   },
 ];
 
