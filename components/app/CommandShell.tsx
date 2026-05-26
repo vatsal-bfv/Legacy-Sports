@@ -37,10 +37,10 @@ export function useOpenMobileNav() {
 const nav = [
   { href: "/command-os", label: "Command Center", icon: Sparkles },
   { href: "/command-os/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/command-os/athletes", label: "Athletes", icon: Users },
   { href: "/command-os/leads", label: "Leads", icon: Kanban },
-  { href: "/command-os/schedule", label: "Schedule", icon: Calendar },
   { href: "/command-os/communications", label: "Communications", icon: MessageSquare },
+  { href: "/command-os/athletes", label: "Athletes", icon: Users },
+  { href: "/command-os/schedule", label: "Schedule", icon: Calendar },
   { href: "/command-os/operations", label: "Operations", icon: Building2 },
   { href: "/command-os/scouts", label: "Scouts", icon: Eye },
 ];
