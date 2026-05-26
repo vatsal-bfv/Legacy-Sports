@@ -35,7 +35,7 @@ export function buildDomainContext(scopeLocationId?: string): string {
 
   return `## Legacy Command domain
 
-Legacy Sports runs multi-location youth performance training. Use tools to fetch live demo data — never invent athlete names, numbers, or locations.
+Legacy Sports runs a nationwide multi-campus athlete development network. Use tools to fetch live demo data — never invent athlete names, numbers, or locations.
 
 ### Facilities
 ${locations}

@@ -7,14 +7,14 @@ export const metadata: Metadata = {
     absolute: "Legacy Sports Complex - Where Athletes Become Recruits",
   },
   description:
-    "Georgia's premier multi-location athlete development system. Performance training, combine prep, and a college recruiting pipeline powered by AI. 5 locations across Atlanta.",
+    "The nation's premier multi-campus athlete development system. Performance training, combine prep, and a college recruiting pipeline powered by AI. Campuses nationwide.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Legacy Sports Complex",
     description:
-      "Where athletes become recruits. 5 Georgia locations. AI-powered athlete development.",
+      "Where athletes become recruits. Nationwide campuses. AI-powered athlete development.",
     images: "/og-image.jpg",
   },
 };

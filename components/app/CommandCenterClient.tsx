@@ -130,7 +130,7 @@ export function CommandCenterClient() {
               </li>
             ))}
             <li className="text-sm text-slate">
-              Session completed — Suwanee HS Combine Prep
+              Session completed — HS Combine Prep
             </li>
             <li className="text-sm text-slate">
               Payment received — Marcus Johnson

@@ -73,7 +73,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
         label: "Vertical Jump",
         x: 78,
         y: 22,
-        detail: "Measured monthly at Suwanee",
+        detail: "Measured monthly at Legacy",
       },
       {
         id: "power",
@@ -226,7 +226,7 @@ export const featuredAthletes: FeaturedAthlete[] = [
     school: "Johns Creek High School",
     photo_url: HERO_ATHLETE_PHOTOS.emma,
     story:
-      "Emma trains for approach vertical and explosive first-step power at Legacy's Suwanee location. She gained 18 inches on her approach jump in eight months while maintaining 91% session attendance across school and club seasons.",
+      "Emma trains for approach vertical and explosive first-step power at her home Legacy campus. She gained 18 inches on her approach jump in eight months while maintaining 91% session attendance across school and club seasons.",
     slug: "emma-patel",
     stats: [
       { value: '18"', label: "Approach Gain" },

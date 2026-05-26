@@ -109,7 +109,7 @@ export const locationSchematics: LocationSchematic[] = [
     footprintWidth: 38,
     footprintDepth: 32,
     ceilingHeight: 13,
-    caption: "Compact east-metro layout with turf spine, film room, and high-traffic weight floor.",
+    caption: "Compact suburban layout with turf spine, film room, and high-traffic weight floor.",
     promptSeed:
       "Lawrenceville: 12,000 sq ft L-shaped floor plan, turf center, film room rear corner, open rack weight area front-left.",
     zones: [
@@ -125,7 +125,7 @@ export const locationSchematics: LocationSchematic[] = [
     footprintWidth: 34,
     footprintDepth: 30,
     ceilingHeight: 12,
-    caption: "Efficient north-Georgia footprint — turf, racks, and recovery in a single continuous loop.",
+    caption: "Efficient mid-size footprint — turf, racks, and recovery in a single continuous loop.",
     promptSeed:
       "Hoschton: 11,000 sq ft narrow bay, linear turf runway, weight racks along west wall, recovery nook east side.",
     zones: [
@@ -157,7 +157,7 @@ export const locationSchematics: LocationSchematic[] = [
     footprintWidth: 38,
     footprintDepth: 32,
     ceilingHeight: 13,
-    caption: "North Fulton layout mirroring flagship zones at a slightly tighter footprint.",
+    caption: "Premium suburban layout mirroring flagship zones at a slightly tighter footprint.",
     promptSeed:
       "Alpharetta: 12,500 sq ft premium suburban shell, turf spine, recovery suite, pro weight floor, minimal lobby.",
     zones: [

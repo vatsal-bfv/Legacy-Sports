@@ -14,12 +14,12 @@ export const heroMarqueeItems = [
   "Sean Weatherspoon",
   "Johnny Venters",
   "Dustin Chovanic",
-  "Georgia's Best",
+  "Nationwide Network",
 ];
 
 export const statItems = [
   { value: 1200, suffix: "+", label: "Athletes Trained" },
-  { value: 5, suffix: "", label: "Georgia Locations" },
+  { value: 8, suffix: "+", label: "Campus Locations" },
   { value: 3, suffix: "", label: "D1 Commitments This Season" },
   { value: 10, suffix: "+", label: "Years Building Champions" },
 ];
@@ -97,25 +97,25 @@ export const originsStory = {
     "From first session to college signing - Legacy's system doesn't stop at the facility wall.",
   paragraphs: [
     "Legacy started when a group of former NFL and MLB athletes asked a simple question: why does athlete development still feel fragmented? Training in one place, recruiting in another, data scattered across five different apps.",
-    "They built Legacy to answer it - pro-level coaching standards, a statewide facility network, and Legacy Command, the AI operating system that tracks every measurable from first session to college commitment.",
+    "They built Legacy to answer it — pro-level coaching standards, a nationwide campus network, and Legacy Command, the AI operating system that tracks every measurable from first session to college commitment.",
   ],
   ownershipIntro:
-    "The ownership group isn't ceremonial. They set coaching standards, review programming, and hold every location accountable to the same pro-level bar.",
+    "The ownership group isn't ceremonial. They set coaching standards, review programming, and hold every campus accountable to the same pro-level bar.",
   facilityIntro:
-    "Suwanee was the first facility. Five Georgia locations now run the same development system - same coaches, same measurables, same path to recruitment.",
+    "Legacy started with one flagship campus and is scaling nationally — the same coaches, measurables, and recruiting pipeline at every site.",
 };
 
 export const originsHero = {
   src: "https://images.pexels.com/photos/399187/pexels-photo-399187.jpeg?auto=compress&cs=tinysrgb&w=1800",
-  alt: "Athletes training on the turf at Legacy Sports Complex's Suwanee flagship facility",
-  location: "Suwanee Flagship",
+  alt: "Athletes training on the turf at a Legacy Sports Complex flagship campus",
+  location: "Flagship Campus",
   detail: "15,000 sq ft - Turf, weight room, recovery",
 };
 
 export const originsOwners = [
   {
     name: "Sean Weatherspoon",
-    role: "Former Atlanta Falcon",
+    role: "Former NFL Pro",
   },
   {
     name: "Dustin Chovanic",
@@ -133,7 +133,7 @@ export const originsOwners = [
 
 export const originsMilestones = [
   { value: "15K", label: "Sq Ft Flagship" },
-  { value: "5", label: "Georgia Locations" },
+  { value: "8+", label: "Campus Locations" },
   { value: "10+", label: "Years Building Champions" },
 ];
 
@@ -151,14 +151,14 @@ export const familyTestimonials = [
     quote:
       "Legacy didn't just train my son - they gave him a recruiting profile. He had two D1 conversations by the end of the year. I didn't know that was possible at 16.",
     name: "Darnell P.",
-    role: "Parent, Suwanee",
+    role: "Parent · Legacy Family",
     avatar: "https://randomuser.me/api/portraits/men/41.jpg",
   },
   {
     quote:
       "The data they track is unlike anything I'd seen at another facility. My daughter's 40-yard time dropped by 0.3 seconds in four months. We have the charts to prove it.",
     name: "Kimberly R.",
-    role: "Parent, Lawrenceville",
+    role: "Parent · Southeast Campus",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {

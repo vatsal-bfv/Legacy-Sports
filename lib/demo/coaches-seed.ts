@@ -40,7 +40,7 @@ const COMMAND_OS_COACHES: SeedCoach[] = [
       "First-round NFL linebacker and Pro Bowl talent who brings championship-level intensity to every session at Legacy.",
     specialties: ["linebacker development", "combine prep", "leadership"],
     voiceSample:
-      "Hey — Coach Spoon here. We built Legacy to give Georgia athletes the pro standard from day one. Let's get your athlete back on the turf this week.",
+      "Hey — Coach Spoon here. We built Legacy to give every athlete the pro standard from day one. Let's get your athlete back on the turf this week.",
   },
   {
     id: DEMO_COACH_IDS.venters,
@@ -73,7 +73,7 @@ const COMMAND_OS_COACHES: SeedCoach[] = [
     lastName: "Chovanic",
     primarySlug: "suwanee",
     shortBio:
-      "Legacy CEO and co-founder who built the five-location Georgia network on discipline forged in professional combat sports.",
+      "Legacy CEO and co-founder who built Legacy's nationwide campus network on discipline forged in professional combat sports.",
     specialties: ["operations", "adult performance", "culture"],
     voiceSample:
       "Hi, I'm Dustin. Wanted to check in on training this week and make sure we're staying on track with your athlete's goals.",

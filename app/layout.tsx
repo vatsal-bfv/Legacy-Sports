@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Legacy Sports Complex",
   },
   description:
-    "Georgia's premier multi-location athlete development system. Performance training, combine prep, and a college recruiting pipeline powered by AI.",
+    "The nation's premier multi-campus athlete development system. Performance training, combine prep, and a college recruiting pipeline powered by AI — expanding coast to coast.",
   applicationName: "Legacy Sports Complex",
   openGraph: {
     siteName: "Legacy Sports Complex",

@@ -348,7 +348,7 @@ function HeroSection({
             ref={subheadRef}
             className="mt-6 max-w-[480px] text-[clamp(15px,1.6vw,18px)] font-light leading-[1.65] text-coal"
           >
-            Five Georgia locations. 1,200+ athletes trained.
+            Nationwide campuses. 1,200+ athletes trained.
             <br />
             Owned by the pros. Powered by AI.
           </p>
@@ -402,7 +402,7 @@ function HeroSection({
         <p className="text-right text-[11px] font-normal tracking-[0.08em] text-ash">
           <span className="text-sm font-extrabold text-orange">3</span> Spots Remaining -
           {" "}
-          Suwanee Intake
+          National Intake
         </p>
       </div>
 
@@ -594,7 +594,7 @@ function BrandStatement({ reducedMotion }: { reducedMotion: boolean }) {
             [ 001 ]
           </span>
           <h2 className="mt-7 max-w-[340px] text-[clamp(24px,3.2vw,40px)] font-extrabold leading-[1.2] tracking-[-0.025em] text-ghost">
-            The training ground for Georgia&apos;s next generation.
+            The training ground for the next generation of recruits.
           </h2>
           <p
             ref={(element) => {
@@ -998,7 +998,7 @@ function AthleteResultsSection({ reducedMotion }: { reducedMotion: boolean }) {
         <div>
           <p className="legacy-section-label mb-7">[ RESULTS ]</p>
           <h2 className="max-w-[420px] text-[clamp(24px,3.2vw,40px)] font-extrabold leading-[1.2] tracking-[-0.025em] text-ghost">
-            Where Georgia&apos;s best athletes were built.
+            Where national-caliber athletes are built.
           </h2>
           <p className="mt-6 max-w-[540px] text-[15px] font-light leading-[1.85] text-coal">
             From first combine to college signing day - every milestone is tracked,
@@ -1349,7 +1349,7 @@ function CommandSection({ reducedMotion }: { reducedMotion: boolean }) {
                     14
                   </p>
                   <p className="mt-3 text-sm text-coal">
-                    AI flagged a 3-day attendance drop at Suwanee and Lawrenceville.
+                    AI flagged a 3-day attendance drop across two campuses on the network.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-steel bg-charcoal p-5">

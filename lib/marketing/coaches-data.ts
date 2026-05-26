@@ -35,14 +35,14 @@ export const marketingCoaches: MarketingCoach[] = [
     roles: ["Owner", "Head Trainer", "Linebacker Development"],
     isOwner: true,
     quote:
-      "I'm Spoon. We built Legacy to give Georgia athletes the pro standard from day one — no shortcuts, no excuses.",
+      "I'm Spoon. We built Legacy to give every athlete the pro standard from day one — no shortcuts, no excuses.",
     shortBio:
       "First-round NFL linebacker and Pro Bowl talent who brings championship-level intensity to every session at Legacy.",
     history: [
       "First-round pick (19th overall) by the Atlanta Falcons in the 2010 NFL Draft after a decorated career at the University of Missouri.",
       "Named to the Pro Bowl in 2012 and earned All-Pro honors while anchoring the Falcons defense for six seasons.",
       "Finished his NFL career with over 470 tackles, establishing himself as one of the most physical linebackers of his era.",
-      "Co-founded Legacy Sports Complex to translate pro-level standards — film study, accountability, and measurable progress — into youth and high school athlete development across Georgia.",
+      "Co-founded Legacy Sports Complex to translate pro-level standards — film study, accountability, and measurable progress — into youth and high school athlete development nationwide.",
     ],
     highlights: [
       { value: "2012", label: "Pro Bowl selection" },
@@ -67,7 +67,7 @@ export const marketingCoaches: MarketingCoach[] = [
       "Played professional baseball before transitioning into athlete development and facility ownership.",
       "Brings a pitcher's mindset to coaching — precision, repetition, and mental toughness under pressure.",
       "Helped design Legacy's youth curriculum to emphasize movement quality before max-effort testing.",
-      "Oversees baseball and multi-sport athlete pipelines at Legacy's Hoschton and Suwanee locations.",
+      "Oversees baseball and multi-sport athlete pipelines at Legacy campuses in the Southeast.",
     ],
     highlights: [
       { value: "MLB", label: "Professional career" },
@@ -88,16 +88,16 @@ export const marketingCoaches: MarketingCoach[] = [
     quote:
       "Hi, I'm Dustin. My pro MMA career has given me the discipline to birth this inclusive vision!",
     shortBio:
-      "Legacy CEO and co-founder who built the five-location Georgia network on discipline forged in professional combat sports.",
+      "Legacy CEO and co-founder who built Legacy's nationwide campus network on discipline forged in professional combat sports.",
     history: [
       "Competed professionally in mixed martial arts, developing the work ethic and systems thinking that shaped Legacy's operating model.",
-      "Founded Legacy Sports Complex with a vision of inclusive, pro-standard training accessible across metro Atlanta and North Georgia.",
-      "Scaled the brand from a single Suwanee flagship to five locations while maintaining unified coaching standards and Legacy Command integration.",
+      "Founded Legacy Sports Complex with a vision of inclusive, pro-standard training accessible coast to coast.",
+      "Scaled the brand from a single flagship to a multi-state network while maintaining unified coaching standards and Legacy Command integration.",
       "Sets facility culture, hiring standards, and the athlete-first philosophy that every Legacy coach is held to.",
     ],
     highlights: [
       { value: "CEO", label: "Legacy Sports Complex" },
-      { value: "5", label: "Georgia locations" },
+      { value: "8+", label: "Campus locations" },
       { value: "Pro", label: "MMA background" },
     ],
     programSlugs: [
